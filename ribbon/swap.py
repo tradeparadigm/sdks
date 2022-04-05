@@ -5,15 +5,17 @@
 # Created Date: 04/04/2022
 # version ='0.01'
 # ---------------------------------------------------------------------------
-""" Abstract class for contract factory """
+""" Module to call Swap contract """
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
+from typing import Type
 from web3 import Web3
 from contract import ContractConnection
 from classes import SignedBid
+from dataclasses import asdict
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -43,26 +45,17 @@ class SwapContract(ContractConnection):
         bid (dict): Bid dictionary containing swapId, nonce, signerWallet, 
           sellAmount, buyAmount, referrer, v, r, and s
 
+    Raises:
+        TypeError: Bid argument is not an instance of SignedBid
+
     Returns:
         response (dict): Dictionary containing number of errors (errors)
           and the corresponding error messages (messages)
     """
-    try:
-      params = {
-        'swapId': int(bid['swapId']),
-        'nonce': int(bid['nonce']),
-        'signerWallet': bid['signerWallet'],
-        'sellAmount': int(bid['sellAmount']),
-        'buyAmount': int(bid['buyAmount']),
-        'referrer': bid['referrer'],
-        'v': int(bid['v']),
-        'r': bid['r'],
-        's': bid['s'],
-      }
-    except:
-      raise TypeError('Invalid bid')
+    if not isinstance(bid, SignedBid):
+      raise TypeError("Invalid signed bid")
 
-    response = self.contract.functions.check(params).call()
+    response = self.contract.functions.check(asdict(bid)).call()
     
     errors = response[0]
     if errors == 0:

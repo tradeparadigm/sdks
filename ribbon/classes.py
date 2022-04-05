@@ -7,6 +7,7 @@ class Domain:
   chainId: int
   verifyingContract: str
   version: int
+  salt: str = None
 
 @dataclass
 class Bid:

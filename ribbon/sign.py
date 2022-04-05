@@ -14,6 +14,7 @@
 import eth_keys
 from encode import TypedDataEncoder
 from classes import Domain, Bid, SignedBid
+from dataclasses import asdict
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -72,10 +73,18 @@ class Signature:
         types (dict): Dictionary of types and their fields
         value (dict): Dictionary of values for each field in types
 
+    Raises:
+        TypeError: Domain argument is not an instance of Domain class
+
     Returns:
         signature (dict): Signature split into v, r, s components
     """
-    return self.sign_msg(TypedDataEncoder._hash(domain, types, value))
+    if not isinstance(domain, Domain):
+      raise TypeError("Invalid domain parameters")
+
+    domain_dict = {k: v for k, v in asdict(domain).items() if v is not None}
+
+    return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
   def sign_bid(self, domain: Domain, bid: Bid, types: dict = BID_TYPES) -> SignedBid:
     """Sign a bid using _sign_type_data_v4
@@ -86,20 +95,26 @@ class Signature:
         types (dict): Dictionary of types and their fields
         bid (dict): Dicionary of bid specification
 
+    Raises:
+        TypeError: Bid argument is not an instance of Bid class
+
     Returns:
         signedBid (dict): Bid combined with the generated signature
     """
-    signature = self._sign_type_data_v4(domain, bid, types)
+    if not isinstance(bid, Bid):
+      raise TypeError("Invalid bid")
 
-    return {
-      'swapId': bid['swapId'],
-      'nonce': bid['nonce'],
-      'signerWallet': bid['signerWallet'],
-      'sellAmount': bid['sellAmount'],
-      'buyAmount': bid['buyAmount'],
-      'referrer': bid['referrer'],
-      'v': signature['v'],
-      'r': signature['r'],
-      's': signature['s']
-    }
+    signature = self._sign_type_data_v4(domain, asdict(bid), types)
+
+    return SignedBid(
+      swapId=bid.swapId,
+      nonce=bid.nonce,
+      signerWallet=bid.signerWallet,
+      sellAmount=bid.sellAmount,
+      buyAmount=bid.buyAmount,
+      referrer=bid.referrer,
+      v=signature['v'],
+      r=signature['r'],
+      s=signature['s']
+    )
 
