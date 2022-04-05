@@ -5,7 +5,7 @@
 # Created Date: 04/04/2022
 # version ='0.01'
 # ---------------------------------------------------------------------------
-''' Module to generate signature to bid '''
+""" Module to generate signature to bid """
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -13,12 +13,27 @@
 # ---------------------------------------------------------------------------
 import eth_keys
 from encode import TypedDataEncoder
+from classes import Domain, Bid, SignedBid
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+BID_TYPES = {
+    'Bid': [
+      {'name': 'swapId', 'type': 'uint256'},
+      {'name': 'nonce', 'type': 'uint256'},
+      {'name': 'signerWallet', 'type': 'address'},
+      {'name': 'sellAmount', 'type': 'uint256'},
+      {'name': 'buyAmount', 'type': 'uint256'},
+      {'name': 'referrer', 'type': 'address'},
+    ]
+  }
 
 # ---------------------------------------------------------------------------
 # Signature Generator
 # ---------------------------------------------------------------------------
-class SignatureGenerator:
-  '''
+class Signature:
+  """
   Object to generate bid signature
 
   Args:
@@ -26,19 +41,19 @@ class SignatureGenerator:
 
   Attributes:
       signer (object): Instance of signer to generate signature
-  '''
+  """
   def __init__(self, privateKey: str) -> None:
     self.signer = eth_keys.keys.PrivateKey(bytes.fromhex(privateKey[2:]))
 
-  def signMessage(self, messageHash: str) -> dict:
-    '''Sign a hash message using the signer object
+  def sign_msg(self, messageHash: str) -> dict:
+    """Sign a hash message using the signer object
 
     Args:
         messageHash (str): Message to signed in hex format with 0x prefix
 
     Returns:
         signature (dict): Signature split into v, r, s components
-    '''
+    """
     signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
 
     return {
@@ -47,8 +62,8 @@ class SignatureGenerator:
       's': hex(signature.s)
     }
 
-  def _signTypedDataV4(self, domain: dict, types: dict, value: dict) -> str:
-    '''Sign a hash of typed data V4 which follows EIP712 convention:
+  def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> str:
+    """Sign a hash of typed data V4 which follows EIP712 convention:
     https://eips.ethereum.org/EIPS/eip-712
     
     Args:
@@ -59,11 +74,11 @@ class SignatureGenerator:
 
     Returns:
         signature (dict): Signature split into v, r, s components
-    '''
-    return self.signMessage(TypedDataEncoder._hash(domain, types, value))
+    """
+    return self.sign_msg(TypedDataEncoder._hash(domain, types, value))
 
-  def sign(self, domain: dict, types: dict, bid: dict) -> dict:
-    '''Sign a bid using _signTypedDataV4
+  def sign_bid(self, domain: Domain, bid: Bid, types: dict = BID_TYPES) -> SignedBid:
+    """Sign a bid using _sign_type_data_v4
     
     Args:
         domain (dict): Dictionary containing domain parameters including
@@ -73,8 +88,8 @@ class SignatureGenerator:
 
     Returns:
         signedBid (dict): Bid combined with the generated signature
-    '''
-    signature = self._signTypedDataV4(domain, types, bid)
+    """
+    signature = self._sign_type_data_v4(domain, bid, types)
 
     return {
       'swapId': bid['swapId'],

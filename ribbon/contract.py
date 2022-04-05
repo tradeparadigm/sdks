@@ -5,7 +5,7 @@
 # Created Date: 04/04/2022
 # version ='0.01'
 # ---------------------------------------------------------------------------
-''' Abstract class for contract factory '''
+""" Abstract class for contract connection """
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -15,10 +15,10 @@ from web3 import Web3
 import json
 
 # ---------------------------------------------------------------------------
-# Contract Factory
+# Contract Connection
 # ---------------------------------------------------------------------------
-class ContractFactory:
-  '''
+class ContractConnection:
+  """
   Object to create connection to a contract
 
   Args:
@@ -31,7 +31,7 @@ class ContractFactory:
       abi (dict): Contract ABI
       w3 (object): RPC connection instance
       contract (object): Contract instance
-  '''
+  """
   def __init__(self, rpc: str, address: str, abi: dict) -> None:
     self.address = address
     self.abi = abi

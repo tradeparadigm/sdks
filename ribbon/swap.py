@@ -5,14 +5,15 @@
 # Created Date: 04/04/2022
 # version ='0.01'
 # ---------------------------------------------------------------------------
-''' Abstract class for contract factory '''
+""" Abstract class for contract factory """
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
 from web3 import Web3
-from contract import ContractFactory
+from contract import ContractConnection
+from classes import SignedBid
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -20,22 +21,22 @@ from contract import ContractFactory
 DEFAULT_ABI_LOCATION = 'abis/Swap.json'
 
 # ---------------------------------------------------------------------------
-# Swap Contract Factory
+# Swap Contract
 # ---------------------------------------------------------------------------
-class SwapFactory(ContractFactory):
-  '''
+class SwapContract(ContractConnection):
+  """
   Object to create connection to the Swap contract
 
   Args:
       rpc (str): Json RPC address to connect
       address (str): Contract address
       abi (dict): Contract ABI location
-  '''
+  """
   def __init__(self, rpc: str, address: str, abi: dict=DEFAULT_ABI_LOCATION):
         super().__init__(rpc, address, abi)
 
-  def validateBid(self, bid: dict) -> str:
-    '''
+  def validate_bid(self, bid: SignedBid) -> str:
+    """
     Method to validate bid
 
     Args:
@@ -45,7 +46,7 @@ class SwapFactory(ContractFactory):
     Returns:
         response (dict): Dictionary containing number of errors (errors)
           and the corresponding error messages (messages)
-    '''
+    """
     try:
       params = {
         'swapId': int(bid['swapId']),

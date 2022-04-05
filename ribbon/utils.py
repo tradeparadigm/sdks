@@ -5,7 +5,7 @@
 # Created Date: 04/04/2022
 # version ='0.01'
 # ---------------------------------------------------------------------------
-''' Utility functions for encode.py '''
+""" Utility functions for encode.py """
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -23,7 +23,7 @@ PADDING = bytearray([0] * 32)
 # Utilities
 # ---------------------------------------------------------------------------
 def id(text: str) -> str:
-  '''
+  """
   Generate the keccak256 of a string
 
   Args:
@@ -31,11 +31,11 @@ def id(text: str) -> str:
 
   Returns:
       hash (str): Resulting hash
-  '''
+  """
   return Web3.keccak(text=text).hex()
 
-def getAddress(address: str) -> str:
-  '''
+def get_address(address: str) -> str:
+  """
   Validate if address is valid
 
   Args:
@@ -43,14 +43,14 @@ def getAddress(address: str) -> str:
 
   Returns:
       address (str): Returns address if valid
-  '''
+  """
   if not Web3.isAddress(address):
     raise ValueError(f'Invalid address: {address}')
 
   return address
 
-def hexConcat(items: list) -> str:
-  '''
+def hex_concat(items: list) -> str:
+  """
   Concatenate list of hexes with 0x prefix
 
   Args:
@@ -58,14 +58,14 @@ def hexConcat(items: list) -> str:
 
   Returns:
       hex (str): Concatenated hex
-  '''
+  """
   result = '0x'
   for i in items:
     result += i[2:]
   return result
 
-def isHexString(value: str, length: int=None) -> bool:
-  '''
+def is_hex_string(value: str, length: int=None) -> bool:
+  """
   Check if string is a hex with a specified length
 
   Args:
@@ -75,15 +75,15 @@ def isHexString(value: str, length: int=None) -> bool:
   Returns:
       isHex (bool): Boolean whether the given value is 
         hex of a given length
-  '''
+  """
   if not isinstance(value, str) or not re.match('^0x[0-9A-Fa-f]*$', value):
     return False
   if length and len(value) != (2 + 2 * length):
     return False
   return True
 
-def hexZeroPad(value: str, length: int) -> str:
-  '''
+def hex_zero_pad(value: str, length: int) -> str:
+  """
   Add zero padding on the left
 
   Args:
@@ -92,8 +92,8 @@ def hexZeroPad(value: str, length: int) -> str:
 
   Returns:
       hex (object): Hex with padding
-  '''
-  if not isHexString(value):
+  """
+  if not is_hex_string(value):
     raise ValueError(f'Invalid hex string: {value}')
   elif (len(value) > 2 * length + 2):
     raise ValueError(f'Value out of range: {value}, {length}')
@@ -103,8 +103,8 @@ def hexZeroPad(value: str, length: int) -> str:
   
   return value
 
-def hexPadRight(value: str) -> str:
-  '''
+def hex_pad_right(value: str) -> str:
+  """
   Add zero padding on the right to create hex of length 32
 
   Args:
@@ -112,14 +112,14 @@ def hexPadRight(value: str) -> str:
 
   Returns:
       hex (object): Hex with padding
-  '''
+  """
   padOffset = len(value) % 32
   if padOffset > 0:
-    return hexConcat([value, PADDING.hex()[padOffset:]])
+    return hex_concat([value, PADDING.hex()[padOffset:]])
   return value
 
-def encodeType(name: str, fields: list) -> str:
-  '''
+def encode_type(name: str, fields: list) -> str:
+  """
   Encode struct types
 
   Args:
@@ -128,6 +128,6 @@ def encodeType(name: str, fields: list) -> str:
 
   Returns:
       data (object): Encoded type
-  '''
+  """
   fields = ','.join([i['type'] + ' ' + i['name'] for i in fields])
   return f'{name}({fields})'

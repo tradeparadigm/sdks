@@ -5,7 +5,7 @@
 # Created Date: 04/04/2022
 # version ='0.01'
 # ---------------------------------------------------------------------------
-''' Module to generate JWT signature '''
+""" Module to generate JWT signature """
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -22,7 +22,7 @@ ALGORITHM = 'EdDSA'
 # Authenticator
 # ---------------------------------------------------------------------------
 class Authenticator:
-  '''
+  """
   Object to generate JWT signature
 
   Args:
@@ -30,13 +30,13 @@ class Authenticator:
 
   Attributes:
       key (str): API key in PKSI format
-  '''
+  """
   def __init__(self, key: str):
     self.key = '-----BEGIN PRIVATE KEY-----\n' \
       + key + '\n-----END PRIVATE KEY-----'
 
-  def signJWT(self, payload: dict):
-    '''
+  def sign_jwt(self, payload: dict):
+    """
     Method to generate JWT signature
 
     Args:
@@ -44,5 +44,5 @@ class Authenticator:
 
     Returns:
         jwt (dict): JWT signature
-    '''
+    """
     return jwt.encode(payload, self.key, algorithm=ALGORITHM)

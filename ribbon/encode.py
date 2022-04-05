@@ -5,7 +5,7 @@
 # Created Date: 04/04/2022
 # version ='0.01'
 # ---------------------------------------------------------------------------
-''' Module to encode message '''
+""" Module to encode message """
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -33,14 +33,14 @@ DOMAIN_FIELD_TYPES = {
     'salt': 'bytes32'
 }
 
-HEX_TRUE = hexZeroPad(Web3.toHex(1), 32)
-HEX_FALSE = hexZeroPad(Web3.toHex(0), 32)
+HEX_TRUE = hex_zero_pad(Web3.toHex(1), 32)
+HEX_FALSE = hex_zero_pad(Web3.toHex(0), 32)
 
 # ---------------------------------------------------------------------------
 # Helper Functions
 # ---------------------------------------------------------------------------
-def uintEncoder(type: str) -> object:
-  '''
+def uint_encoder(type: str) -> object:
+  """
   Encoder for uint types
 
   Args:
@@ -48,7 +48,7 @@ def uintEncoder(type: str) -> object:
 
   Returns:
       encoder (object): Uint encoder
-  '''
+  """
   match = re.findall('^(u?)int(\d*)$', type).pop()
   signed = (match[1] == '')
   width = int(match[2]) if len(match) == 3 else 256
@@ -63,12 +63,12 @@ def uintEncoder(type: str) -> object:
   boundsUpper = 2**(width-1) - 1 if signed else 2**(width) - 1
   boundsLower = (boundsUpper + 1)*(-1)
   return lambda value: \
-    hexZeroPad(Web3.toHex(int(value)), 32) \
+    hex_zero_pad(Web3.toHex(int(value)), 32) \
       if int(value) < boundsUpper and int(value) > boundsLower \
       else ValueError('Value out of bounds')
 
-def bytesEncoder(type: str) -> object:
-  '''
+def bytes_encoder(type: str) -> object:
+  """
   Encoder for bytes types
 
   Args:
@@ -76,7 +76,7 @@ def bytesEncoder(type: str) -> object:
 
   Returns:
       encoder (object): Bytes encoder
-  '''
+  """
   match = re.findall('^bytes(\d+)$', type).pop()
   width = int(match[1])
 
@@ -84,11 +84,11 @@ def bytesEncoder(type: str) -> object:
     raise ValueError(f'Invalid bytes width: {type}')
 
   return lambda value: \
-    hexPadRight(value) if len(value) == width \
+    hex_pad_right(value) if len(value) == width \
     else ValueError('Invalid bytes length')
 
-def getBaseEncoder(type: str) -> object:
-  '''
+def get_base_encoder(type: str) -> object:
+  """
   Get the encoder for base types
 
   Args:
@@ -96,13 +96,13 @@ def getBaseEncoder(type: str) -> object:
 
   Returns:
       encoder (object): Encoder
-  '''
+  """
   if re.match('^(u?)int(\d*)$', type):
-    return uintEncoder(type)
+    return uint_encoder(type)
   elif re.match('^bytes(\d+)$', type):
-    return bytesEncoder(type)
+    return bytes_encoder(type)
   elif type == 'address':
-    return lambda value: hexZeroPad(getAddress(value), 32)
+    return lambda value: hex_zero_pad(get_address(value), 32)
   elif type == 'bool':
     return lambda value: HEX_TRUE if value else HEX_FALSE
   elif type == 'bytes':
@@ -113,7 +113,7 @@ def getBaseEncoder(type: str) -> object:
     return None
 
 class TypedDataEncoder:
-  '''
+  """
   Object to encode typed data
 
   Args:
@@ -127,7 +127,7 @@ class TypedDataEncoder:
       parents (dict): Dictionary container to store parent of structs
       subtypes (dict): Dictionary container to check circular reference
       primaryType (dict): Primary type to encode
-  '''
+  """
   def __init__(self, types: dict) -> None:
     self.types = types
     self._encoderCache = {}
@@ -157,7 +157,7 @@ class TypedDataEncoder:
         if baseType == name:
           raise ValueError(f'Circular type reference: {baseType}')
 
-        encoder = getBaseEncoder(baseType)
+        encoder = get_base_encoder(baseType)
 
         if encoder:
           continue
@@ -195,11 +195,11 @@ class TypedDataEncoder:
     for name in self.subtypes.keys():
       st = list(self.subtypes[name].keys())
       st.sort()
-      self._types[name] = encodeType(name, types[name]) \
-        + ''.join([encodeType(t, types[t]) for t in st])
+      self._types[name] = encode_type(name, types[name]) \
+        + ''.join([encode_type(t, types[t]) for t in st])
 
-  def _getEncoder(self, type: str) -> object:
-    '''
+  def _get_encoder(self, type: str) -> object:
+    """
     Get the encoder for a given type
 
     Args:
@@ -207,8 +207,8 @@ class TypedDataEncoder:
 
     Returns:
         encoder (object): Encoder
-    '''
-    encoder = getBaseEncoder(type)
+    """
+    encoder = get_base_encoder(type)
     if encoder is not None:
       return encoder
 
@@ -216,12 +216,12 @@ class TypedDataEncoder:
     if len(match) > 0:
       match = type[:-1].split('[')
       subtype = match[0]
-      subEncoder = self.getEncoder(subtype)
+      subEncoder = self.get_encoder(subtype)
       length = 0 if len(match) == 1 else int(match[1])
       print(length)
       return lambda values: \
         Web3.keccak(
-          text=hexConcat(
+          text=hex_concat(
             [Web3.keccak(text=subEncoder(value)) for value in values] \
               if subtype in self._types.keys() \
               else [subEncoder(value) for value in values]
@@ -233,16 +233,16 @@ class TypedDataEncoder:
     fields = self.types[type]
     if fields is not None:
       encodedType = id(self._types[type])
-      return lambda value: hexConcat(
-        [encodedType] + [self.getEncoder(field['type'])(value[field['name']]) 
+      return lambda value: hex_concat(
+        [encodedType] + [self.get_encoder(field['type'])(value[field['name']]) 
           if field['type'] not in self._types.keys() \
           else Web3.keccak(
-            text=self.getEncoder(field['type'])(value[field['name']])
+            text=self.get_encoder(field['type'])(value[field['name']])
           ).hex() for field in fields]
         )
 
-  def getEncoder(self, type: str) -> object:
-    '''
+  def get_encoder(self, type: str) -> object:
+    """
     Get the base encoder for a given type and store it in cache
 
     Args:
@@ -250,16 +250,16 @@ class TypedDataEncoder:
 
     Returns:
         encoder (object): Encoder
-    '''
+    """
     if type in self._encoderCache.keys():
       return self._encoderCache[type]
     else:
-      encoder = self._getEncoder(type)
+      encoder = self._get_encoder(type)
     
     return encoder
 
-  def encodeData(self, type: str, value: dict) -> str:
-    '''
+  def encode_data(self, type: str, value: dict) -> str:
+    """
     Encode the value of a given type
 
     Args:
@@ -268,11 +268,11 @@ class TypedDataEncoder:
 
     Returns:
         data (str): Encoded data
-    '''
-    return self.getEncoder(type)(value)
+    """
+    return self.get_encoder(type)(value)
 
-  def hashStruct(self, name: str, value: dict) -> str:
-    '''
+  def hash_struct(self, name: str, value: dict) -> str:
+    """
     Generate the hash of encoded data given a type and value
 
     Args:
@@ -281,11 +281,11 @@ class TypedDataEncoder:
 
     Returns:
         hash (str): Hash of encoded data
-    '''
-    return Web3.keccak(hexstr=self.encodeData(name, value)).hex()
+    """
+    return Web3.keccak(hexstr=self.encode_data(name, value)).hex()
 
   def hash(self, value: dict) -> str:
-    '''
+    """
     Generate the hash of encoded data for the primary type given a value
 
     Args:
@@ -293,12 +293,12 @@ class TypedDataEncoder:
 
     Returns:
         hash (str): Hash of encoded data
-    '''
-    return self.hashStruct(self.primaryType, value)
+    """
+    return self.hash_struct(self.primaryType, value)
 
   @staticmethod
   def _from(types: dict) -> object:
-    '''
+    """
     Create a new instance of TypedDataEncoder for a given types
 
     Args:
@@ -306,12 +306,12 @@ class TypedDataEncoder:
 
     Returns:
         TypedDataEncoder (str): A new instance of TypedDataEncoder
-    '''
+    """
     return TypedDataEncoder(types)
 
   @staticmethod
-  def _hashStruct(name: str, types: dict, value: dict) -> str:
-    '''
+  def _hash_struct(name: str, types: dict, value: dict) -> str:
+    """
     Generate the hash of encoded data given a name, types and value
 
     Args:
@@ -321,12 +321,12 @@ class TypedDataEncoder:
 
     Returns:
         hash (str): Hash of encoded data
-    '''
-    return TypedDataEncoder._from(types).hashStruct(name, value)
+    """
+    return TypedDataEncoder._from(types).hash_struct(name, value)
 
   @staticmethod
-  def hashDomain(domain: dict) -> str:
-    '''
+  def hash_domain(domain: dict) -> str:
+    """
     Encode the domain dictionary
 
     Args:
@@ -334,7 +334,7 @@ class TypedDataEncoder:
 
     Returns:
         hash (str): Hash of encoded domain data
-    '''
+    """
     domainFields = []
     for name in domain.keys():
       if name not in DOMAIN_FIELD_NAMES:
@@ -344,7 +344,7 @@ class TypedDataEncoder:
     
     domainFields.sort(key=lambda x: DOMAIN_FIELD_NAMES.index(x['name']))
 
-    return TypedDataEncoder._hashStruct(
+    return TypedDataEncoder._hash_struct(
       'EIP712Domain', 
       { 'EIP712Domain': domainFields }, 
       domain
@@ -352,7 +352,7 @@ class TypedDataEncoder:
 
   @staticmethod
   def encode(domain: dict, types: dict, value: dict) -> str:
-    '''
+    """
     Encode a message
 
     Args:
@@ -362,16 +362,16 @@ class TypedDataEncoder:
 
     Returns:
         data (str): Encoded message
-    '''
-    return hexConcat([
+    """
+    return hex_concat([
       '0x1901',
-      TypedDataEncoder.hashDomain(domain),
+      TypedDataEncoder.hash_domain(domain),
       TypedDataEncoder._from(types).hash(value)
     ])
 
   @staticmethod
   def _hash(domain: dict, types: dict, value: dict) -> str:
-    '''
+    """
     Generate a hash of a message following the EIP712 convention:
     https://eips.ethereum.org/EIPS/eip-712
 
@@ -382,7 +382,7 @@ class TypedDataEncoder:
 
     Returns:
         hash (str): Hash of message
-    '''
+    """
     return Web3.keccak(
       hexstr=TypedDataEncoder.encode(domain, types, value)
     ).hex()

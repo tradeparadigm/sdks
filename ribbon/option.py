@@ -5,13 +5,13 @@
 # Created Date: 04/04/2022
 # version ='0.01'
 # ---------------------------------------------------------------------------
-''' Abstract class for contract factory '''
+""" Abstract class for contract factory """
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
-from contract import ContractFactory
+from contract import ContractConnection
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -19,29 +19,29 @@ from contract import ContractFactory
 DEFAULT_ABI_LOCATION = 'abis/oToken.json'
 
 # ---------------------------------------------------------------------------
-# oToken Contract Factory
+# oToken Contract
 # ---------------------------------------------------------------------------
-class oTokenFactory(ContractFactory):
-  '''
+class oTokenContract(ContractConnection):
+  """
   Object to create connection to the an oToken contract
 
   Args:
       rpc (str): Json RPC address to connect
       address (str): Contract address
       abi (dict): Contract ABI location
-  '''
+  """
   def __init__(self, rpc: str, address: str, abi: dict=DEFAULT_ABI_LOCATION):
         super().__init__(rpc, address, abi)
 
-  def getOtokenDetails(self) -> dict:
-    '''
+  def get_otoken_details(self) -> dict:
+    """
     Method to validate bid
 
     Args:
 
     Returns:
         response (dict): Dictionary oToken details
-    '''
+    """
     details = self.contract.functions.getOtokenDetails().call()
 
     return {
