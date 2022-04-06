@@ -30,12 +30,19 @@ class SwapContract(ContractConnection):
   Object to create connection to the Swap contract
 
   Args:
-      rpc (str): Json RPC address to connect
+      rpc_url (str): Json RPC url to connect
+      rpc_token (str): Json RPC url token
       address (str): Contract address
       abi (dict): Contract ABI location
   """
-  def __init__(self, rpc: str, address: str, abi: dict=DEFAULT_ABI_LOCATION):
-        super().__init__(rpc, address, abi)
+  def __init__(
+    self, 
+    rpc_url: str, 
+    rpc_token: str, 
+    address: str,
+    abi: dict=DEFAULT_ABI_LOCATION
+  ):
+    super().__init__(rpc_url, rpc_token, address, abi)
 
   def validate_bid(self, bid: SignedBid) -> str:
     """
