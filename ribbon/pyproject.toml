@@ -8,6 +8,9 @@ description = 'SDK to interact with Ribbon Finance systems'
 license = 'MIT'
 version = '0.1.0'
 authors = ['Steven Williams <steven@ribbon.finance>']
+packages = [
+    { include = 'abis' }
+]
 
 [tool.poetry.dependencies]
 python = '^3.6'
