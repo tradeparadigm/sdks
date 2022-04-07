@@ -14,10 +14,10 @@
 from web3 import Web3
 from dataclasses import asdict
 
-from contract import ContractConnection
-from definitions import SignedBid
-from utils import get_address
-from encode import ADDRESS_ZERO
+from ribbon.contract import ContractConnection
+from ribbon.definitions import SignedBid
+from ribbon.utils import get_address
+from ribbon.encode import ADDRESS_ZERO
 
 
 # ---------------------------------------------------------------------------
