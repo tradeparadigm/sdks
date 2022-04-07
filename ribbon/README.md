@@ -58,6 +58,7 @@ pprint(asdict(bid))
 Validate a signed bid:
 ```python
 from pprint import pprint
+
 from ribbon.swap import SwapContract
 
 rpc_url = "https://kovan.infura.io/v3/"
