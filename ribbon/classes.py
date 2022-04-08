@@ -79,8 +79,8 @@ class InfuraAPIVersions(Enum):
 
 
 INFURA_RPC_URLS = {
-    Chains.PROD: f"https://kovan.infura.io/{InfuraAPIVersions.V3}/",
-    Chains.TESTNET: f"https://mainnet.infura.io/{InfuraAPIVersions.V3}/",
+    Chains.PROD: f"https://mainnet.infura.io/{InfuraAPIVersions.V3.value}/",
+    Chains.TESTNET: f"https://kovan.infura.io/{InfuraAPIVersions.V3.value}/",
 }
 
 
@@ -110,13 +110,3 @@ class EthereumVaults(BaseEnum):
 
     THETA_ETH_CALL = "RibbonThetaVaultETHCall"
     THETA_WBTC_CALL = "RibbonThetaVaultWBTCCall"
-
-
-if __name__ == "__main__":
-    from dataclasses import asdict
-
-    config = ContractConfig()
-    print(asdict(config))
-    print(config.infura_rpc_url)
-    print("kovan" in Chains)
-    print("wrong" in Chains)
