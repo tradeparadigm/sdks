@@ -15,7 +15,7 @@ import json
 import os
 from utils import get_address
 from web3 import Web3
-from classes import Chains, ContractConfig
+from types import Chains, ContractConfig
 
 
 # ---------------------------------------------------------------------------

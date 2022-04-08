@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Created By: Steven (steven@ribbon.finance)
 # Created Date: 04/04/2022
-# version ='0.01'
+# version ='0.1.0'
 # ---------------------------------------------------------------------------
 """ Module to generate signature to bid """
 # ---------------------------------------------------------------------------
@@ -13,7 +13,7 @@
 # ---------------------------------------------------------------------------
 import eth_keys
 from encode import TypedDataEncoder
-from classes import Domain, Bid, SignedBid
+from types import Domain, Bid, SignedBid
 from dataclasses import asdict
 
 # ---------------------------------------------------------------------------

@@ -15,7 +15,7 @@ from web3 import Web3
 from dataclasses import asdict
 
 from contract import ContractConnection
-from classes import SignedBid
+from types import SignedBid
 from utils import get_address
 
 
