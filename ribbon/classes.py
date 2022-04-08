@@ -12,7 +12,9 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
-from enum import Enum, EnumMeta
+
+from chains import Chains, INFURA_RPC_URLS
+from meta import BaseEnum
 
 
 # ---------------------------------------------------------------------------
@@ -31,8 +33,6 @@ class Domain:
 
 @dataclass
 class Bid:
-    """Bid parameters"""
-
     swapId: int
     nonce: int
     signerWallet: str
@@ -43,45 +43,9 @@ class Bid:
 
 @dataclass
 class SignedBid(Bid):
-    """Signed bid fields"""
-
     v: int
     r: str
     s: str
-
-
-class MembershipTestEnumMeta(EnumMeta):
-    def __contains__(cls, item):
-        try:
-            cls(item)
-        except ValueError:
-            return False
-        return True
-
-
-class BaseEnum(Enum, metaclass=MembershipTestEnumMeta):
-    """With this you can do membership tests,
-    e.g. >>> element in YourEnumClass"""
-
-
-class Chains(BaseEnum):
-    """Maybe to be called EtherumChains?
-    Note: to test membership you can do
-    >>> if my_current_chain in Chains.__members__
-    """
-
-    PROD = "mainnet"
-    TESTNET = "kovan"
-
-
-class InfuraAPIVersions(Enum):
-    V3 = "v3"
-
-
-INFURA_RPC_URLS = {
-    Chains.PROD: f"https://mainnet.infura.io/{InfuraAPIVersions.V3.value}/",
-    Chains.TESTNET: f"https://kovan.infura.io/{InfuraAPIVersions.V3.value}/",
-}
 
 
 @dataclass
