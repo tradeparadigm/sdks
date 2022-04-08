@@ -15,10 +15,6 @@ from contract import ContractConnection
 from definitions import ContractConfig
 from utils import get_address
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
 
 # ---------------------------------------------------------------------------
 # ERC20 Contract
