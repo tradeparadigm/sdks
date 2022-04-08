@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------------
 # Created By: Steven (steven@ribbon.finance)
 # Created Date: 04/04/2022
-# version ='0.01'
+# version ='0.1.0'
 # ---------------------------------------------------------------------------
 """ Module to call oToken contract """
 # ---------------------------------------------------------------------------
@@ -11,7 +11,7 @@
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
-from contract import ContractConnection
+from erc20 import ERC20Contract
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -21,24 +21,22 @@ DEFAULT_ABI_LOCATION = 'abis/oToken.json'
 # ---------------------------------------------------------------------------
 # oToken Contract
 # ---------------------------------------------------------------------------
-class oTokenContract(ContractConnection):
+class oTokenContract(ERC20Contract):
   """
   Object to create connection to the an oToken contract
 
   Args:
-      rpc_url (str): Json RPC url to connect
-      rpc_token (str): Json RPC url token
+      chain (str): The chain the contract is deployed in
       address (str): Contract address
       abi (dict): Contract ABI location
   """
   def __init__(
     self, 
-    rpc_url: str, 
-    rpc_token: str, 
     address: str,
+    chain: str,
     abi: dict=DEFAULT_ABI_LOCATION
   ):
-    super().__init__(rpc_url, rpc_token, address, abi)
+    super().__init__(address, chain, abi)
 
   def get_otoken_details(self) -> dict:
     """

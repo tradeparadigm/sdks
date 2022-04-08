@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------------
 # Created By: Steven (steven@ribbon.finance)
 # Created Date: 04/04/2022
-# version ='0.01'
+# version ='0.1.0'
 # ---------------------------------------------------------------------------
 """ Abstract class for contract connection """
 # ---------------------------------------------------------------------------
@@ -11,9 +11,11 @@
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
-from web3 import Web3
 import json
 import os
+from utils import get_address
+from web3 import Web3
+from env import CHAINS, RPCS
 
 # ---------------------------------------------------------------------------
 # Contract Connection
@@ -23,8 +25,7 @@ class ContractConnection:
   Object to create connection to a contract
 
   Args:
-      rpc_url (str): Json RPC url to connect
-      rpc_token (str): Json RPC url token
+      chain (str): The chain the contract is deployed in
       address (str): Contract address
       abi (dict): Contract ABI location
 
@@ -34,10 +35,17 @@ class ContractConnection:
       w3 (object): RPC connection instance
       contract (object): Contract instance
   """
-  def __init__(self, rpc_url: str, rpc_token: str, address: str, abi: dict) -> None:
-    self.address = address
+  def __init__(self, address: str, chain: str, abi: dict) -> None:
+    self.chain = chain
+
+    if self.chain not in CHAINS:
+      raise ValueError("Invalid chain")
+
+    url, token = RPCS[chain].values()
+    
+    self.address = get_address(address)
     self.abi = abi
-    self.w3 = Web3(Web3.HTTPProvider(os.path.join(rpc_url + rpc_token)))
+    self.w3 = Web3(Web3.HTTPProvider(os.path.join(url + token)))
 
     if not self.w3.isConnected():
       raise ValueError('RPC connection error')
