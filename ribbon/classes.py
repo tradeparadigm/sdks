@@ -85,24 +85,22 @@ INFURA_RPC_URLS = {
 
 
 @dataclass
+class ContractDetails:
+    address: str
+    bidding_token: str = None
+
+
+@dataclass
 class ContractConfig:
     """Configuration needed to connect to a Contract"""
 
+    details: ContractDetails
+    infura_token: str
     chain_name: Chains = Chains.TESTNET
-    version: int = 1
-    # salt: str = None
 
     @property
     def infura_rpc_url(self):
         return INFURA_RPC_URLS[self.chain_name]
-
-
-@dataclass
-class Vaults:
-    """Vault representation"""
-
-    address: str
-    bidding_token: str
 
 
 class EthereumVaults(BaseEnum):
