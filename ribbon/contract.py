@@ -15,13 +15,12 @@ import json
 import os
 from utils import get_address
 from web3 import Web3
-from types import Chains, ContractConfig
+from definitions import Chains, ContractConfig
 
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-DEFAULT_ABI_LOCATION = "abis/Swap.json"
 
 
 # ---------------------------------------------------------------------------
@@ -42,20 +41,21 @@ class ContractConnection:
         contract (object): Contract instance
     """
 
-    def __init__(self, config: ContractConfig, abi: str = DEFAULT_ABI_LOCATION):
+    abi_location = "abis/Swap.json"
+
+    def __init__(self, config: ContractConfig):
         if config.chain_name not in Chains:
             raise ValueError("Invalid chain")
 
         self.config = config
-        self.address = get_address(config.details.address)
-        self.abi = abi
+        self.address = get_address(config.address)
 
         uri = os.path.join(config.infura_rpc_url + config.infura_token)
         self.w3 = Web3(Web3.HTTPProvider(uri))
         if not self.w3.isConnected():
             raise ValueError("RPC connection error")
 
-        with open(self.abi) as f:
-            self.abi = json.load(f)
+        with open(self.abi_location) as f:
+            abi = json.load(f)
 
-        self.contract = self.w3.eth.contract(self.address, abi=self.abi)
+        self.contract = self.w3.eth.contract(self.address, abi=abi)

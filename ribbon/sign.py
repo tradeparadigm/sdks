@@ -13,7 +13,7 @@
 # ---------------------------------------------------------------------------
 import eth_keys
 from encode import TypedDataEncoder
-from types import Domain, Bid, SignedBid
+from definitions import Domain, Bid, SignedBid
 from dataclasses import asdict
 
 # ---------------------------------------------------------------------------

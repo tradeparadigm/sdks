@@ -14,7 +14,6 @@
 from dataclasses import dataclass
 
 from chains import Chains, INFURA_RPC_URLS
-from meta import BaseEnum
 
 
 # ---------------------------------------------------------------------------
@@ -34,41 +33,30 @@ class Domain:
 @dataclass
 class Bid:
     swapId: int
-    nonce: int
     signerWallet: str
     sellAmount: int
     buyAmount: int
-    referrer: str
+    nonce: int = 1
+    referrer: str = "0x0000000000000000000000000000000000000000"
 
 
 @dataclass
 class SignedBid(Bid):
-    v: int
-    r: str
-    s: str
-
-
-@dataclass
-class ContractDetails:
-    address: str
-    bidding_token: str = None
+    v: int = None
+    r: str = None
+    s: str = None
 
 
 @dataclass
 class ContractConfig:
     """Configuration needed to connect to a Contract"""
 
-    details: ContractDetails
+    address: str
     infura_token: str
+    bidding_token: str = None
     chain_name: Chains = Chains.TESTNET
+    label: str = 'SwapContract'
 
     @property
     def infura_rpc_url(self):
         return INFURA_RPC_URLS[self.chain_name]
-
-
-class EthereumVaults(BaseEnum):
-    """All available Vaults enabled by Ribbon"""
-
-    THETA_ETH_CALL = "RibbonThetaVaultETHCall"
-    THETA_WBTC_CALL = "RibbonThetaVaultWBTCCall"
