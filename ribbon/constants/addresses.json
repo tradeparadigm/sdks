@@ -1,0 +1,17 @@
+{
+  "kovan": {
+    "swap": {
+      "address": "0x58848824baEb9678847aF487CB02EAba782FECB5"
+    },
+    "vaults": {
+      "RibbonThetaVaultETHCall": {
+        "address": "0x9467726c3cFe3f9112Cd0fA3963223d5b8b3C4B1",
+        "biddingToken": "0x7e6eda50d1c833be936492bf42c1bf376239e9e2"
+      },
+      "RibbonThetaVaultWBTCCall": {
+        "address": "0x6e08c6659132dB4aF0352c409e4b3067C8E97ac2",
+        "biddingToken": "0xA5eFEe8c0D466349da48eCe3Da9EdcbA0466aaCc"
+      }
+    }
+  }
+}
