@@ -35,6 +35,7 @@ class ContractConnection:
       w3 (object): RPC connection instance
       contract (object): Contract instance
   """
+
   def __init__(self, address: str, chain: str, abi: dict) -> None:
     self.chain = chain
 

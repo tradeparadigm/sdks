@@ -1,3 +1,4 @@
+<<<<<<< main
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------
@@ -16,6 +17,10 @@ from dataclasses import dataclass
 # ---------------------------------------------------------------------------
 # Data Classes
 # ---------------------------------------------------------------------------
+=======
+from dataclasses import dataclass
+
+>>>>>>> main
 @dataclass
 class Domain:
   """Domain parameters for signatures"""
