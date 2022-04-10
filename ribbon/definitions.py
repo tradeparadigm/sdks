@@ -31,11 +31,11 @@ class Domain:
 
 @dataclass
 class Bid:
-    swapId: int
-    signerWallet: str
-    sellAmount: int
     buyAmount: int
-    nonce: int = 1
+    nonce: int
+    sellAmount: int
+    signerWallet: str
+    swapId: int
     referrer: str = "0x0000000000000000000000000000000000000000"
 
 
