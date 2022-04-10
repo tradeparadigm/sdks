@@ -12,8 +12,7 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
-
-from chains import Chains, INFURA_RPC_URLS
+from meta import BaseEnum
 
 
 # ---------------------------------------------------------------------------
@@ -47,16 +46,24 @@ class SignedBid(Bid):
     s: str = None
 
 
+class Chains(BaseEnum):
+    ETHEREUM_PROD = "mainnet"
+    ETHEREUM_TESTNET = "kovan"
+    AVALANCHE_PROD = "c-chain"
+    AVALANCHE_TESTNET = "fuji"
+
+
 @dataclass
 class ContractConfig:
     """Configuration needed to connect to a Contract"""
 
     address: str
-    infura_token: str
+    rpc_uri: str
     bidding_token: str = None
-    chain_name: Chains = Chains.TESTNET
+    chain_name: Chains = Chains.ETHEREUM_TESTNET
     label: str = 'SwapContract'
 
-    @property
-    def infura_rpc_url(self):
-        return INFURA_RPC_URLS[self.chain_name]
+    def __post_init__(self):
+        """Validate attributes"""
+        if self.chain_name not in Chains:
+            raise AttributeError(f"Invalid chain: {self.chain_name}")

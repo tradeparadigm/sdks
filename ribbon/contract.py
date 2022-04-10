@@ -39,14 +39,10 @@ class ContractConnection:
     abi_location = "abis/Swap.json"
 
     def __init__(self, config: ContractConfig):
-        if config.chain_name not in Chains:
-            raise ValueError("Invalid chain")
-
         self.config = config
-        self.address = get_address(config.address)
+        self.address = get_address(self.config.address)
 
-        uri = os.path.join(config.infura_rpc_url + config.infura_token)
-        self.w3 = Web3(Web3.HTTPProvider(uri))
+        self.w3 = Web3(Web3.HTTPProvider(self.config.rpc_uri))
         if not self.w3.isConnected():
             raise ValueError("RPC connection error")
 
