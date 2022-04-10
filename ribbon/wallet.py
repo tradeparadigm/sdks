@@ -127,7 +127,7 @@ class Wallet:
             s=signature["s"],
         )
 
-    def verify_allowance(self, vault_config: ContractConfig, swap_config: ContractConfig) -> str:
+    def verify_allowance(self, swap_config: ContractConfig, token_address: str) -> str:
         """Verify wallet's allowance for a given vault
 
         Args:
@@ -137,13 +137,13 @@ class Wallet:
         Returns:
             verified (bool): True if wallet has sufficient allowance
         """
+        token_config = ContractConfig(
+            address=token_address,
+            rpc_uri=swap_config.rpc_uri,
+            chain_name=swap_config.chain_name,
+        )
+        bidding_token = ERC20Contract(token_config)
 
-        if vault_config.chain_name != swap_config.chain_name:
-            raise AttributeError("Inconsistency of chains between contracts")
-
-        # NOTE: we let things fail if vault or swap contract configs are wrong
-
-        bidding_token = ERC20Contract(vault_config)
         allowance = (
             bidding_token.get_allowance(self.address, swap_config.address)
             / bidding_token.decimals

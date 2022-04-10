@@ -59,9 +59,7 @@ class ContractConfig:
 
     address: str
     rpc_uri: str
-    bidding_token: str = None
     chain_name: Chains = Chains.ETHEREUM_TESTNET
-    label: str = 'SwapContract'
 
     def __post_init__(self):
         """Validate attributes"""
