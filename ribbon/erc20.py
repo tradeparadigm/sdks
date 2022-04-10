@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Created By: Steven (steven@ribbon.finance)
+# Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 08/04/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
@@ -24,9 +24,7 @@ class ERC20Contract(ContractConnection):
     Object to create connection to an ERC20 contract
 
     Args:
-        chain (str): The chain the contract is deployed in
-        address (str): Contract address
-        abi (dict): Contract ABI location
+        config (ContractConfig): Configuration to setup the Contract
     """
     abi_location = "abis/ERC20.json"
 

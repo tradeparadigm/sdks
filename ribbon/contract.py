@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Created By: Steven (steven@ribbon.finance)
+# Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 04/04/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
@@ -15,7 +15,7 @@ import json
 import os
 from utils import get_address
 from web3 import Web3
-from definitions import Chains, ContractConfig
+from definitions import ContractConfig
 
 
 # ---------------------------------------------------------------------------
@@ -26,7 +26,7 @@ class ContractConnection:
     Object to create connection to a contract
 
     Args:
-        config (ContractConfig): configuration to setup the Contract
+        config (ContractConfig): Configuration to setup the Contract
         abi (str): Contract ABI location
 
     Attributes:
@@ -39,14 +39,11 @@ class ContractConnection:
     abi_location = "abis/Swap.json"
 
     def __init__(self, config: ContractConfig):
-        if config.chain_name not in Chains:
-            raise ValueError("Invalid chain")
 
         self.config = config
         self.address = get_address(config.address)
 
-        uri = os.path.join(config.infura_rpc_url + config.infura_token)
-        self.w3 = Web3(Web3.HTTPProvider(uri))
+        self.w3 = Web3(Web3.HTTPProvider(config.rpc))
         if not self.w3.isConnected():
             raise ValueError("RPC connection error")
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Created By: Steven (steven@ribbon.finance)
+# Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 04/04/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
@@ -12,8 +12,6 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
-
-from chains import Chains, INFURA_RPC_URLS
 
 
 # ---------------------------------------------------------------------------
@@ -52,11 +50,4 @@ class ContractConfig:
     """Configuration needed to connect to a Contract"""
 
     address: str
-    infura_token: str
-    bidding_token: str = None
-    chain_name: Chains = Chains.TESTNET
-    label: str = 'SwapContract'
-
-    @property
-    def infura_rpc_url(self):
-        return INFURA_RPC_URLS[self.chain_name]
+    rpc: str

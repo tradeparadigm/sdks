@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Created By: Steven (steven@ribbon.finance)
+# Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 04/04/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
@@ -127,23 +127,20 @@ class Wallet:
             s=signature["s"],
         )
 
-    def verify_allowance(self, vault_config: ContractConfig, swap_config: ContractConfig) -> str:
-        """Verify wallet's allowance for a given vault
+    def verify_allowance(self, swap_config: ContractConfig, token_address: str) -> str:
+        """Verify wallet's allowance for a given token
 
         Args:
-            vault (str): Vault's address
-            chain (str): Chain to verify wallet in
+            config (ContractConfig): Configuration to setup the Swap Contract
+            token_address (str): Address of token
 
         Returns:
             verified (bool): True if wallet has sufficient allowance
         """
 
-        if vault_config.chain_name != swap_config.chain_name:
-            raise AttributeError("Inconsistency of chains between contracts")
+        token_config = ContractConfig(token_address, swap_config.rpc)
 
-        # NOTE: we let things fail if vault or swap contract configs are wrong
-
-        bidding_token = ERC20Contract(vault_config)
+        bidding_token = ERC20Contract(token_config)
         allowance = (
             bidding_token.get_allowance(self.address, swap_config.address)
             / bidding_token.decimals

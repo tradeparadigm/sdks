@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Created By: Steven (steven@ribbon.finance)
+# Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 04/04/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
@@ -25,6 +25,9 @@ from utils import get_address
 class SwapContract(ContractConnection):
     """
     Object to create connection to the Swap contract
+
+    Args:
+        config (ContractConfig): Configuration to setup the Contract
     """
 
     def validate_bid(self, bid: SignedBid) -> str:
