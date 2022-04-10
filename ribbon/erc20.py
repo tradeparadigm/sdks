@@ -30,6 +30,8 @@ class ERC20Contract(ContractConnection):
 
     def __init__(self, config: ContractConfig):
         super().__init__(config)
+        self.name = self.contract.functions.name().call()
+        self.symbol = self.contract.functions.symbol().call()
         self.decimals = self.contract.functions.decimals().call()
 
     def get_allowance(self, owner: str, spender: str) -> int:
