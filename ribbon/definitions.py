@@ -12,6 +12,7 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
+from encode import ADDRESS_ZERO
 
 
 # ---------------------------------------------------------------------------
@@ -31,11 +32,11 @@ class Domain:
 @dataclass
 class Bid:
     swapId: int
+    nonce: int
     signerWallet: str
     sellAmount: int
     buyAmount: int
-    nonce: int = 1
-    referrer: str = "0x0000000000000000000000000000000000000000"
+    referrer: str = ADDRESS_ZERO
 
 
 @dataclass
