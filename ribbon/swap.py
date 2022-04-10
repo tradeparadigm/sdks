@@ -17,6 +17,7 @@ from dataclasses import asdict
 from contract import ContractConnection
 from definitions import SignedBid
 from utils import get_address
+from encode import ADDRESS_ZERO
 
 
 # ---------------------------------------------------------------------------
@@ -29,6 +30,35 @@ class SwapContract(ContractConnection):
     Args:
         config (ContractConfig): Configuration to setup the Contract
     """
+
+    def get_offer_details(self, id: int) -> dict:
+        """
+        Method to get bid details
+
+        Args:
+            id (int): Offer ID
+
+        Raises:
+            TypeError: Bid argument is not an instance of SignedBid
+
+        Returns:
+            details (dict): Offer details
+        """
+        details = self.contract.functions.swapOffers(id).call()
+        seller = details[0]
+        
+        if seller == ADDRESS_ZERO:
+            raise ValueError(f'Offer does not exist: {id}')
+        
+        return {
+            'seller': details[0],
+            'oToken': details[1],
+            'biddingToken': details[3],
+            'minPrice': details[2],
+            'minBidSize': details[4],
+            'totalSize': details[5],
+            'availableSize': details[6]
+        }
 
     def validate_bid(self, bid: SignedBid) -> str:
         """
@@ -61,6 +91,6 @@ class SwapContract(ContractConnection):
                 "errors": errors,
                 "messages": [
                     Web3.toText(msg).replace("\x00", "")
-                    for msg in response[1][1:errors]
+                    for msg in response[1][:errors]
                 ],
             }
