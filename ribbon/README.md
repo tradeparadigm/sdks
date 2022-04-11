@@ -6,8 +6,17 @@ Website: https://www.ribbon.finance
 
 ## Install
 
+It's possible to install the package via `pip`,
+having also `git` installed.
+
 ```bash
-python3 -m pip install "git+https://github.com/tradeparadigm/sdks.git#egg=ribbon&subdirectory=ribbon"
+# Latest version
+python3 -m pip install \
+    "git+https://github.com/tradeparadigm/sdks.git#egg=ribbon&subdirectory=ribbon"
+
+# A specific commit version
+python3 -m pip install \
+    "git+https://github.com/tradeparadigm/sdks.git@74554a57ef278791651ee3f5f7f7a1289ae20656#egg=ribbon&subdirectory=ribbon"
 ```
 
 ## Usage
@@ -163,8 +172,9 @@ print(jwtSignature)
 
 ## Development
 
+To contribute to this package you may set up a dedicated container:
 ```bash
-# open a container with the latest python
+# open a container with python
 $ docker run -it --rm \
     -v $(pwd):/tmp/code -w /tmp/code \
     -p 8888:8888 \
@@ -174,7 +184,7 @@ $ docker run -it --rm \
 # install the library in development mode
 pip3 install -e ribbon/
 
-# run code that access the ribbon sdk
+# run code that accesses the ribbon sdk
 python3 my_examples.py
 
 # optional: add and use ipython/jypiter
