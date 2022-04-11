@@ -140,7 +140,7 @@ class Wallet:
         token_config = ContractConfig(
             address=token_address,
             rpc_uri=swap_config.rpc_uri,
-            chain_name=swap_config.chain_name,
+            chain_id=swap_config.chain_id,
         )
         bidding_token = ERC20Contract(token_config)
 

@@ -61,4 +61,4 @@ class ContractConfig:
 
     address: str
     rpc_uri: str
-    chain_name: Chains = Chains.ETHEREUM
+    chain_id: Chains = Chains.ETHEREUM

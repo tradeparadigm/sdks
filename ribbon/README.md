@@ -20,28 +20,36 @@ This is an example of how we can define your domain of interaction:
 from ribbon.definitions import Chains, ContractConfig, Domain
 from ribbon.swap import SwapContract, asdict
 
-
-rpc_token = "0bccea5795074895bdb92c62c5c3afba"
-swap_address = "0x58848824baEb9678847aF487CB02EAba782FECB5"
-
+# Define the following variables:
+rpc_token = "..."
+swap_address = "0x..."
 current_chain = Chains.KOVAN
+
 rpc = {Chains.KOVAN: "https://kovan.infura.io/v3/"}
-chain = {
-    "chain_name": current_chain,
+chain_data = {
+    "chain_id": current_chain,
     "rpc_uri": rpc[current_chain] + rpc_token,
 }
 
-swap_config = ContractConfig(address=swap_address, **chain)
+swap_config = ContractConfig(address=swap_address, **chain_data)
 swap_contract = SwapContract(swap_config)
 
 domain = Domain(
     name="RIBBON SWAP",
     version="1",
-    chainId=current_chain,
+    chainId=current_chain.value,
     verifyingContract=swap_config.address,
 )
-asdict(domain)
+print(asdict(domain))
+```
 
+This may output something like:
+```python
+{'chainId': 42,
+ 'name': 'RIBBON SWAP',
+ 'salt': None,
+ 'verifyingContract': '0x58848824baEb9678847aF487CB02EAba782FECB5',
+ 'version': '1'}
 ```
 
 ### Sign bids
