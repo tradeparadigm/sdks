@@ -122,6 +122,8 @@ print(check)
 
 ### Informations about the Vaults
 
+TODO: update
+
 Get details related to the oToken of interest:
 ```python
 from pprint import pprint
@@ -148,6 +150,8 @@ pprint(details)
 ```
 
 ### Produce a JWT signature
+
+TODO: update
 
 ```python
 
