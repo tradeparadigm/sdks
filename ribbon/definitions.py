@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Created By: Steven (steven@ribbon.finance)
+# Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 04/04/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
@@ -12,6 +12,7 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
+from encode import ADDRESS_ZERO
 
 
 # ---------------------------------------------------------------------------
@@ -37,12 +38,12 @@ class Domain:
 
 @dataclass
 class Bid:
-    buyAmount: int
-    nonce: int
-    sellAmount: int
-    signerWallet: str
     swapId: int
-    referrer: str = "0x0000000000000000000000000000000000000000"
+    nonce: int
+    signerWallet: str
+    sellAmount: int
+    buyAmount: int
+    referrer: str = ADDRESS_ZERO
 
 
 @dataclass

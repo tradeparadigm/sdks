@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Created By: Steven (steven@ribbon.finance)
+# Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 04/04/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
@@ -128,11 +128,11 @@ class Wallet:
         )
 
     def verify_allowance(self, swap_config: ContractConfig, token_address: str) -> str:
-        """Verify wallet's allowance for a given vault
+        """Verify wallet's allowance for a given token
 
         Args:
-            vault (str): Vault's address
-            chain (str): Chain to verify wallet in
+            config (ContractConfig): Configuration to setup the Swap Contract
+            token_address (str): Address of token
 
         Returns:
             verified (bool): True if wallet has sufficient allowance
