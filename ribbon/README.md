@@ -43,7 +43,7 @@ domain = Domain(
 print(asdict(domain))
 ```
 
-This may output something like:
+This may output something similar to:
 ```python
 {'chainId': 42,
  'name': 'RIBBON SWAP',
@@ -55,44 +55,39 @@ This may output something like:
 ### Sign bids
 
 ```python
-from pprint import pprint
-from dataclasses import asdict
+from ribbon.definitions import Bid
+from ribbon.wallet import Wallet
 
-from ribbon.classes import Domain, Bid
-from ribbon.sign import Signature
-
-
-domain = Domain(
-    name="RIBBON SWAP",
-    version="1",
-    chainId=42,
-    verifyingContract="0x...",
-)
+# Define the following variables:
+wallet_public_key = "..."
+wallet_private_key = "..."
 
 payload = Bid(
     swapId=1,
     nonce=1,
-    signerWallet="0x...",
+    signerWallet=wallet_public_key,
     sellAmount=6000000,
     buyAmount=1000000000000000000,
     referrer="0x0000000000000000000000000000000000000000",
 )
 
-priv_key = "..."            # your wallet private key
 
-signer = Signature(priv_key)
-bid = signer.sign_bid(domain, payload)
+wallet = Wallet(wallet_private_key)
+bid = wallet.sign_bid(domain, payload)
 pprint(asdict(bid))
+```
 
-# {'buyAmount': 1000000000000000000,
-#  'nonce': 1,
-#  'r': '0x...',
-#  'referrer': '0x0000000000000000000000000000000000000000',
-#  's': '0x...',
-#  'sellAmount': 6000000,
-#  'signerWallet': '0x...',
-#  'swapId': 1,
-#  'v': 27}
+This may output something similar to:
+```python
+{'buyAmount': 1000000000000000000,
+ 'nonce': 1,
+ 'r': '0xd48860fab24673d45a03d58428f36bd7d62ac115972bd2a94e040503415a9478',
+ 'referrer': '0x0000000000000000000000000000000000000000',
+ 's': '0x32eed933d6532dc613e3167a5e839bce2c1d577b3c4b2c73eea7411fec1c9a53',
+ 'sellAmount': 6000000,
+ 'signerWallet': '0x...',
+ 'swapId': 1,
+ 'v': 27}
 
 ```
 
