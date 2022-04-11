@@ -73,6 +73,7 @@ payload = Bid(
 
 
 wallet = Wallet(wallet_private_key)
+
 bid = wallet.sign_bid(domain, payload)
 pprint(asdict(bid))
 ```
@@ -94,32 +95,29 @@ This may output something similar to:
 ### Validate bids
 
 ```python
-from pprint import pprint
-
-from ribbon.swap import SwapContract
-
-rpc_url = "https://kovan.infura.io/v3/"
-swap_address = "0x..."
-
-rpc_token = "..."      # token for infura
-
-swap = SwapContract(rpc_url, rpc_token, swap_address)
-
-result = swap.validate_bid(this_is_a_valid_bid)
-pprint(result)
-
+result = swap_contract.validate_bid(bid)
+print(result)
+# If the Bid is valid, we see
 # {'errors': 0}
 
-
-result = swap.validate_bid(this_is_a_bad_bid)
-pprint(result)
-
+result = swap_contract.validate_bid(invalid_bid)
+print(result)
+# Examples of errors we get
 # {'errors': 5,
 #  'messages': ['BID_TOO_SMALL',
 #               'PRICE_TOO_LOW',
 #               'SIGNER_ALLOWANCE_LOW',
 #               'SIGNER_BALANCE_LOW']}
+```
 
+### Validate bids
+
+```python
+token_address = "0x7e6eda50d1c833be936492bf42c1bf376239e9e2"
+check = wallet.verify_allowance(swap_config=swap_config, token_address=token_address)
+print(check)
+
+# True
 ```
 
 ### Informations about the Vaults
