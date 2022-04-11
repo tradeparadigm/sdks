@@ -12,9 +12,40 @@ python3 -m pip install "git+https://github.com/tradeparadigm/sdks.git#egg=ribbon
 
 ## Usage
 
-TODO: update examples.
+There are different things you are able to do with this package.
+First let's setup the needed informations.
 
-Sign your bids:
+This is an example of how we can define your domain of interaction:
+```python
+from ribbon.definitions import Chains, ContractConfig, Domain
+from ribbon.swap import SwapContract, asdict
+
+
+rpc_token = "0bccea5795074895bdb92c62c5c3afba"
+swap_address = "0x58848824baEb9678847aF487CB02EAba782FECB5"
+
+current_chain = Chains.KOVAN
+rpc = {Chains.KOVAN: "https://kovan.infura.io/v3/"}
+chain = {
+    "chain_name": current_chain,
+    "rpc_uri": rpc[current_chain] + rpc_token,
+}
+
+swap_config = ContractConfig(address=swap_address, **chain)
+swap_contract = SwapContract(swap_config)
+
+domain = Domain(
+    name="RIBBON SWAP",
+    version="1",
+    chainId=current_chain,
+    verifyingContract=swap_config.address,
+)
+asdict(domain)
+
+```
+
+### Sign bids
+
 ```python
 from pprint import pprint
 from dataclasses import asdict
@@ -57,7 +88,8 @@ pprint(asdict(bid))
 
 ```
 
-Validate a signed bid:
+### Validate bids
+
 ```python
 from pprint import pprint
 
@@ -87,6 +119,8 @@ pprint(result)
 
 ```
 
+### Informations about the Vaults
+
 Get details related to the oToken of interest:
 ```python
 from pprint import pprint
@@ -112,7 +146,8 @@ pprint(details)
 
 ```
 
-Get a JWT signature:
+### Produce a JWT signature
+
 ```python
 
 from ribbon.authenticate import Authenticator
