@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------
-# Created By: Steven (steven@ribbon.finance)
+# Created By: Steven@Ribbon
 # Created Date: 04/04/2022
-# version ='0.01'
+# version ='0.1.0'
 # ---------------------------------------------------------------------------
 """ Module to encode message """
 # ---------------------------------------------------------------------------
@@ -35,6 +35,7 @@ DOMAIN_FIELD_TYPES = {
 
 HEX_TRUE = hex_zero_pad(Web3.toHex(1), 32)
 HEX_FALSE = hex_zero_pad(Web3.toHex(0), 32)
+ADDRESS_ZERO = hex_zero_pad(Web3.toHex(0), 20)
 
 # ---------------------------------------------------------------------------
 # Helper Functions

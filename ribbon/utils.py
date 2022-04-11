@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------
-# Created By: Steven (steven@ribbon.finance)
+# Created By: Steven@Ribbon
 # Created Date: 04/04/2022
-# version ='0.01'
+# version ='0.1.0'
 # ---------------------------------------------------------------------------
 """ Utility functions for encode.py """
 # ---------------------------------------------------------------------------
@@ -36,7 +36,7 @@ def id(text: str) -> str:
 
 def get_address(address: str) -> str:
   """
-  Validate if address is valid
+  Validate address validity and return the checksum address
 
   Args:
       address (str): Address with 0x prefix
@@ -44,10 +44,10 @@ def get_address(address: str) -> str:
   Returns:
       address (str): Returns address if valid
   """
-  if not Web3.isAddress(address):
+  try:
+    return Web3.toChecksumAddress(address)
+  except ValueError:
     raise ValueError(f'Invalid address: {address}')
-
-  return address
 
 def hex_concat(items: list) -> str:
   """

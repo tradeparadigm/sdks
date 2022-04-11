@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------
-# Created By: Steven (steven@ribbon.finance)
+# ----------------------------------------------------------------------------
+# Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 04/04/2022
-# version ='0.01'
+# version ='0.1.0'
 # ---------------------------------------------------------------------------
 """ Abstract class for contract connection """
 # ---------------------------------------------------------------------------
@@ -11,38 +11,54 @@
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
-from web3 import Web3
 import json
-import os
+from chains import Chains
+from utils import get_address
+from web3 import Web3
+from definitions import ContractConfig
+
 
 # ---------------------------------------------------------------------------
 # Contract Connection
 # ---------------------------------------------------------------------------
 class ContractConnection:
-  """
-  Object to create connection to a contract
+    """
+    Object to create connection to a contract
 
-  Args:
-      rpc_url (str): Json RPC url to connect
-      rpc_token (str): Json RPC url token
-      address (str): Contract address
-      abi (dict): Contract ABI location
+    Args:
+        config (ContractConfig): Configuration to setup the Contract
+        abi (str): Contract ABI location
 
-  Attributes:
-      address (str): Contract address
-      abi (dict): Contract ABI
-      w3 (object): RPC connection instance
-      contract (object): Contract instance
-  """
-  def __init__(self, rpc_url: str, rpc_token: str, address: str, abi: dict) -> None:
-    self.address = address
-    self.abi = abi
-    self.w3 = Web3(Web3.HTTPProvider(os.path.join(rpc_url + rpc_token)))
+    Attributes:
+        address (str): Contract address
+        abi (dict): Contract ABI
+        w3 (object): RPC connection instance
+        contract (object): Contract instance
+    """
 
-    if not self.w3.isConnected():
-      raise ValueError('RPC connection error')
+    abi_location = 'abis/Swap.json'
 
-    with open(self.abi) as f:
-      self.abi = json.load(f)
+    def __init__(self, config: ContractConfig):
+        if config.chain_name not in Chains:
+            raise ValueError("Invalid chain")
 
-    self.contract = self.w3.eth.contract(self.address, abi=self.abi)
+        self.config = config
+        self.address = get_address(self.config.address)
+
+        self.w3 = Web3(Web3.HTTPProvider(self.config.rpc_uri))
+        if not self.w3.isConnected():
+            raise ValueError('RPC connection error')
+
+        chain = self.config.chain_name
+        rpc_chain_id = self.w3.eth.chain_id
+        if int(rpc_chain_id) != chain.value:
+            raise ValueError(
+                f'RPC chain mismatched ({rpc_chain_id}). '
+                + f'Expected: {chain.name} '
+                + f'({chain.value})'
+            )
+
+        with open(self.abi_location) as f:
+            abi = json.load(f)
+
+        self.contract = self.w3.eth.contract(self.address, abi=abi)
