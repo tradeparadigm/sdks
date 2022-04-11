@@ -54,7 +54,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "offeredToken",
+        "name": "oToken",
         "type": "address"
       },
       {
@@ -145,15 +145,9 @@
         "type": "uint256"
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "senderWallet",
-        "type": "address"
-      },
-      {
         "indexed": false,
         "internalType": "uint256",
-        "name": "senderAmount",
+        "name": "sellerAmount",
         "type": "uint256"
       },
       {
@@ -245,6 +239,25 @@
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "swapId",
+        "type": "uint256"
+      }
+    ],
+    "name": "averagePriceForOffer",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -351,7 +364,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "offeredToken",
+        "name": "oToken",
         "type": "address"
       },
       {
@@ -561,18 +574,8 @@
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "isOpen",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint88",
-        "name": "offeredTokenDecimals",
-        "type": "uint88"
-      },
-      {
         "internalType": "address",
-        "name": "offeredToken",
+        "name": "oToken",
         "type": "address"
       },
       {
@@ -601,14 +604,9 @@
         "type": "uint128"
       },
       {
-        "internalType": "uint128",
-        "name": "highestPrice",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint128",
+        "internalType": "uint256",
         "name": "totalSales",
-        "type": "uint128"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
