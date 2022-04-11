@@ -113,7 +113,10 @@ print(result)
 ### Validate bids
 
 ```python
-token_address = "0x7e6eda50d1c833be936492bf42c1bf376239e9e2"
+
+# Define the following variables:
+token_address = "0x..."
+
 check = wallet.verify_allowance(swap_config=swap_config, token_address=token_address)
 print(check)
 
@@ -122,44 +125,38 @@ print(check)
 
 ### Informations about the Vaults
 
-TODO: update
-
 Get details related to the oToken of interest:
 ```python
-from pprint import pprint
+from ribbon.otoken import oTokenContract
 
-from ribbon.option import oTokenContract
-
-
-rpc_url = "https://kovan.infura.io/v3/"
+# Define the following variables:
 otoken_address = "0x..."
 
-rpc_token = "..."      # token for infura
-
-oToken = oTokenContract(rpc_url, rpc_token, otoken_address)
+oToken = oTokenContract(ContractConfig(address=otoken_address, **chain_data))
 details = oToken.get_otoken_details()
-pprint(details)
+print(details)
+```
 
-# {'collateralAsset': '0x...',
-#  'expiryTimestamp': 1646380800,
-#  'isPut': False,
-#  'strikeAsset': '0x...',
-#  'strikePrice': 200000000000,
-#  'underlyingAsset': '0x...'}
-
+This may output something similar to:
+```python
+{'collateralAsset': '0xd0A1E359811322d97991E03f863a0C30C2cF029C',
+ 'expiryTimestamp': 1646380800,
+ 'isPut': False,
+ 'strikeAsset': '0x7e6edA50d1c833bE936492BF42C1BF376239E9e2',
+ 'strikePrice': 200000000000,
+ 'underlyingAsset': '0xd0A1E359811322d97991E03f863a0C30C2cF029C'}
 ```
 
 ### Produce a JWT signature
-
-TODO: update
 
 ```python
 
 from ribbon.authenticate import Authenticator
 
-apiKey = "..."      # your api key
+# Define the following variables:
+api_key = "..."
 
-auth = Authenticator(apiKey)
+auth = Authenticator(api_key)
 jwtSignature = auth.sign_jwt({"some": "payload"})
 print(jwtSignature)
 ```
