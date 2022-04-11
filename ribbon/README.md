@@ -119,7 +119,7 @@ print(result)
 #               'SIGNER_BALANCE_LOW']}
 ```
 
-### Validate bids
+### Validate wallets
 
 ```python
 
