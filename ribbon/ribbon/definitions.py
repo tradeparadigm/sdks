@@ -12,8 +12,9 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
-from encode import ADDRESS_ZERO
-from chains import Chains
+
+from ribbon.encode import ADDRESS_ZERO
+from ribbon.chains import Chains
 
 
 # ---------------------------------------------------------------------------

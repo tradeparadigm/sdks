@@ -14,10 +14,10 @@
 import eth_keys
 from dataclasses import asdict
 
-from encode import TypedDataEncoder
-from definitions import Domain, Bid, SignedBid, ContractConfig
-from erc20 import ERC20Contract
-from utils import get_address
+from ribbon.encode import TypedDataEncoder
+from ribbon.definitions import Domain, Bid, SignedBid, ContractConfig
+from ribbon.erc20 import ERC20Contract
+from ribbon.utils import get_address
 
 # ---------------------------------------------------------------------------
 # Constants

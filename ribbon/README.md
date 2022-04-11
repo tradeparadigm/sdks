@@ -12,6 +12,8 @@ python3 -m pip install "git+https://github.com/tradeparadigm/sdks.git#egg=ribbon
 
 ## Usage
 
+TODO: update examples.
+
 Sign your bids:
 ```python
 from pprint import pprint
@@ -120,4 +122,26 @@ apiKey = "..."      # your api key
 auth = Authenticator(apiKey)
 jwtSignature = auth.sign_jwt({"some": "payload"})
 print(jwtSignature)
+```
+
+## Development
+
+```bash
+# open a container with the latest python
+$ docker run -it --rm \
+    -v $(pwd):/tmp/code -w /tmp/code \
+    -p 8888:8888 \
+    python:3.10 \
+    bash
+
+# install the library in development mode
+pip3 install -e ribbon/
+
+# run code that access the ribbon sdk
+python3 my_examples.py
+
+# optional: add and use ipython/jypiter
+pip3 install ipython jupyter
+jupyter notebook --allow-root --no-browser --ip=0.0.0.0
+# now browse the http://127.0.0.1:8888/?token=... link in the output
 ```

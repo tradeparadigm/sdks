@@ -12,10 +12,11 @@
 # Imports
 # ---------------------------------------------------------------------------
 import json
-from chains import Chains
-from utils import get_address
 from web3 import Web3
-from definitions import ContractConfig
+
+from ribbon.chains import Chains
+from ribbon.definitions import ContractConfig
+from ribbon.utils import get_address
 
 
 # ---------------------------------------------------------------------------

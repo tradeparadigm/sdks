@@ -7,7 +7,10 @@ name = 'ribbon'
 description = 'SDK to interact with Ribbon Finance systems'
 license = 'MIT'
 version = '0.1.0'
-authors = ['Steven Williams <steven@ribbon.finance>']
+authors = [
+    "Steven Williams <steven@ribbon.finance>",
+    "Paolo D'Onorio De Meo <paolo@paradigm.co>",
+]
 packages = [
     { include = 'abis' }
 ]
