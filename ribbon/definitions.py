@@ -13,6 +13,7 @@
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
 from encode import ADDRESS_ZERO
+from chains import Chains
 
 
 # ---------------------------------------------------------------------------
@@ -59,4 +60,4 @@ class ContractConfig:
 
     address: str
     rpc_uri: str
-    chain_name: str
+    chain_name: Chains = Chains.ETHEREUM
