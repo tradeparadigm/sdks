@@ -31,25 +31,25 @@ class SwapContract(ContractConnection):
         config (ContractConfig): Configuration to setup the Contract
     """
 
-    def get_offer_details(self, id: int) -> dict:
+    def get_offer_details(self, offer_id: int) -> dict:
         """
         Method to get bid details
 
         Args:
-            id (int): Offer ID
+            offer_id (int): Offer ID
 
         Raises:
-            TypeError: Bid argument is not an instance of SignedBid
+            ValueError: The argument is not a valid offer
 
         Returns:
             details (dict): Offer details
         """
-        details = self.contract.functions.swapOffers(id).call()
+        details = self.contract.functions.swapOffers(offer_id).call()
         seller = details[0]
-        
+
         if seller == ADDRESS_ZERO:
-            raise ValueError(f'Offer does not exist: {id}')
-        
+            raise ValueError(f'Offer does not exist: {offer_id}')
+
         return {
             'seller': details[0],
             'oToken': details[1],

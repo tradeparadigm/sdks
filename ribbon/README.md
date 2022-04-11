@@ -156,6 +156,14 @@ This may output something similar to:
  'underlyingAsset': '0xd0A1E359811322d97991E03f863a0C30C2cF029C'}
 ```
 
+To get details of an offer instead:
+```python
+offer_id = 3
+
+offer_details = swap_contract.get_offer_details(offer_id)
+print(offer_details)
+```
+
 ### Produce a JWT signature
 
 ```python
