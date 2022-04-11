@@ -12,7 +12,6 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
-from meta import BaseEnum
 
 
 # ---------------------------------------------------------------------------
@@ -20,7 +19,14 @@ from meta import BaseEnum
 # ---------------------------------------------------------------------------
 @dataclass
 class Domain:
-    """Domain parameters for signatures"""
+    """
+    Domain parameters for signatures
+
+    # TODO: see if you can leverage this ID
+    # to know which chain we are using
+    # maybe to do in the smart contract itself
+    # https://web3py.readthedocs.io/en/stable/web3.eth.html#web3.eth.Eth.chain_id
+    """
 
     name: str
     chainId: int
@@ -46,22 +52,10 @@ class SignedBid(Bid):
     s: str = None
 
 
-class Chains(BaseEnum):
-    ETHEREUM_PROD = "mainnet"
-    ETHEREUM_TESTNET = "kovan"
-    AVALANCHE_PROD = "c-chain"
-    AVALANCHE_TESTNET = "fuji"
-
-
 @dataclass
 class ContractConfig:
     """Configuration needed to connect to a Contract"""
 
     address: str
     rpc_uri: str
-    chain_name: Chains = Chains.ETHEREUM_TESTNET
-
-    def __post_init__(self):
-        """Validate attributes"""
-        if self.chain_name not in Chains:
-            raise AttributeError(f"Invalid chain: {self.chain_name}")
+    chain_name: str

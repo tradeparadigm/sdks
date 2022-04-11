@@ -12,10 +12,9 @@
 # Imports
 # ---------------------------------------------------------------------------
 import json
-import os
 from utils import get_address
 from web3 import Web3
-from definitions import Chains, ContractConfig
+from definitions import ContractConfig
 
 
 # ---------------------------------------------------------------------------
