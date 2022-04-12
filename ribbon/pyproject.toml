@@ -12,7 +12,8 @@ authors = [
     "Paolo D'Onorio De Meo <paolo@paradigm.co>",
 ]
 packages = [
-    { include = 'abis' }
+    { include = 'abis' },
+    { include = 'ribbon' },
 ]
 
 [tool.poetry.dependencies]
