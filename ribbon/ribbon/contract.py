@@ -12,10 +12,11 @@
 # Imports
 # ---------------------------------------------------------------------------
 import json
-from chains import Chains
-from utils import get_address
 from web3 import Web3
-from definitions import ContractConfig
+
+from ribbon.chains import Chains
+from ribbon.definitions import ContractConfig
+from ribbon.utils import get_address
 
 
 # ---------------------------------------------------------------------------
@@ -39,7 +40,7 @@ class ContractConnection:
     abi_location = 'abis/Swap.json'
 
     def __init__(self, config: ContractConfig):
-        if config.chain_name not in Chains:
+        if config.chain_id not in Chains:
             raise ValueError("Invalid chain")
 
         self.config = config
@@ -49,7 +50,7 @@ class ContractConnection:
         if not self.w3.isConnected():
             raise ValueError('RPC connection error')
 
-        chain = self.config.chain_name
+        chain = self.config.chain_id
         rpc_chain_id = self.w3.eth.chain_id
         if int(rpc_chain_id) != chain.value:
             raise ValueError(

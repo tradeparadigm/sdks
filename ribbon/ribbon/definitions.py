@@ -12,8 +12,9 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
-from encode import ADDRESS_ZERO
-from chains import Chains
+
+from ribbon.encode import ADDRESS_ZERO
+from ribbon.chains import Chains
 
 
 # ---------------------------------------------------------------------------
@@ -60,4 +61,4 @@ class ContractConfig:
 
     address: str
     rpc_uri: str
-    chain_name: Chains = Chains.ETHEREUM
+    chain_id: Chains = Chains.ETHEREUM

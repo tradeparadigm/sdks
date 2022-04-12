@@ -14,10 +14,10 @@
 import eth_keys
 from dataclasses import asdict
 
-from encode import TypedDataEncoder
-from definitions import Domain, Bid, SignedBid, ContractConfig
-from erc20 import ERC20Contract
-from utils import get_address
+from ribbon.encode import TypedDataEncoder
+from ribbon.definitions import Domain, Bid, SignedBid, ContractConfig
+from ribbon.erc20 import ERC20Contract
+from ribbon.utils import get_address
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -140,7 +140,7 @@ class Wallet:
         token_config = ContractConfig(
             address=token_address,
             rpc_uri=swap_config.rpc_uri,
-            chain_name=swap_config.chain_name,
+            chain_id=swap_config.chain_id,
         )
         bidding_token = ERC20Contract(token_config)
 
