@@ -81,7 +81,7 @@ payload = Bid(
 )
 
 
-wallet = Wallet(wallet_private_key)
+wallet = Wallet(public_key=wallet_public_key, private_key=wallet_private_key)
 
 bid = wallet.sign_bid(domain, payload)
 pprint(asdict(bid))
@@ -182,6 +182,9 @@ print(jwtSignature)
 
 To contribute to this package you may set up a dedicated container:
 ```bash
+$ pwd
+[...]/sdks/ribbon
+
 # open a container with python
 $ docker run -it --rm \
     -v $(pwd):/tmp/code -w /tmp/code \
@@ -190,7 +193,7 @@ $ docker run -it --rm \
     bash
 
 # install the library in development mode
-pip3 install -e ribbon/
+pip3 install -e /code
 
 # run code that accesses the ribbon sdk
 python3 my_examples.py
