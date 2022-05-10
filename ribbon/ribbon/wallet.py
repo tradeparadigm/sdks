@@ -139,7 +139,7 @@ class Wallet:
             s=signature["s"],
         )
 
-    def verify_allowance(self, swap_config: ContractConfig, token_address: str) -> str:
+    def verify_allowance(self, swap_config: ContractConfig, token_address: str) -> bool:
         """Verify wallet's allowance for a given token
 
         Args:
