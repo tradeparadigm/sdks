@@ -56,6 +56,15 @@ class SignedBid(Bid):
 
 
 @dataclass
+class Offer:
+    oToken: str
+    biddingToken: str
+    minPrice: int
+    minBidSize: int
+    offerAmount: int
+
+
+@dataclass
 class ContractConfig:
     """Configuration needed to connect to a Contract"""
 
