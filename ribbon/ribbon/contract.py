@@ -12,10 +12,12 @@
 # Imports
 # ---------------------------------------------------------------------------
 import json
-from chains import Chains
-from utils import get_address
+from pathlib import Path
 from web3 import Web3
-from definitions import ContractConfig
+
+from ribbon.chains import Chains
+from ribbon.definitions import ContractConfig
+from ribbon.utils import get_address
 
 
 # ---------------------------------------------------------------------------
@@ -36,10 +38,15 @@ class ContractConnection:
         contract (object): Contract instance
     """
 
-    abi_location = 'abis/Swap.json'
+    abi_location = "abis/Swap.json"
+
+    @property
+    def abi_file_path(self):
+        # TODO: move in utils when we clean up the code
+        return Path(__file__).resolve().parent.parent / self.abi_location
 
     def __init__(self, config: ContractConfig):
-        if config.chain_name not in Chains:
+        if config.chain_id not in Chains:
             raise ValueError("Invalid chain")
 
         self.config = config
@@ -47,18 +54,18 @@ class ContractConnection:
 
         self.w3 = Web3(Web3.HTTPProvider(self.config.rpc_uri))
         if not self.w3.isConnected():
-            raise ValueError('RPC connection error')
+            raise ValueError("RPC connection error")
 
-        chain = self.config.chain_name
+        chain = self.config.chain_id
         rpc_chain_id = self.w3.eth.chain_id
         if int(rpc_chain_id) != chain.value:
             raise ValueError(
-                f'RPC chain mismatched ({rpc_chain_id}). '
-                + f'Expected: {chain.name} '
-                + f'({chain.value})'
+                f"RPC chain mismatched ({rpc_chain_id}). "
+                + f"Expected: {chain.name} "
+                + f"({chain.value})"
             )
 
-        with open(self.abi_location) as f:
+        with open(self.abi_file_path) as f:
             abi = json.load(f)
 
         self.contract = self.w3.eth.contract(self.address, abi=abi)
