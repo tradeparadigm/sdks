@@ -15,9 +15,11 @@ from web3 import Web3
 from dataclasses import asdict
 
 from ribbon.contract import ContractConnection
-from ribbon.definitions import SignedBid
+from ribbon.definitions import SignedBid, Offer
+from ribbon.wallet import Wallet
 from ribbon.utils import get_address
 from ribbon.encode import ADDRESS_ZERO
+from shutil import ExecError
 
 
 # ---------------------------------------------------------------------------
@@ -94,3 +96,48 @@ class SwapContract(ContractConnection):
                     for msg in response[1][:errors]
                 ],
             }
+
+    def create_offer(self, offer: Offer, wallet: Wallet) -> str:
+        """
+        Method to create offer
+
+        Args:
+            offer (dict): Offer dictionary containing necessary parameters 
+                to create a new offer
+            wallet (Wallet): Wallet class instance
+
+        Raises:
+            TypeError: Offer argument is not a valid instance of Offer class
+            ExecError: Transaction reverted
+
+        Returns:
+            offerId (int): OfferId of the created order
+        """
+        if not isinstance(offer, Offer):
+            raise TypeError("Invalid offer")
+
+        offer.oToken = get_address(offer.oToken)
+        offer.biddingToken = get_address(offer.biddingToken)
+
+        nonce = self.w3.eth.get_transaction_count(wallet.public_key) 
+        tx = self.contract.functions.createOffer(*list(asdict(offer).values())) \
+            .buildTransaction({
+                "nonce": nonce,
+                "gas": 150000,
+            })
+
+        signed_tx = self.w3.eth.account \
+            .sign_transaction(tx, private_key=wallet.private_key)
+
+        self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+
+        tx_receipt = self.w3.eth \
+            .wait_for_transaction_receipt(signed_tx.hash, timeout=600)
+        
+        if tx_receipt.status == 0:
+            raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
+        else:
+            return self.contract.events.NewOffer() \
+                .processReceipt(tx_receipt)[0]["args"]["swapId"]
+
+        
