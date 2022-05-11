@@ -132,7 +132,7 @@ print(check)
 # True
 ```
 
-### Informations about the Vaults
+### Informations about the option (oToken)
 
 Get details related to the oToken of interest:
 ```python
@@ -162,6 +162,21 @@ offer_id = 3
 
 offer_details = swap_contract.get_offer_details(offer_id)
 print(offer_details)
+```
+
+### Create an offer
+To create a new offer in the swap contract:
+(This method requires the wallet to have sufficient ETH to send the transaction)
+```
+new_offer = Offer(
+    oToken='0x61FB6d86456Dc4821f0738fDFD478B281294932D',
+    biddingToken='0xd0A1E359811322d97991E03f863a0C30C2cF029C',
+    minPrice=1,
+    minBidSize=100000,
+    offerAmount=100000
+)
+
+new_offer_id = swap_contract.create_offer(new_offer, wallet)
 ```
 
 ### Produce a JWT signature
