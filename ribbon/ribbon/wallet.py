@@ -17,7 +17,7 @@ from dataclasses import asdict
 from ribbon.encode import TypedDataEncoder
 from ribbon.definitions import Domain, Bid, SignedBid, ContractConfig
 from ribbon.erc20 import ERC20Contract
-from ribbon.utils import get_address
+from ribbon.utils import hex_zero_pad, get_address
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -72,8 +72,12 @@ class Wallet:
             signature (dict): Signature split into v, r, s components
         """
         signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
-
-        return {"v": signature.v + 27, "r": hex(signature.r), "s": hex(signature.s)}
+        print(str(signature))
+        return {
+            "v": signature.v + 27, 
+            "r": hex_zero_pad(hex(signature.r), 32), 
+            "s": hex_zero_pad(hex(signature.s), 32)
+        }
 
     def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> str:
         """Sign a hash of typed data V4 which follows EIP712 convention:
