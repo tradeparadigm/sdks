@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+web3 = "*"
+eth-tester = "*"
+eth-keys = "*"
+python-dotenv = "*"
+pyjwt = "*"
+cryptography = "*"
+eth-utils = "*"
+
+[dev-packages]
+ipykernel = "*"
+
+[requires]
+python_version = "3"

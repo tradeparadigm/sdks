@@ -12,9 +12,8 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
-
-from ribbon.encode import ADDRESS_ZERO
-from ribbon.chains import Chains
+from encode import ADDRESS_ZERO
+from chains import Chains
 
 
 # ---------------------------------------------------------------------------
@@ -56,18 +55,9 @@ class SignedBid(Bid):
 
 
 @dataclass
-class Offer:
-    oToken: str
-    biddingToken: str
-    minPrice: int
-    minBidSize: int
-    offerAmount: int
-
-
-@dataclass
 class ContractConfig:
     """Configuration needed to connect to a Contract"""
 
     address: str
     rpc_uri: str
-    chain_id: Chains = Chains.ETHEREUM
+    chain_name: Chains = Chains.ETHEREUM

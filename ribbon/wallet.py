@@ -14,10 +14,10 @@
 import eth_keys
 from dataclasses import asdict
 
-from ribbon.encode import TypedDataEncoder
-from ribbon.definitions import Domain, Bid, SignedBid, ContractConfig
-from ribbon.erc20 import ERC20Contract
-from ribbon.utils import get_address
+from encode import TypedDataEncoder
+from definitions import Domain, Bid, SignedBid, ContractConfig
+from erc20 import ERC20Contract
+from utils import get_address
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -43,24 +43,15 @@ class Wallet:
     Object to generate bid signature
 
     Args:
-        public_key (str): Public key of the user in hex format with 0x prefix
-        private_key (str): Private key of the user in hex format with 0x prefix
+        privateKey (str): Private key of the user in hex format with 0x prefix
 
     Attributes:
         signer (object): Instance of signer to generate signature
     """
 
-    def __init__(self, public_key: str = None, private_key: str = None):
-        if not private_key and not public_key:
-            raise ValueError("Can't instanciate a Wallet without a public or private key")
-
-        self.private_key = private_key
-        self.public_key = public_key
-
-        if self.private_key:
-            self.signer = eth_keys.keys.PrivateKey(bytes.fromhex(self.private_key[2:]))
-            if not self.public_key:
-                self.public_key = get_address(self.signer.public_key.to_address())
+    def __init__(self, privateKey: str) -> None:
+        self.signer = eth_keys.keys.PrivateKey(bytes.fromhex(privateKey[2:]))
+        self.address = get_address(self.signer.public_key.to_address())
 
     def sign_msg(self, messageHash: str) -> dict:
         """Sign a hash message using the signer object
@@ -116,13 +107,10 @@ class Wallet:
         if not isinstance(bid, Bid):
             raise TypeError("Invalid bid")
 
-        if not self.private_key:
-            raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
-
         signerWallet = get_address(bid.signerWallet)
         referrer = get_address(bid.referrer)
 
-        if signerWallet != self.public_key:
+        if signerWallet != self.address:
             raise ValueError("Signer wallet address mismatch")
 
         signature = self._sign_type_data_v4(domain, asdict(bid), types)
@@ -152,12 +140,12 @@ class Wallet:
         token_config = ContractConfig(
             address=token_address,
             rpc_uri=swap_config.rpc_uri,
-            chain_id=swap_config.chain_id,
+            chain_name=swap_config.chain_name,
         )
         bidding_token = ERC20Contract(token_config)
 
         allowance = (
-            bidding_token.get_allowance(self.public_key, swap_config.address)
+            bidding_token.get_allowance(self.address, swap_config.address)
             / bidding_token.decimals
         )
 
