@@ -11,9 +11,9 @@
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
-from contract import ContractConnection
-from definitions import ContractConfig
-from utils import get_address
+from ribbon.contract import ContractConnection
+from ribbon.definitions import ContractConfig
+from ribbon.utils import get_address
 
 
 # ---------------------------------------------------------------------------
