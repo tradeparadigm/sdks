@@ -72,7 +72,7 @@ class Wallet:
             signature (dict): Signature split into v, r, s components
         """
         signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
-        print(str(signature))
+
         return {
             "v": signature.v + 27, 
             "r": hex_zero_pad(hex(signature.r), 32), 
