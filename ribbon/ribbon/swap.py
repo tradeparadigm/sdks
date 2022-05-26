@@ -82,6 +82,7 @@ class SwapContract(ContractConnection):
 
         bid.signerWallet = get_address(bid.signerWallet)
         bid.referrer = get_address(bid.referrer)
+        bid.v = bid.v + (bid.v < 27) * 27
 
         response = self.contract.functions.check(asdict(bid)).call()
 
