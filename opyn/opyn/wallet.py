@@ -15,14 +15,21 @@ import eth_keys
 from dataclasses import asdict
 
 from opyn.encode import TypedDataEncoder
-from opyn.definitions import  OrderData, ContractConfig
+from opyn.definitions import  Domain, UnsignedOrderData, OrderData, ContractConfig
 from opyn.erc20 import ERC20Contract
 from opyn.utils import hex_zero_pad, get_address
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-
+UNSIGNED_ORDERDATA_TYPES = {
+    "OrderData": [
+        {"name": "bidId", "type": "uint256"},
+        {"name": "trader", "type": "address"},
+        {"name": "token", "type": "address"},
+        {"name": "amount", "type": "uint256"},
+    ]
+}
 MIN_ALLOWANCE = 100000000
 
 
@@ -69,6 +76,66 @@ class Wallet:
             "r": hex_zero_pad(hex(signature.r), 32),
             "s": hex_zero_pad(hex(signature.s), 32)
         }
+
+    def _sign_type_data_v4(self, domain: Domain, types: dict, value: dict ) -> dict:
+        """Sign a hash of typed data V4 which follows EIP712 convention:
+        https://eips.ethereum.org/EIPS/eip-712
+
+        Args:
+            domain (dict): Dictionary containing domain parameters including
+              name, version, chainId, verifyingContract and salt (optional)
+            types (dict): Dictionary of types and their fields
+            value (dict): Dictionary of values for each field in types
+
+        Raises:
+            TypeError: Domain argument is not an instance of Domain class
+
+        Returns:
+            signature (dict): Signature split into v, r, s components
+        """
+        if not isinstance(domain, Domain):
+            raise TypeError("Invalid domain parameters")
+
+        domain_dict = {k: v for k, v in asdict(domain).items() if v is not None}
+
+        return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
+
+    def sign_order_data(self, domain: Domain, unsigned_order: UnsignedOrderData) -> OrderData:
+        """Sign a bid using _sign_type_data_v4
+
+        Args:
+            domain (dict): Dictionary containing domain parameters including
+              name, version, chainId, verifyingContract and salt (optional)
+            unsigned_order (UnsignedOrderData): Unsigned Order Data
+
+        Raises:
+            TypeError: unsigned_order argument is not an instance of UnsignedOrderData class
+
+        Returns:
+            signedBid (dict): Bid combined with the generated signature
+        """
+        if not isinstance(unsigned_order, OrderData):
+            raise TypeError("Invalid unsigned_order(UnsignedOrderData)")
+
+        if not self.private_key:
+            raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
+
+        signerWallet = get_address(unsigned_order.trader)
+
+        if signerWallet != self.public_key:
+            raise ValueError("Signer wallet address mismatch")
+
+        signature = self._sign_type_data_v4(domain, UNSIGNED_ORDERDATA_TYPES, asdict(unsigned_order))
+
+        return OrderData(
+            bidId=unsigned_order.bidId,
+            trader=unsigned_order.trader,
+            token=unsigned_order.token,
+            amount=unsigned_order.amount,
+            v=signature["v"],
+            r=signature["r"],
+            s=signature["s"],
+        )
 
     def verify_allowance(self, swap_config: ContractConfig, token_address: str) -> bool:
         """Verify wallet's allowance for a given token
