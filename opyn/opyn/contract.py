@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Created By: Steven@Ribbon, Paolo@Paradigm
-# Created Date: 04/04/2022
+# Created By: Anil@Opyn
+# Created Date: 06/08/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
 """ Abstract class for contract connection """
@@ -15,9 +15,9 @@ import json
 from pathlib import Path
 from web3 import Web3
 
-from ribbon.chains import Chains
-from ribbon.definitions import ContractConfig
-from ribbon.utils import get_address
+from opyn.chains import Chains
+from opyn.definitions import ContractConfig
+from opyn.utils import get_address
 
 
 # ---------------------------------------------------------------------------
@@ -38,7 +38,7 @@ class ContractConnection:
         contract (object): Contract instance
     """
 
-    abi_location = "abis/Swap.json"
+    abi_location = "abis/Settlement.json"
 
     @property
     def abi_file_path(self):

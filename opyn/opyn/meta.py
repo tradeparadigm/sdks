@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Created By: Paolo@Paradigm
-# Created Date: 08/04/2022
+# Created By: Anil@Opyn
+# Created Date: 06/08/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
 """ Module to store Enum class """

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------
-# Created By: Steven@Ribbon
-# Created Date: 04/04/2022
+# Created By: Anil@Opyn
+# Created Date: 06/08/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
 """ Module to encode message """
@@ -19,10 +19,10 @@ from ribbon.utils import *
 # Constants
 # ---------------------------------------------------------------------------
 DOMAIN_FIELD_NAMES = [
-  'name', 
-  'version', 
-  'chainId', 
-  'verifyingContract', 
+  'name',
+  'version',
+  'chainId',
+  'verifyingContract',
   'salt'
 ]
 DOMAIN_FIELD_TYPES = {
@@ -60,7 +60,7 @@ def uint_encoder(type: str) -> object:
     or (len(match) == 3 and match[2] != str(width))
   ):
     raise ValueError(f'Invalid numeric width: {type}')
-  
+
   boundsUpper = 2**(width-1) - 1 if signed else 2**(width) - 1
   boundsLower = (boundsUpper + 1)*(-1)
   return lambda value: \
@@ -147,7 +147,7 @@ class TypedDataEncoder:
 
       for field in types[name]:
         fieldName = field['name']
-        
+
         if fieldName in uniqueNames.keys():
           raise ValueError(f'Duplicate variable name {fieldName} in {name}')
 
@@ -162,11 +162,11 @@ class TypedDataEncoder:
 
         if encoder:
           continue
-        
+
         self.parents[baseType].push(name)
         self.links[name][baseType] = True
 
-    primaryTypes = [type for type in self.parents.keys() 
+    primaryTypes = [type for type in self.parents.keys()
       if len(self.parents[type]) == 0]
 
     if len(primaryTypes) == 0:
@@ -179,7 +179,7 @@ class TypedDataEncoder:
     def checkCircular(type: str, found: dict):
       if type in found.keys():
         raise ValueError(f'Circular type reference to {type}')
-      
+
       found[type] = True
 
       for child in self.links[type].keys():
@@ -188,9 +188,9 @@ class TypedDataEncoder:
 
           for subtype in found.keys():
             self.subtypes[subtype][child] = True
-      
+
       del found[type]
-    
+
     checkCircular(self.primaryType, {})
 
     for name in self.subtypes.keys():
@@ -235,7 +235,7 @@ class TypedDataEncoder:
     if fields is not None:
       encodedType = id(self._types[type])
       return lambda value: hex_concat(
-        [encodedType] + [self.get_encoder(field['type'])(value[field['name']]) 
+        [encodedType] + [self.get_encoder(field['type'])(value[field['name']])
           if field['type'] not in self._types.keys() \
           else Web3.keccak(
             text=self.get_encoder(field['type'])(value[field['name']])
@@ -256,7 +256,7 @@ class TypedDataEncoder:
       return self._encoderCache[type]
     else:
       encoder = self._get_encoder(type)
-    
+
     return encoder
 
   def encode_data(self, type: str, value: dict) -> str:
@@ -340,14 +340,14 @@ class TypedDataEncoder:
     for name in domain.keys():
       if name not in DOMAIN_FIELD_NAMES:
         raise ValueError('Invalid domain key')
-      
+
       domainFields.append({'name': name, 'type': DOMAIN_FIELD_TYPES[name]})
-    
+
     domainFields.sort(key=lambda x: DOMAIN_FIELD_NAMES.index(x['name']))
 
     return TypedDataEncoder._hash_struct(
-      'EIP712Domain', 
-      { 'EIP712Domain': domainFields }, 
+      'EIP712Domain',
+      { 'EIP712Domain': domainFields },
       domain
     )
 

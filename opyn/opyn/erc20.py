@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Created By: Steven@Ribbon, Paolo@Paradigm
-# Created Date: 08/04/2022
+# Created By: Anil@Opyn
+# Created Date: 06/08/2022
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
 """ Module to interact with ERC20 contracts """
@@ -11,9 +11,9 @@
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
-from ribbon.contract import ContractConnection
-from ribbon.definitions import ContractConfig
-from ribbon.utils import get_address
+from opyn.contract import ContractConnection
+from opyn.definitions import ContractConfig
+from opyn.utils import get_address
 
 
 # ---------------------------------------------------------------------------

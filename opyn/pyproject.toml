@@ -3,17 +3,17 @@ requires = ['poetry-core~=1.0']
 build-backend = 'poetry.core.masonry.api'
 
 [tool.poetry]
-name = 'ribbon'
-description = 'SDK to interact with Ribbon Finance systems'
+name = 'opyn'
+description = 'SDK to interact with Opyn Finance systems'
 license = 'MIT'
 version = '0.1.0'
 authors = [
-    "Steven Williams <steven@ribbon.finance>",
-    "Paolo D'Onorio De Meo <paolo@paradigm.co>",
+    "Anil <anil@opyn.co>",
+    "Haythem <haythem@opyn.co>",
 ]
 packages = [
     { include = 'abis' },
-    { include = 'ribbon' },
+    { include = 'opyn' },
 ]
 
 [tool.poetry.dependencies]
