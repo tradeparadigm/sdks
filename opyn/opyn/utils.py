@@ -38,6 +38,39 @@ def get_address(address: str) -> str:
   except ValueError:
     raise ValueError(f'Invalid address: {address}')
 
+def is_hex_string(value: str, length: int=None) -> bool:
+  """
+  Check if string is a hex with a specified length
+
+  Args:
+      value (str): Hex string
+      length (int) (optional): Supposed length of hex
+
+  Returns:
+      isHex (bool): Boolean whether the given value is 
+        hex of a given length
+  """
+  if not isinstance(value, str) or not re.match('^0x[0-9A-Fa-f]*$', value):
+    return False
+  if length and len(value) != (2 + 2 * length):
+    return False
+  return True
+
+def hex_concat(items: list) -> str:
+  """
+  Concatenate list of hexes with 0x prefix
+
+  Args:
+      items (str): List of hexes with 0x prefix
+
+  Returns:
+      hex (str): Concatenated hex
+  """
+  result = '0x'
+  for i in items:
+    result += i[2:]
+  return result
+
 def hex_zero_pad(value: str, length: int) -> str:
   """
   Add zero padding on the left
@@ -58,3 +91,17 @@ def hex_zero_pad(value: str, length: int) -> str:
     value = '0x0' + value[2:]
 
   return value
+
+def encode_type(name: str, fields: list) -> str:
+  """
+  Encode struct types
+
+  Args:
+      name (str): Name of struct
+      fields (list): List of dictionary fields with name and type
+
+  Returns:
+      data (object): Encoded type
+  """
+  fields = ','.join([i['type'] + ' ' + i['name'] for i in fields])
+  return f'{name}({fields})'

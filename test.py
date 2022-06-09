@@ -11,19 +11,24 @@ from opyn.erc20 import ERC20Contract
 from opyn.settlement import Settlement
 from opyn.contract import ContractConnection
 from opyn.wallet import Wallet
+from dotenv import load_dotenv
 
 import os
+
+load_dotenv()
+
 
 rpc_token = os.getenv('RPC_TOKEN')
 osqth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
 current_chain = Chains.ROPSTEN
 rpc = {
-    Chains.ROPSTEN: "https://eth-ropsten.alchemyapi.io/v2/"
+    Chains.ROPSTEN: os.getenv('RPC_URL')
 }
+print(rpc_token)
 rpc_uri = rpc[current_chain] + rpc_token
 
 token_config = ContractConfig(
-            address=osthq_token_address,
+            address="0xa4222f78d23593e82Aa74742d25D06720DCa4ab7",
             rpc_uri=rpc_uri,
             chain_id=current_chain,
         )
@@ -38,12 +43,13 @@ domain = Domain("OPYN", 3, "0x529189A6684C8deA7D01d2d1329c01E38Fefb314", 1)
 taker_public = "0x917e2bF1484E94935C8664C8dC2B768073cceFcB"
 taker_private = os.getenv('TAKER_PKEY')
 
-taker_wallet  = Wallet(taker_public, taker_private)
+taker_wallet  = Wallet(public_key=taker_public, private_key=taker_private)
 taker_order = UnsignedOrderData(1, taker_public, osqth_token_address, 2 )
+print(taker_wallet)
 signed_taker_order = taker_wallet.sign_order_data(domain, taker_order)
 
-maker_public = "0x591540D17259838e73323892B4AefF11244B2DF4"
-maker_private = os.getenv('MAKER_PKEY')
+maker_public = os.getenv('MAKER_PubKEY')
+maker_private = os.getenv('MAKER_PrivKEY')
 maker_wallet = Wallet(maker_public, maker_private)
 maker_order = UnsignedOrderData(1, maker_public, osqth_token_address, 2 )
 signed_maker_order = maker_wallet.sign_order_data(domain, maker_order)
