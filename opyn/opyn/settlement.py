@@ -64,7 +64,7 @@ class Settlement(ContractConnection):
 
         self.contract.functions.settleRfq(_offerOrder, _bidOrder).call()
 
-    def nonces(self, owner: str) -> dict:
+    def nonces(self, owner: str) -> int:
         """
         Method to get nonces
 

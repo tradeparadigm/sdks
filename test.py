@@ -6,7 +6,7 @@
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
 
-from opyn.definitions import Domain, UnsignedOrderData, Chains, ContractConfig
+from opyn.definitions import Domain, MessageToSign, Chains, ContractConfig
 from opyn.erc20 import ERC20Contract
 from opyn.settlement import Settlement
 from opyn.contract import ContractConnection
@@ -23,7 +23,7 @@ rpc = {
 rpc_uri = rpc[current_chain] + rpc_token
 
 token_config = ContractConfig(
-            address=osthq_token_address,
+            address=osqth_token_address,
             rpc_uri=rpc_uri,
             chain_id=current_chain,
         )
@@ -39,14 +39,14 @@ taker_public = "0x917e2bF1484E94935C8664C8dC2B768073cceFcB"
 taker_private = os.getenv('TAKER_PKEY')
 
 taker_wallet  = Wallet(taker_public, taker_private)
-taker_order = UnsignedOrderData(1, taker_public, osqth_token_address, 2 )
-signed_taker_order = taker_wallet.sign_order_data(domain, taker_order)
+taker_message = MessageToSign(1, taker_public, osqth_token_address, 2, 1 )
+signed_taker_order = taker_wallet.sign_order_data(domain, taker_message)
 
 maker_public = "0x591540D17259838e73323892B4AefF11244B2DF4"
 maker_private = os.getenv('MAKER_PKEY')
 maker_wallet = Wallet(maker_public, maker_private)
-maker_order = UnsignedOrderData(1, maker_public, osqth_token_address, 2 )
-signed_maker_order = maker_wallet.sign_order_data(domain, maker_order)
+maker_message = MessageToSign(1, maker_public, osqth_token_address, 2 , 1)
+signed_maker_order = maker_wallet.sign_order_data(domain, maker_message)
 
 settlement_contract_address = "0x529189A6684C8deA7D01d2d1329c01E38Fefb314"
 

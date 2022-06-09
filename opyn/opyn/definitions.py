@@ -34,14 +34,19 @@ class Domain:
     salt: str = None
 
 @dataclass
-class UnsignedOrderData:
+class MessageToSign:
     bidId: int
     trader: str
     token: str
     amount: int
+    nonce: int 
 
 @dataclass
-class OrderData(UnsignedOrderData):
+class OrderData:
+    bidId: int
+    trader: str
+    token: str
+    amount: int
     v: int
     r: str
     s: str

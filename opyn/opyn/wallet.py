@@ -15,19 +15,20 @@ import eth_keys
 from dataclasses import asdict
 
 from opyn.encode import TypedDataEncoder
-from opyn.definitions import  Domain, UnsignedOrderData, OrderData, ContractConfig
+from opyn.definitions import  Domain, MessageToSign, OrderData, ContractConfig
 from opyn.erc20 import ERC20Contract
 from opyn.utils import hex_zero_pad, get_address
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-UNSIGNED_ORDERDATA_TYPES = {
-    "OrderData": [
+MESSAGE_TYPES = {
+    "Message": [
         {"name": "bidId", "type": "uint256"},
         {"name": "trader", "type": "address"},
         {"name": "token", "type": "address"},
         {"name": "amount", "type": "uint256"},
+        {"name": "nonces", "type": "uint256"},
     ]
 }
 MIN_ALLOWANCE = 100000000
@@ -100,7 +101,7 @@ class Wallet:
 
         return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
-    def sign_order_data(self, domain: Domain, unsigned_order: UnsignedOrderData) -> OrderData:
+    def sign_order_data(self, domain: Domain, message_to_sign: MessageToSign) -> OrderData:
         """Sign a bid using _sign_type_data_v4
 
         Args:
@@ -114,24 +115,24 @@ class Wallet:
         Returns:
             signedBid (dict): Bid combined with the generated signature
         """
-        if not isinstance(unsigned_order, UnsignedOrderData):
-            raise TypeError("Invalid unsigned_order(UnsignedOrderData)")
+        if not isinstance(message_to_sign, MessageToSign):
+            raise TypeError("Invalid message_to_sign(MessageToSign)")
 
         if not self.private_key:
             raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
 
-        signerWallet = get_address(unsigned_order.trader)
+        signerWallet = get_address(message_to_sign.trader)
 
         if signerWallet != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
-        signature = self._sign_type_data_v4(domain, UNSIGNED_ORDERDATA_TYPES, asdict(unsigned_order))
+        signature = self._sign_type_data_v4(domain, MESSAGE_TYPES, asdict(message_to_sign))
 
         return OrderData(
-            bidId=unsigned_order.bidId,
-            trader=unsigned_order.trader,
-            token=unsigned_order.token,
-            amount=unsigned_order.amount,
+            bidId=message_to_sign.bidId,
+            trader=message_to_sign.trader,
+            token=message_to_sign.token,
+            amount=message_to_sign.amount,
             v=signature["v"],
             r=signature["r"],
             s=signature["s"],
