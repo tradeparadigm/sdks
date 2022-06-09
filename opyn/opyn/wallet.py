@@ -114,7 +114,7 @@ class Wallet:
         Returns:
             signedBid (dict): Bid combined with the generated signature
         """
-        if not isinstance(unsigned_order, OrderData):
+        if not isinstance(unsigned_order, UnsignedOrderData):
             raise TypeError("Invalid unsigned_order(UnsignedOrderData)")
 
         if not self.private_key:
