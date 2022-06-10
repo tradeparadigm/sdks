@@ -31,24 +31,6 @@ class Settlement(ContractConnection):
         config (ContractConfig): Configuration to setup the Contract
     """
 
-    def settleRfqByMkr(self, bidOrder: OrderData):
-        """
-        Method to settle RFQ by the Maker.
-        This method will connect to relayer to fetch the signature of the Taker/DOV
-        and then call the onchain settle method using both signatures
-
-        Args:
-            _offerOrder (OrderData): The offer related order data
-            _bidOrder   (OrderData): The bid related order data
-
-
-        """
-        if not isinstance(bidOrder, OrderData):
-            raise TypeError("Invalid Order Data for bid")
-            
-        # settleRfq(_offerOrder, _bidOrder)
-
-
     def settleRfq(self, _offerOrder: OrderData, _bidOrder: OrderData):
         """
         Method to settle RFQ on chain
@@ -64,7 +46,7 @@ class Settlement(ContractConnection):
 
         self.contract.functions.settleRfq(_offerOrder, _bidOrder).call()
 
-    def nonces(self, owner: str) -> int:
+    def nonce(self, owner: str) -> int:
         """
         Method to get nonces
 
@@ -80,3 +62,8 @@ class Settlement(ContractConnection):
         nonces = self.contract.functions.nonces(owner).call()
 
         return nonces
+
+    def domainSeparator(self) -> str:
+        domain = self.contract.functions.DOMAIN_SEPARATOR().call()
+
+        return domain

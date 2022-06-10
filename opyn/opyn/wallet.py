@@ -28,7 +28,7 @@ MESSAGE_TYPES = {
         {"name": "trader", "type": "address"},
         {"name": "token", "type": "address"},
         {"name": "amount", "type": "uint256"},
-        {"name": "nonces", "type": "uint256"},
+        {"name": "nonce", "type": "uint256"},
     ]
 }
 MIN_ALLOWANCE = 100000000
@@ -99,6 +99,8 @@ class Wallet:
 
         domain_dict = {k: v for k, v in asdict(domain).items() if v is not None}
 
+        print("domain_dict", domain_dict)
+
         return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
     def sign_order_data(self, domain: Domain, message_to_sign: MessageToSign) -> OrderData:
@@ -125,6 +127,9 @@ class Wallet:
 
         if signerWallet != self.public_key:
             raise ValueError("Signer wallet address mismatch")
+
+        print("asdict", asdict(message_to_sign))
+        print("MESSAGE_TYPES", MESSAGE_TYPES)
 
         signature = self._sign_type_data_v4(domain, MESSAGE_TYPES, asdict(message_to_sign))
 

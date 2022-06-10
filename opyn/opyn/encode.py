@@ -219,7 +219,6 @@ class TypedDataEncoder:
       subtype = match[0]
       subEncoder = self.get_encoder(subtype)
       length = 0 if len(match) == 1 else int(match[1])
-      print(length)
       return lambda values: \
         Web3.keccak(
           text=hex_concat(
@@ -364,6 +363,8 @@ class TypedDataEncoder:
     Returns:
         data (str): Encoded message
     """
+
+    print("TypedDataEncoder.hash_domain(domain)", TypedDataEncoder.hash_domain(domain))
     return hex_concat([
       '0x1901',
       TypedDataEncoder.hash_domain(domain),

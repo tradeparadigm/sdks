@@ -32,6 +32,7 @@ def id(text: str) -> str:
   Returns:
       hash (str): Resulting hash
   """
+  print("AAAAAAAAAAAAAAAAAAAAAAAAA", text, "type", type(text), "hash type", type(Web3.keccak(text=text).hex()))
   return Web3.keccak(text=text).hex()
 
 def get_address(address: str) -> str:

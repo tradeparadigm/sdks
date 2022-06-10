@@ -28,18 +28,17 @@ class Domain:
     # https://web3py.readthedocs.io/en/stable/web3.eth.html#web3.eth.Eth.chain_id
     """
     name: str
+    version: int
     chainId: int
     verifyingContract: str
-    version: int
-    salt: str = None
 
 @dataclass
 class MessageToSign:
-    bidId: int
+    bidId: str
     trader: str
     token: str
-    amount: int
-    nonce: int 
+    amount: str
+    nonce: str 
 
 @dataclass
 class OrderData:
