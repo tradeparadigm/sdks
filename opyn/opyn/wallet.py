@@ -23,7 +23,7 @@ from opyn.utils import hex_zero_pad, get_address
 # Constants
 # ---------------------------------------------------------------------------
 MESSAGE_TYPES = {
-    "Message": [
+    "OpynRfq": [
         {"name": "bidId", "type": "uint256"},
         {"name": "trader", "type": "address"},
         {"name": "token", "type": "address"},
