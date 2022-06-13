@@ -27,7 +27,7 @@ from shutil import ExecError
 DETAILED_ERROR_MESSAGES = {
     "SIGNATURE_INVALID": "Signature invalid.",
     "SIGNATURE_MISMATCHED": "Signature's origin does not match signer's address. Ensure you are using the correct wallet.",
-    "NONCE_ALREADY_USED": "Nonce has been used.",
+    "NONCE_ALREADY_USED": "This nonce has been previously used.",
     "BID_TOO_SMALL": "Bid size has to be larger than minimum bid.",
     "BID_EXCEED_AVAILABLE_SIZE": "Bid size has to be smaller than available size.",
     "PRICE_TOO_LOW": "Price per oToken has to be larger than minimum price.",
