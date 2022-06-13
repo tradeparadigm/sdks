@@ -14,6 +14,7 @@
 import json
 from pathlib import Path
 from web3 import Web3
+from web3.middleware import geth_poa_middleware
 
 from ribbon.chains import Chains
 from ribbon.definitions import ContractConfig
@@ -64,6 +65,9 @@ class ContractConnection:
                 + f"Expected: {chain.name} "
                 + f"({chain.value})"
             )
+
+        if chain == Chains.FUJI:
+            self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         with open(self.abi_file_path) as f:
             abi = json.load(f)

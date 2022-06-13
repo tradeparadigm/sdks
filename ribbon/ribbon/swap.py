@@ -21,6 +21,21 @@ from ribbon.utils import get_address
 from ribbon.encode import ADDRESS_ZERO
 from shutil import ExecError
 
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+DETAILED_ERROR_MESSAGES = {
+    "SIGNATURE_INVALID": "Signature invalid.",
+    "SIGNATURE_MISMATCHED": "Signature's origin does not match signer's address. Ensure you are using the correct wallet.",
+    "NONCE_ALREADY_USED": "This nonce has been previously used.",
+    "BID_TOO_SMALL": "Bid size has to be larger than minimum bid.",
+    "BID_EXCEED_AVAILABLE_SIZE": "Bid size has to be smaller than available size.",
+    "PRICE_TOO_LOW": "Price per oToken has to be larger than minimum price.",
+    "SIGNER_ALLOWANCE_LOW": "Insufficient bidding token allowance. Ensure you have approved sufficient amount of bidding token.",
+    "SIGNER_BALANCE_LOW": "Insufficient bidding token balance. Ensure you have sufficient balance of bidding token in your wallet.",
+    "SELLER_ALLOWANCE_LOW": "Seller has insufficient oToken allowance.",
+    "SELLER_BALANCE_LOW": "Seller has insufficienct oToken balance.",
+}
 
 # ---------------------------------------------------------------------------
 # Swap Contract
@@ -93,7 +108,7 @@ class SwapContract(ContractConnection):
             return {
                 "errors": errors,
                 "messages": [
-                    Web3.toText(msg).replace("\x00", "")
+                    DETAILED_ERROR_MESSAGES[Web3.toText(msg).replace("\x00", "")]
                     for msg in response[1][:errors]
                 ],
             }
