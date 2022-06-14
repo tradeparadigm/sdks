@@ -11,6 +11,7 @@
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
+from urllib import response
 import eth_keys
 from dataclasses import asdict
 from opyn.encode import TypedDataEncoder
@@ -18,6 +19,7 @@ from opyn.definitions import  Domain, MessageToSign, OrderData, ContractConfig
 from opyn.erc20 import ERC20Contract
 from opyn.settlement import SettlementContract
 from opyn.utils import hex_zero_pad, get_address
+import requests
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -49,12 +51,13 @@ class Wallet:
         signer (object): Instance of signer to generate signature
     """
 
-    def __init__(self, public_key: str = None, private_key: str = None):
+    def __init__(self, public_key: str = None, private_key: str = None, relayer_url: str = None):
         if not private_key and not public_key:
             raise ValueError("Can't instanciate a Wallet without a public or private key")
 
         self.private_key = private_key
         self.public_key = public_key
+        self.relayer_url = relayer_url
 
         if self.private_key:
             self.signer = eth_keys.keys.PrivateKey(bytes.fromhex(self.private_key[2:]))
@@ -172,17 +175,19 @@ class Wallet:
 
         token.approve(self.public_key, self.private_key, settlement_config.address, amount)
 
-    def settle_trade(self, settlement_config: ContractConfig, bid_order: OrderData):
+    def settle_trade(self, auction_id: str, settlement_config: ContractConfig, bid_order: OrderData):
         settlement = SettlementContract(settlement_config)
 
-        #TODO: call Relayer API to get seller order
+        response = requests.get(self.relayer_url + "auctions/" + auction_id + "/bids/" + str(bid_order.bidId) + "/settle").json()
+        print(response)
+        
         seller_order = OrderData(
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
+            response.bidId,
+            response.trader,
+            response.amount,
+            response.v,
+            response.r,
+            response.s,
         )
 
         settlement.settleRfq(self.public_key, self.private_key, bid_order, seller_order)
