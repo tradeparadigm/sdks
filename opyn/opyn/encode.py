@@ -364,7 +364,6 @@ class TypedDataEncoder:
         data (str): Encoded message
     """
 
-    print("TypedDataEncoder.hash_domain(domain)", TypedDataEncoder.hash_domain(domain))
     return hex_concat([
       '0x1901',
       TypedDataEncoder.hash_domain(domain),

@@ -13,10 +13,10 @@
 # ---------------------------------------------------------------------------
 import eth_keys
 from dataclasses import asdict
-
 from opyn.encode import TypedDataEncoder
 from opyn.definitions import  Domain, MessageToSign, OrderData, ContractConfig
 from opyn.erc20 import ERC20Contract
+from opyn.settlement import SettlementContract
 from opyn.utils import hex_zero_pad, get_address
 
 # ---------------------------------------------------------------------------
@@ -99,8 +99,6 @@ class Wallet:
 
         domain_dict = {k: v for k, v in asdict(domain).items() if v is not None}
 
-        print("domain_dict", domain_dict)
-
         return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
     def sign_order_data(self, domain: Domain, message_to_sign: MessageToSign) -> OrderData:
@@ -128,9 +126,6 @@ class Wallet:
         if signerWallet != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
-        print("asdict", asdict(message_to_sign))
-        print("MESSAGE_TYPES", MESSAGE_TYPES)
-
         signature = self._sign_type_data_v4(domain, MESSAGE_TYPES, asdict(message_to_sign))
 
         return OrderData(
@@ -143,7 +138,7 @@ class Wallet:
             s=signature["s"],
         )
 
-    def verify_allowance(self, swap_config: ContractConfig, token_address: str) -> bool:
+    def verify_allowance(self, settlement_config: ContractConfig, token_address: str) -> bool:
         """Verify wallet's allowance for a given token
 
         Args:
@@ -155,14 +150,40 @@ class Wallet:
         """
         token_config = ContractConfig(
             address=token_address,
-            rpc_uri=swap_config.rpc_uri,
-            chain_id=swap_config.chain_id,
+            rpc_uri=settlement_config.rpc_uri,
+            chain_id=settlement_config.chain_id,
         )
-        bidding_token = ERC20Contract(token_config)
+        token = ERC20Contract(token_config)
 
         allowance = (
-            bidding_token.get_allowance(self.public_key, swap_config.address)
-            / bidding_token.decimals
+            token.get_allowance(self.public_key, settlement_config.address)
+            / token.decimals
         )
 
         return allowance > MIN_ALLOWANCE
+
+    def allow_more(self, settlement_config: ContractConfig, token_address: str, amount: str): 
+        token_config = ContractConfig(
+            address=token_address,
+            rpc_uri=settlement_config.rpc_uri,
+            chain_id=settlement_config.chain_id,
+        )
+        token = ERC20Contract(token_config)
+
+        token.approve(self.public_key, self.private_key, settlement_config.address, amount)
+
+    def settle_trade(self, settlement_config: ContractConfig, bid_order: OrderData):
+        settlement = SettlementContract(settlement_config)
+
+        #TODO: call Relayer API to get seller order
+        seller_order = OrderData(
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        )
+
+        settlement.settleRfq(self.public_key, self.private_key, bid_order, seller_order)
+

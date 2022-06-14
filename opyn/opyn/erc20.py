@@ -15,7 +15,6 @@ from opyn.contract import ContractConnection
 from opyn.definitions import ContractConfig
 from opyn.utils import get_address
 
-
 # ---------------------------------------------------------------------------
 # ERC20 Contract
 # ---------------------------------------------------------------------------
@@ -75,3 +74,17 @@ class ERC20Contract(ContractConnection):
         response = self.contract.functions.balanceOf(owner_address).call()
 
         return response
+
+    def approve(self, publicKey: str, privateKey: str, spender: str, amount: str):
+        nonce = self.w3.eth.get_transaction_count(publicKey) 
+        tx = self.contract.functions.approve(get_address(spender), amount) \
+            .buildTransaction({
+                "nonce": nonce
+            })
+
+        signed_tx = self.w3.eth.account \
+            .sign_transaction(tx, private_key=privateKey)
+
+        self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+
+        self.w3.eth.wait_for_transaction_receipt(signed_tx.hash, timeout=600)

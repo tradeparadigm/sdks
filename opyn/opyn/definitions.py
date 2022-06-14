@@ -42,11 +42,11 @@ class MessageToSign:
 
 @dataclass
 class OrderData:
-    bidId: int
+    bidId: str
     trader: str
     token: str
-    amount: int
-    v: int
+    amount: str
+    v: str
     r: str
     s: str
 
