@@ -166,6 +166,13 @@ class Wallet:
         return allowance > MIN_ALLOWANCE
 
     def allow_more(self, settlement_config: ContractConfig, token_address: str, amount: str): 
+        """Increase settlement contract allowance
+
+        Args:
+            settlement_config (ContractConfig): Configuration to setup the Settlement contract
+            token_address (str): Address of token to increase allowance of
+            amount (str): Amount to increase allowance to
+        """
         token_config = ContractConfig(
             address=token_address,
             rpc_uri=settlement_config.rpc_uri,
@@ -175,12 +182,35 @@ class Wallet:
 
         token.approve(self.public_key, self.private_key, settlement_config.address, amount)
 
+    def get_offer_details(self, auction_id: str = None) -> dict : 
+        """Get offer details by auction ID
+
+        Args:
+            auction_id (str): auction ID
+
+        Returns:
+            details (dict): offer details
+        """
+        response = requests.get(self.relayer_url + "auctions/" + auction_id).json()
+
+        return {
+            'auctionId': response.auctionId,
+            'status': response.status,
+        }
+
     def settle_trade(self, auction_id: str, settlement_config: ContractConfig, bid_order: OrderData):
+        """Settle trade
+
+        Args:
+            auction_id (str): auction ID
+            settlement_config (ContractConfig): Configuration to setup the Settlement contract
+            bid_order
+        """
         settlement = SettlementContract(settlement_config)
 
         response = requests.get(self.relayer_url + "auctions/" + auction_id + "/bids/" + str(bid_order.bidId) + "/settle").json()
         print(response)
-        
+
         seller_order = OrderData(
             response.bidId,
             response.trader,
