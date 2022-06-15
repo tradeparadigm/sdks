@@ -25,20 +25,7 @@ rpc = {
 rpc_uri = rpc[current_chain] + rpc_token
 
 osqth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
-# token_config = ContractConfig(
-#             address=osqth_token_address,
-#             rpc_uri=rpc_uri,
-#             chain_id=current_chain,
-#         )
-# osqth_token = ERC20Contract(token_config)
-
 opyn_usdc_token_address = "0x27415c30d8c87437becbd4f98474f26e712047f4"
-# token_config = ContractConfig(
-#             address=opyn_usdc_token_address,
-#             rpc_uri=rpc_uri,
-#             chain_id=current_chain,
-#         )
-# opyn_usdc_token = ERC20Contract(token_config)
 
 settlement_contract_address = "0x0e709c6e73dcbcb169c29e4412f905a16d5aff4e"
 settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
@@ -68,9 +55,3 @@ signed_taker_order = taker_wallet.sign_order_data(domain, taker_message)
 # taker_wallet.allow_more(settlement_config, osqth_token_address, taker_order_amount)
 
 maker_wallet.settle_trade("744", ContractConfig(settlement_contract_address, rpc_uri, current_chain), signed_maker_order)
-# settlement_contract.settleRfq(
-#     taker_wallet.public_key,
-#     taker_wallet.private_key,
-#     signed_taker_order,
-#     signed_maker_order
-# )

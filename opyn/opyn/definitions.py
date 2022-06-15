@@ -53,7 +53,6 @@ class OrderData:
 @dataclass
 class ContractConfig:
     """Configuration needed to connect to a Contract"""
-
     address: str
     rpc_uri: str
     chain_id: Chains = Chains.ETHEREUM
