@@ -35,7 +35,7 @@ domain = Domain("OPYN RFQ", "1", 3, "0x0e709c6e73dcbcb169c29e4412f905a16d5aff4e"
 
 maker_public = os.getenv('MAKER_PubKEY')
 maker_private = os.getenv('MAKER_PrivKEY')
-maker_wallet = Wallet(maker_public, maker_private, os.getenv('RELAYER_API'))
+maker_wallet = Wallet(maker_public, maker_private, os.getenv('RELAYER_API'), os.getenv('RELAYER_TOKEN'))
 
 maker_order_amount = str(1)
 maker_nonce = settlement_contract.nonce(maker_wallet.public_key)
@@ -44,7 +44,7 @@ signed_maker_order = maker_wallet.sign_order_data(domain, maker_message)
 
 taker_public = os.getenv('TAKER_PubKEY')
 taker_private = os.getenv('TAKER_PrivKEY')
-taker_wallet = Wallet(taker_public, taker_private, os.getenv('RELAYER_API'))
+taker_wallet = Wallet(taker_public, taker_private, os.getenv('RELAYER_API'), os.getenv('RELAYER_TOKEN'))
 
 taker_order_amount = str(1)
 taker_nonce = settlement_contract.nonce(taker_wallet.public_key)
@@ -54,4 +54,5 @@ signed_taker_order = taker_wallet.sign_order_data(domain, taker_message)
 # maker_wallet.allow_more(settlement_config, opyn_usdc_token_address, maker_order_amount)
 # taker_wallet.allow_more(settlement_config, osqth_token_address, taker_order_amount)
 
-maker_wallet.settle_trade("744", ContractConfig(settlement_contract_address, rpc_uri, current_chain), signed_maker_order)
+# maker_wallet.settle_trade("744", ContractConfig(settlement_contract_address, rpc_uri, current_chain), signed_maker_order)
+settlement_contract.settleRfq(taker_wallet.public_key, taker_wallet.private_key, signed_taker_order, signed_maker_order)

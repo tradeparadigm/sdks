@@ -11,15 +11,14 @@
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
-from urllib import response
 import eth_keys
+import requests
 from dataclasses import asdict
 from opyn.encode import TypedDataEncoder
 from opyn.definitions import  Domain, MessageToSign, OrderData, ContractConfig
 from opyn.erc20 import ERC20Contract
 from opyn.settlement import SettlementContract
 from opyn.utils import hex_zero_pad, get_address
-import requests
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -51,13 +50,14 @@ class Wallet:
         signer (object): Instance of signer to generate signature
     """
 
-    def __init__(self, public_key: str = None, private_key: str = None, relayer_url: str = None):
+    def __init__(self, public_key: str = None, private_key: str = None, relayer_url: str = None, relayer_token: str = None):
         if not private_key and not public_key:
             raise ValueError("Can't instanciate a Wallet without a public or private key")
 
         self.private_key = private_key
         self.public_key = public_key
         self.relayer_url = relayer_url
+        self.relayer_token = relayer_token
 
         if self.private_key:
             self.signer = eth_keys.keys.PrivateKey(bytes.fromhex(self.private_key[2:]))
@@ -191,7 +191,7 @@ class Wallet:
         Returns:
             details (dict): offer details
         """
-        response = requests.get(self.relayer_url + "auctions/" + auction_id).json()
+        response = requests.get(self.relayer_url + "auction/" + auction_id).json()
 
         return {
             'auctionId': response.auctionId,
@@ -208,7 +208,7 @@ class Wallet:
         """
         settlement = SettlementContract(settlement_config)
 
-        response = requests.get(self.relayer_url + "auctions/" + auction_id + "/bids/" + str(bid_order.bidId) + "/settle").json()
+        response = requests.get(self.relayer_url + "/sdk/signature/auction/" + auction_id + "/bid/" + str(bid_order.bidId), headers={'Opyn-Cedefi-Bridge-X-API-Key': self.relayer_token}).json()
         print(response)
 
         seller_order = OrderData(
@@ -220,5 +220,13 @@ class Wallet:
             response.s,
         )
 
-        settlement.settleRfq(self.public_key, self.private_key, bid_order, seller_order)
+        # seller_order = OrderData(
+        #     "2",
+        #     "0x5599b4EAdDd319e2F462b27fC8378B0BFaD309CA",
+        #     1,
+        #     response.v,
+        #     response.r,
+        #     response.s,
+        # )
 
+        settlement.settleRfq(self.public_key, self.private_key, bid_order, seller_order)

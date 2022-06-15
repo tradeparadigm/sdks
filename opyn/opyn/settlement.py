@@ -47,7 +47,7 @@ class SettlementContract(ContractConnection):
             raise TypeError("Invalid bid order")
         
         nonce = self.w3.eth.get_transaction_count(publicKey) 
-        tx = self.contract.functions.settleRfq(tuple(asdict(_offerOrder)), tuple(asdict(_offerOrder))) \
+        tx = self.contract.functions.settleRfq(asdict(_offerOrder).values(), asdict(_offerOrder)) \
             .buildTransaction({
                 "nonce": nonce
             })

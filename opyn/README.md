@@ -93,7 +93,7 @@ MAKER_PubKEY=
 MAKER_PrivKEY=
 TAKER_PubKEY=
 TAKER_PrivKEY=
-RELAYER_API=
+RELAYER_TOKEN=
 ```
 - Make sure to build the Opyn module
 - Run `pip3 install -I opyn/dist/opyn-0.1.0-py3-none-any.whl`
