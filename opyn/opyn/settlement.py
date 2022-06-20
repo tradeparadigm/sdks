@@ -15,7 +15,8 @@ from web3 import Web3
 from dataclasses import asdict
 from opyn.contract import ContractConnection
 from opyn.utils import get_address
-from opyn.definitions import OrderData
+from opyn.definitions import Offer
+from opyn.wallet import Wallet
 
 # ---------------------------------------------------------------------------
 # Settlement Contract
@@ -28,37 +29,111 @@ class SettlementContract(ContractConnection):
         config (ContractConfig): Configuration to setup the Contract
     """
 
-    def settleRfq(self, publicKey: str, privateKey: str, _offerOrder: OrderData, _bidOrder: OrderData):
+    def create_offer(self, offer: Offer, wallet: Wallet) -> str:
         """
-        Method to settle RFQ on chain
+        Method to create offer
 
         Args:
-            _offerOrder (OrderData): The offer related order data
-            _bidOrder   (OrderData): The bid related order data
+            offer (dict): Offer dictionary containing necessary parameters 
+                to create a new offer
+            wallet (Wallet): Wallet class instance
 
         Raises:
-            ValueError: The argument is not a valid offer
+            TypeError: Offer argument is not a valid instance of Offer class
+            ExecError: Transaction reverted
 
+        Returns:
+            offerId (int): OfferId of the created order
         """
-        if not isinstance(_offerOrder, OrderData):
-            raise TypeError("Invalid offer order")
+        if not isinstance(offer, Offer):
+            raise TypeError("Invalid offer")
 
-        if not isinstance(_bidOrder, OrderData):
-            raise TypeError("Invalid bid order")
-        
-        nonce = self.w3.eth.get_transaction_count(publicKey) 
-        tx = self.contract.functions.settleRfq(asdict(_offerOrder).values(), asdict(_offerOrder)) \
+        offer.offerToken = get_address(offer.offerToken)
+        offer.bidToken = get_address(offer.bidToken)
+
+        nonce = self.w3.eth.get_transaction_count(wallet.public_key) 
+        tx = self.contract.functions.createOffer(*list(asdict(offer).values())) \
             .buildTransaction({
-                "nonce": nonce
+                "nonce": nonce,
+                "gas": 150000,
             })
 
         signed_tx = self.w3.eth.account \
-            .sign_transaction(tx, private_key=privateKey)
+            .sign_transaction(tx, private_key=wallet.private_key)
 
         self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
 
         tx_receipt = self.w3.eth \
             .wait_for_transaction_receipt(signed_tx.hash, timeout=600)
+        
+        if tx_receipt.status == 0:
+            raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
+        else:
+            return self.contract.events.CreateOffer() \
+                .processReceipt(tx_receipt)[0]["args"]["offerId"]
+
+
+    def get_offer_details(self, offer_id: int) -> dict:
+        """
+        Method to get bid details
+
+        Args:
+            offer_id (int): Offer ID
+
+        Raises:
+            ValueError: The argument is not a valid offer
+
+        Returns:
+            details (dict): Offer details
+        """
+        details = self.contract.functions.getOfferDetails(offer_id).call()
+        seller = details[0]
+
+        if seller == ADDRESS_ZERO:
+            raise ValueError(f'Offer does not exist: {offer_id}')
+
+        return {
+            'seller': details[0],
+            'offerToken': details[1],
+            'bidToken': details[3],
+            'minPrice': details[2],
+            'minBidSize': details[4]
+        }
+
+    # def validate_bid(self, bid: BidData) -> str:
+    #     """
+    #     Method to validate bid
+
+    #     Args:
+    #         bid (dict): Bid dictionary containing swapId, nonce, signerWallet,
+    #           sellAmount, buyAmount, referrer, v, r, and s
+
+    #     Raises:
+    #         TypeError: Bid argument is not an instance of SignedBid
+
+    #     Returns:
+    #         response (dict): Dictionary containing number of errors (errors)
+    #           and the corresponding error messages (messages)
+    #     """
+    #     if not isinstance(bid, BidData):
+    #         raise TypeError("Invalid signed bid")
+
+    #     bid.signerAddress = get_address(bid.signerAddress)
+    #     bid.v = bid.v + (bid.v < 27) * 27
+
+    #     response = self.contract.functions.check(asdict(bid)).call()
+
+    #     errors = response[0]
+    #     if errors == 0:
+    #         return {"errors": 0}
+    #     else:
+    #         return {
+    #             "errors": errors,
+    #             "messages": [
+    #                 Web3.toText(msg).replace("\x00", "")
+    #                 for msg in response[1][:errors]
+    #             ],
+    #         }
 
     def nonce(self, owner: str) -> int:
         """
@@ -81,3 +156,14 @@ class SettlementContract(ContractConnection):
         domain = self.contract.functions.DOMAIN_SEPARATOR().call()
 
         return domain
+
+    def get_offer_counter(self) -> int:
+        """
+        Method to get offersCounter
+
+        Returns:
+            counter (int): Number of created offers
+        """
+        counter = self.contract.functions.offersCounter().call()
+
+        return counter

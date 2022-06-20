@@ -34,18 +34,26 @@ class Domain:
 
 @dataclass
 class MessageToSign:
+    offerId: str
     bidId: str
-    trader: str
-    token: str
-    amount: str
+    signerAddress: str
+    bidderAddress: str
+    bidToken: str
+    offerToken: str
+    bidAmount: str
+    sellAmount: str
     nonce: str 
 
 @dataclass
-class OrderData:
+class BidData:
+    offerId: str
     bidId: str
-    trader: str
-    token: str
-    amount: str
+    signerAddress: str
+    bidderAddress: str
+    bidToken: str
+    offerToken: str
+    bidAmount: str
+    sellAmount: str
     v: str
     r: str
     s: str
@@ -56,3 +64,12 @@ class ContractConfig:
     address: str
     rpc_uri: str
     chain_id: Chains = Chains.ETHEREUM
+
+@dataclass
+class Offer:
+    """On-chain offer"""
+    offerToken: str
+    bidToken: str
+    minPrice: str
+    minBidSize: str
+    totalSize: str

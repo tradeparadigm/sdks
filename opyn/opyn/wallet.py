@@ -12,12 +12,10 @@
 # Imports
 # ---------------------------------------------------------------------------
 import eth_keys
-import requests
 from dataclasses import asdict
 from opyn.encode import TypedDataEncoder
-from opyn.definitions import  Domain, MessageToSign, OrderData, ContractConfig
+from opyn.definitions import  Domain, MessageToSign, BidData, ContractConfig
 from opyn.erc20 import ERC20Contract
-from opyn.settlement import SettlementContract
 from opyn.utils import hex_zero_pad, get_address
 
 # ---------------------------------------------------------------------------
@@ -25,11 +23,15 @@ from opyn.utils import hex_zero_pad, get_address
 # ---------------------------------------------------------------------------
 MESSAGE_TYPES = {
     "OpynRfq": [
+        {"name": "offerId", "type": "uint256"},
         {"name": "bidId", "type": "uint256"},
-        {"name": "trader", "type": "address"},
-        {"name": "token", "type": "address"},
-        {"name": "amount", "type": "uint256"},
-        {"name": "nonce", "type": "uint256"},
+        {"name": "signerAddress", "type": "address"},
+        {"name": "bidderAddress", "type": "address"},
+        {"name": "bidToken", "type": "address"},
+        {"name": "offerToken", "type": "address"},
+        {"name": "bidAmount", "type": "uint256"},
+        {"name": "sellAmount", "type": "uint256"},
+        {"name": "nonce", "type": "uint256"}
     ]
 }
 MIN_ALLOWANCE = 100000000
@@ -104,16 +106,16 @@ class Wallet:
 
         return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
-    def sign_order_data(self, domain: Domain, message_to_sign: MessageToSign) -> OrderData:
+    def sign_order_data(self, domain: Domain, message_to_sign: MessageToSign) -> BidData:
         """Sign a bid using _sign_type_data_v4
 
         Args:
             domain (dict): Dictionary containing domain parameters including
               name, version, chainId, verifyingContract and salt (optional)
-            unsigned_order (UnsignedOrderData): Unsigned Order Data
+            unsigned_order (UnsignedBidData): Unsigned Order Data
 
         Raises:
-            TypeError: unsigned_order argument is not an instance of UnsignedOrderData class
+            TypeError: unsigned_order argument is not an instance of UnsignedBidData class
 
         Returns:
             signedBid (dict): Bid combined with the generated signature
@@ -124,18 +126,22 @@ class Wallet:
         if not self.private_key:
             raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
 
-        signerWallet = get_address(message_to_sign.trader)
+        signerWallet = get_address(message_to_sign.signerAddress)
 
         if signerWallet != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
         signature = self._sign_type_data_v4(domain, MESSAGE_TYPES, asdict(message_to_sign))
 
-        return OrderData(
+        return BidData(
+            offerId=message_to_sign.offerId,
             bidId=message_to_sign.bidId,
-            trader=message_to_sign.trader,
-            token=message_to_sign.token,
-            amount=message_to_sign.amount,
+            signerAddress=message_to_sign.signerAddress,
+            bidderAddress=message_to_sign.bidderAddress,
+            bidToken=message_to_sign.bidToken,
+            offerToken=message_to_sign.offerToken,
+            bidAmount=message_to_sign.bidAmount,
+            sellAmount=message_to_sign.sellAmount,
             v=signature["v"],
             r=signature["r"],
             s=signature["s"],
@@ -181,52 +187,3 @@ class Wallet:
         token = ERC20Contract(token_config)
 
         token.approve(self.public_key, self.private_key, settlement_config.address, amount)
-
-    def get_offer_details(self, auction_id: str = None) -> dict : 
-        """Get offer details by auction ID
-
-        Args:
-            auction_id (str): auction ID
-
-        Returns:
-            details (dict): offer details
-        """
-        response = requests.get(self.relayer_url + "auction/" + auction_id).json()
-
-        return {
-            'auctionId': response.auctionId,
-            'status': response.status,
-        }
-
-    def settle_trade(self, auction_id: str, settlement_config: ContractConfig, bid_order: OrderData):
-        """Settle trade
-
-        Args:
-            auction_id (str): auction ID
-            settlement_config (ContractConfig): Configuration to setup the Settlement contract
-            bid_order
-        """
-        settlement = SettlementContract(settlement_config)
-
-        response = requests.get(self.relayer_url + "/sdk/signature/auction/" + auction_id + "/bid/" + str(bid_order.bidId), headers={'Opyn-Cedefi-Bridge-X-API-Key': self.relayer_token}).json()
-        print(response)
-
-        seller_order = OrderData(
-            response.bidId,
-            response.trader,
-            response.amount,
-            response.v,
-            response.r,
-            response.s,
-        )
-
-        # seller_order = OrderData(
-        #     "2",
-        #     "0x5599b4EAdDd319e2F462b27fC8378B0BFaD309CA",
-        #     1,
-        #     response.v,
-        #     response.r,
-        #     response.s,
-        # )
-
-        settlement.settleRfq(self.public_key, self.private_key, bid_order, seller_order)
