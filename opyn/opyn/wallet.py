@@ -220,13 +220,4 @@ class Wallet:
             response.s,
         )
 
-        # seller_order = OrderData(
-        #     "2",
-        #     "0x5599b4EAdDd319e2F462b27fC8378B0BFaD309CA",
-        #     1,
-        #     response.v,
-        #     response.r,
-        #     response.s,
-        # )
-
         settlement.settleRfq(self.public_key, self.private_key, bid_order, seller_order)
