@@ -17,7 +17,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = '>3.7.1,<4.0.0'
+python = '^3.6'
 
 cryptography = '36.0.2'
 eth-abi = '2.1.1'

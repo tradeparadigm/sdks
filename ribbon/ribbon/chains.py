@@ -19,7 +19,6 @@ from ribbon.meta import BaseEnum
 # ---------------------------------------------------------------------------
 class Chains(BaseEnum):
     ETHEREUM = 1
-    ROPSTEN = 3
     KOVAN = 42
     AVALANCHE = 43114
     FUJI = 43113
