@@ -100,41 +100,6 @@ class SettlementContract(ContractConnection):
             'minBidSize': details[4]
         }
 
-    # def validate_bid(self, bid: BidData) -> str:
-    #     """
-    #     Method to validate bid
-
-    #     Args:
-    #         bid (dict): Bid dictionary containing swapId, nonce, signerWallet,
-    #           sellAmount, buyAmount, referrer, v, r, and s
-
-    #     Raises:
-    #         TypeError: Bid argument is not an instance of SignedBid
-
-    #     Returns:
-    #         response (dict): Dictionary containing number of errors (errors)
-    #           and the corresponding error messages (messages)
-    #     """
-    #     if not isinstance(bid, BidData):
-    #         raise TypeError("Invalid signed bid")
-
-    #     bid.signerAddress = get_address(bid.signerAddress)
-    #     bid.v = bid.v + (bid.v < 27) * 27
-
-    #     response = self.contract.functions.check(asdict(bid)).call()
-
-    #     errors = response[0]
-    #     if errors == 0:
-    #         return {"errors": 0}
-    #     else:
-    #         return {
-    #             "errors": errors,
-    #             "messages": [
-    #                 Web3.toText(msg).replace("\x00", "")
-    #                 for msg in response[1][:errors]
-    #             ],
-    #         }
-
     def nonce(self, owner: str) -> int:
         """
         Method to get nonces

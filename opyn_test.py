@@ -8,10 +8,8 @@
 
 import os
 from opyn.definitions import *
-# from opyn.erc20 import ERC20Contract
 from opyn.settlement import SettlementContract
 from opyn.wallet import Wallet
-from dataclasses import asdict
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -49,7 +47,7 @@ offerToCreate = Offer(
     sell_amount
 )
 
-settlement_contract.create_offer(offerToCreate, taker_wallet)
+# settlement_contract.create_offer(offerToCreate, taker_wallet)
 offerId = settlement_contract.get_offer_counter()
 
 maker_order_amount = str(1)
@@ -57,3 +55,4 @@ maker_order_amount = str(1)
 maker_nonce = settlement_contract.nonce(maker_wallet.public_key)
 maker_message = MessageToSign(offerId, 2, maker_public, maker_public, opyn_usdc_token_address, osqth_token_address, maker_order_amount, sell_amount, maker_nonce)
 signed_maker_order = maker_wallet.sign_order_data(domain, maker_message)
+print('signed_maker_order', signed_maker_order)
