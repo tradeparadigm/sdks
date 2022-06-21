@@ -57,26 +57,63 @@ from opyn.wallet import Wallet
 
 wallet_public_key = ""
 wallet_private_key = ""
+usdc_token_address = "0x..."
+osqth_token_address = "0x.."
 
 payload = MessageToSign(
+    offerId="1",
     bidId="1",
-    trader=wallet_public_key
-    nonce="1",
-    token="0xabcd",
-    amount="6000000",
-    buyAmount=1000000000000000000,
-    referrer="0x0000000000000000000000000000000000000000",
+    signerAddress=wallet_public_key,
+    bidderAddress=wallet_public_key,
+    bidToken=usdc_token_address,
+    offerToken=osqth_token_address,
+    bidAmount=1e18,
+    sellAmount=1000e6,
+    nonce="1"
 )
 
 wallet = Wallet(public_key=wallet_public_key, private_key=wallet_private_key)
 
-bid = wallet.sign_bid(domain, payload)
+bid = wallet.sign_bid_data(domain, payload)
 pprint(asdict(bid))
 ```
 
 ### Fetching offer details
 
-### Executing settlement
+```python
+import os
+from opyn.definitions import *
+from opyn.settlement import SettlementContract
+from dotenv import load_dotenv
+
+load_dotenv()
+
+rpc_token = os.getenv('RPC_TOKEN')
+current_chain = Chains.ROPSTEN
+rpc = {
+    Chains.ROPSTEN: os.getenv('RPC_URL')
+}
+rpc_uri = rpc[current_chain] + rpc_token
+
+settlement_contract_address = "0x73834097f5e7c8a8b2465c80a8362d8737d8c8cd"
+settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
+settlement_contract = SettlementContract(settlement_config)
+
+offer_details = settlement_contract.get_offer_details(offerId)
+```
+
+### Validate wallets
+
+```python
+
+# Define the following variables:
+token_address = "0x..."
+
+check = wallet.verify_allowance(settlement_config=settlement_config, token_address=token_address)
+print(check)
+
+# True
+```
 
 ## Local development
 

@@ -106,7 +106,7 @@ class Wallet:
 
         return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
-    def sign_order_data(self, domain: Domain, message_to_sign: MessageToSign) -> BidData:
+    def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign) -> BidData:
         """Sign a bid using _sign_type_data_v4
 
         Args:

@@ -38,7 +38,7 @@ taker_public = os.getenv('TAKER_PubKEY')
 taker_private = os.getenv('TAKER_PrivKEY')
 taker_wallet = Wallet(taker_public, taker_private, os.getenv('RELAYER_API'), os.getenv('RELAYER_TOKEN'))
 
-sell_amount = 1e18
+sell_amount = 1000e6
 offerToCreate = Offer(
     osqth_token_address,
     opyn_usdc_token_address,
@@ -46,13 +46,24 @@ offerToCreate = Offer(
     sell_amount,
     sell_amount
 )
-
 # settlement_contract.create_offer(offerToCreate, taker_wallet)
+
 offerId = settlement_contract.get_offer_counter()
-
-maker_order_amount = str(1)
-
+maker_order_amount = 1e18
 maker_nonce = settlement_contract.nonce(maker_wallet.public_key)
-maker_message = MessageToSign(offerId, 2, maker_public, maker_public, opyn_usdc_token_address, osqth_token_address, maker_order_amount, sell_amount, maker_nonce)
-signed_maker_order = maker_wallet.sign_order_data(domain, maker_message)
+maker_message = MessageToSign(
+    offerId=offerId,
+    bidId="2",
+    signerAddress=maker_public,
+    bidderAddress=maker_public,
+    bidToken=opyn_usdc_token_address,
+    offerToken=osqth_token_address,
+    bidAmount=maker_order_amount,
+    sellAmount=sell_amount,
+    nonce="1"
+)
+signed_maker_order = maker_wallet.sign_bid_data(domain, maker_message)
 print('signed_maker_order', signed_maker_order)
+
+# offer_details = settlement_contract.get_offer_details(offerId)
+# print('offerDetails', offer_details)
