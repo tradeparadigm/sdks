@@ -11,6 +11,129 @@
     "type": "constructor"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "offerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "seller",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "offerToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "bidToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "minPrice",
+        "type": "uint128"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "minBidSize",
+        "type": "uint128"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalSize",
+        "type": "uint256"
+      }
+    ],
+    "name": "CreateOffer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "bidder",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newSigner",
+        "type": "address"
+      }
+    ],
+    "name": "DelegateToSigner",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "offerId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "bidId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "offerToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "bidToken",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "seller",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "bidder",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "bidAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "sellAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "SettleOffer",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "DOMAIN_SEPARATOR",
     "outputs": [
@@ -26,8 +149,162 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "_offers",
+    "outputs": [
+      {
         "internalType": "address",
-        "name": "owner",
+        "name": "seller",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "offerToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "bidToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint128",
+        "name": "minPrice",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint128",
+        "name": "minBidSize",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalSize",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "bidderDelegator",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_offerToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_bidToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint128",
+        "name": "_minPrice",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint128",
+        "name": "_minBidSize",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalSize",
+        "type": "uint256"
+      }
+    ],
+    "name": "createOffer",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_signer",
+        "type": "address"
+      }
+    ],
+    "name": "delegateToSigner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_offerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOfferDetails",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint128",
+        "name": "",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint128",
+        "name": "",
+        "type": "uint128"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
         "type": "address"
       }
     ],
@@ -43,69 +320,65 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "offersCounter",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "bidId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "trader",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8",
-            "name": "v",
-            "type": "uint8"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "r",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "s",
-            "type": "bytes32"
-          }
-        ],
-        "internalType": "struct Settlement.OrderData",
-        "name": "offerOrder",
-        "type": "tuple"
+        "internalType": "uint256",
+        "name": "_offerId",
+        "type": "uint256"
       },
       {
         "components": [
           {
             "internalType": "uint256",
+            "name": "offerId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "bidId",
             "type": "uint256"
           },
           {
             "internalType": "address",
-            "name": "trader",
+            "name": "signerAddress",
             "type": "address"
           },
           {
             "internalType": "address",
-            "name": "token",
+            "name": "bidderAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "bidToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "offerToken",
             "type": "address"
           },
           {
             "internalType": "uint256",
-            "name": "amount",
+            "name": "bidAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sellAmount",
             "type": "uint256"
           },
           {
@@ -124,12 +397,12 @@
             "type": "bytes32"
           }
         ],
-        "internalType": "struct Settlement.OrderData",
-        "name": "bidOrder",
+        "internalType": "struct Settlement.BidData",
+        "name": "_bidData",
         "type": "tuple"
       }
     ],
-    "name": "settleRfq",
+    "name": "settleOffer",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
