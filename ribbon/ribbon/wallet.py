@@ -79,7 +79,7 @@ class Wallet:
             "s": hex_zero_pad(hex(signature.s), 32)
         }
 
-    def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> dict:
+    def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> str:
         """Sign a hash of typed data V4 which follows EIP712 convention:
         https://eips.ethereum.org/EIPS/eip-712
 
