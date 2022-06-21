@@ -112,10 +112,10 @@ class Wallet:
         Args:
             domain (dict): Dictionary containing domain parameters including
               name, version, chainId, verifyingContract and salt (optional)
-            unsigned_order (UnsignedBidData): Unsigned Order Data
+            message_to_sign (MessageToSign): Unsigned Order Data
 
         Raises:
-            TypeError: unsigned_order argument is not an instance of UnsignedBidData class
+            TypeError: message_to_sign argument is not an instance of MessageToSign class
 
         Returns:
             signedBid (dict): Bid combined with the generated signature
