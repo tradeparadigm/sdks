@@ -70,6 +70,6 @@ class Offer:
     """On-chain offer"""
     offerToken: str
     bidToken: str
-    minPrice: str
-    minBidSize: str
-    totalSize: str
+    minPrice: int
+    minBidSize: int
+    totalSize: int

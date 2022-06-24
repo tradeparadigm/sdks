@@ -49,6 +49,44 @@ This may output something similar to:
 {'name': 'OPYN RFQ', 'version': '1', 'chainId': 3, 'verifyingContract': '0x...'}
 ```
 
+### Create offer
+
+```python
+import os
+from opyn.definitions import *
+from opyn.settlement import SettlementContract
+from dotenv import load_dotenv
+
+load_dotenv()
+
+rpc_token = os.getenv('RPC_TOKEN')
+current_chain = Chains.ROPSTEN
+rpc = {
+    Chains.ROPSTEN: os.getenv('RPC_URL')
+}
+rpc_uri = rpc[current_chain] + rpc_token
+
+settlement_contract_address = "0x73834097f5e7c8a8b2465c80a8362d8737d8c8cd"
+settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
+settlement_contract = SettlementContract(settlement_config)
+
+taker_public = "0x..."
+taker_private = "0x..."
+taker_wallet = Wallet(taker_public, taker_private)
+
+sell_amount = 1000*10**6
+offerToCreate = Offer(
+    osqth_token_address,
+    opyn_usdc_token_address,
+    10*10**6,
+    sell_amount,
+    sell_amount
+)
+settlement_contract.create_offer(offerToCreate, taker_wallet)
+
+offerId = settlement_contract.get_offer_counter()
+```
+
 ### Signing bid order
 
 ```python
@@ -130,7 +168,6 @@ MAKER_PubKEY=
 MAKER_PrivKEY=
 TAKER_PubKEY=
 TAKER_PrivKEY=
-RELAYER_TOKEN=
 ```
 - Make sure to build the Opyn module
 - Run `pip3 install -I opyn/dist/opyn-0.1.0-py3-none-any.whl`

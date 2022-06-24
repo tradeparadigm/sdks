@@ -28,7 +28,6 @@ class SettlementContract(ContractConnection):
     Args:
         config (ContractConfig): Configuration to setup the Contract
     """
-
     def create_offer(self, offer: Offer, wallet: Wallet) -> str:
         """
         Method to create offer
@@ -55,7 +54,7 @@ class SettlementContract(ContractConnection):
         tx = self.contract.functions.createOffer(*list(asdict(offer).values())) \
             .buildTransaction({
                 "nonce": nonce,
-                "gas": 150000,
+                "gas": 3000000,
             })
 
         signed_tx = self.w3.eth.account \
@@ -71,7 +70,6 @@ class SettlementContract(ContractConnection):
         else:
             return self.contract.events.CreateOffer() \
                 .processReceipt(tx_receipt)[0]["args"]["offerId"]
-
 
     def get_offer_details(self, offer_id: int) -> dict:
         """

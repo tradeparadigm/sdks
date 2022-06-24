@@ -52,15 +52,12 @@ class Wallet:
         signer (object): Instance of signer to generate signature
     """
 
-    def __init__(self, public_key: str = None, private_key: str = None, relayer_url: str = None, relayer_token: str = None):
+    def __init__(self, public_key: str = None, private_key: str = None):
         if not private_key and not public_key:
             raise ValueError("Can't instanciate a Wallet without a public or private key")
 
         self.private_key = private_key
         self.public_key = public_key
-        self.relayer_url = relayer_url
-        self.relayer_token = relayer_token
-
         if self.private_key:
             self.signer = eth_keys.keys.PrivateKey(bytes.fromhex(self.private_key[2:]))
             if not self.public_key:

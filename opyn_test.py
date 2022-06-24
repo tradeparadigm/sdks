@@ -32,21 +32,21 @@ domain = Domain("OPYN RFQ", "1", 3, "0x73834097f5e7c8a8b2465c80a8362d8737d8c8cd"
 
 maker_public = os.getenv('MAKER_PubKEY')
 maker_private = os.getenv('MAKER_PrivKEY')
-maker_wallet = Wallet(maker_public, maker_private, os.getenv('RELAYER_API'), os.getenv('RELAYER_TOKEN'))
+maker_wallet = Wallet(maker_public, maker_private)
 
 taker_public = os.getenv('TAKER_PubKEY')
 taker_private = os.getenv('TAKER_PrivKEY')
-taker_wallet = Wallet(taker_public, taker_private, os.getenv('RELAYER_API'), os.getenv('RELAYER_TOKEN'))
+taker_wallet = Wallet(taker_public, taker_private)
 
-sell_amount = 1000e6
+sell_amount = 1000*10**6
 offerToCreate = Offer(
     osqth_token_address,
     opyn_usdc_token_address,
-    str(10e6),
+    10*10**6,
     sell_amount,
     sell_amount
 )
-# settlement_contract.create_offer(offerToCreate, taker_wallet)
+settlement_contract.create_offer(offerToCreate, taker_wallet)
 
 offerId = settlement_contract.get_offer_counter()
 maker_order_amount = 1e18
