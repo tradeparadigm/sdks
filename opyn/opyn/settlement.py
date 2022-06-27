@@ -15,7 +15,7 @@ from web3 import Web3
 from dataclasses import asdict
 from opyn.contract import ContractConnection
 from opyn.utils import get_address
-from opyn.definitions import Offer
+from opyn.definitions import Offer, BidData
 from opyn.wallet import Wallet
 
 # ---------------------------------------------------------------------------
@@ -97,6 +97,48 @@ class SettlementContract(ContractConnection):
             'minPrice': details[2],
             'minBidSize': details[4]
         }
+
+    def validate_bid(self, bid: BidData) -> str:
+        """
+        Method to validate bid
+
+        Args:
+            bid (dict): Bid dictionary containing offerId, bidId, signerAddress,
+            bidderAddress, bidToken, offerToken, bidAmount, sellAmount, v, r, and s
+
+        Raises:
+            TypeError: Bid argument is not an instance of SignedBid
+
+        Returns:
+            response (dict): Dictionary containing number of errors (errors)
+            and the corresponding error messages (messages)
+        """
+        if not isinstance(bid, BidData):
+            raise TypeError("Invalid signed bid")
+
+        bid.signerAddress = get_address(bid.signerAddress)
+        bid.bidderAddress = get_address(bid.bidderAddress)
+        bid.v = bid.v + (bid.v < 27) * 27
+
+        print("bid.r", bid.r)
+        bid.r = Web3.toBytes(bid.r)
+        bid.s = Web3.toBytes(bid.s)
+
+        print(tuple(asdict(bid).values()))
+
+        response = self.contract.functions.checkBid(tuple(asdict(bid).values())).call()
+
+        errors = response[0]
+        if errors == 0:
+            return {"errors": 0}
+        else:
+            return {
+                "errors": errors,
+                "messages": [
+                    Web3.toText(msg).replace("\x00", "")
+                    for msg in response[1][:errors]
+                ],
+            }
 
     def nonce(self, owner: str) -> int:
         """

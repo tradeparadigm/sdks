@@ -185,6 +185,11 @@
         "internalType": "uint256",
         "name": "totalSize",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "offerTokenDecimals",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -204,6 +209,87 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "offerId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bidId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "signerAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "bidderAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "bidToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "offerToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bidAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sellAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "v",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct Settlement.BidData",
+        "name": "_bidData",
+        "type": "tuple"
+      }
+    ],
+    "name": "checkBid",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "",
+        "type": "bytes32[]"
       }
     ],
     "stateMutability": "view",

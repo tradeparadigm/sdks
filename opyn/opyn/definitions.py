@@ -34,27 +34,27 @@ class Domain:
 
 @dataclass
 class MessageToSign:
-    offerId: str
-    bidId: str
+    offerId: int
+    bidId: int
     signerAddress: str
     bidderAddress: str
     bidToken: str
     offerToken: str
-    bidAmount: str
-    sellAmount: str
-    nonce: str 
+    bidAmount: int
+    sellAmount: int
+    nonce: int 
 
 @dataclass
 class BidData:
-    offerId: str
-    bidId: str
+    offerId: int
+    bidId: int
     signerAddress: str
     bidderAddress: str
     bidToken: str
     offerToken: str
-    bidAmount: str
-    sellAmount: str
-    v: str
+    bidAmount: int
+    sellAmount: int
+    v: int
     r: str
     s: str
 
