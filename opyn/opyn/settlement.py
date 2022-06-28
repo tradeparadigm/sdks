@@ -118,13 +118,9 @@ class SettlementContract(ContractConnection):
 
         bid.signerAddress = get_address(bid.signerAddress)
         bid.bidderAddress = get_address(bid.bidderAddress)
+        bid.bidToken = get_address(bid.bidToken)
+        bid.offerToken = get_address(bid.offerToken)
         bid.v = bid.v + (bid.v < 27) * 27
-
-        print("bid.r", bid.r)
-        bid.r = Web3.toBytes(bid.r)
-        bid.s = Web3.toBytes(bid.s)
-
-        print(tuple(asdict(bid).values()))
 
         response = self.contract.functions.checkBid(tuple(asdict(bid).values())).call()
 

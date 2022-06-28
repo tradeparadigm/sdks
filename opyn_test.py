@@ -65,6 +65,6 @@ maker_message = MessageToSign(
 signed_maker_order = maker_wallet.sign_bid_data(domain, maker_message)
 print('signed_maker_order', signed_maker_order)
 result = settlement_contract.validate_bid(signed_maker_order)
-print(signed_maker_order)
+print(result)
 # offer_details = settlement_contract.get_offer_details(offerId)
 # print('offerDetails', offer_details)
