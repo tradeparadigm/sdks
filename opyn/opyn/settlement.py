@@ -123,9 +123,6 @@ class SettlementContract(ContractConnection):
         bid.offerToken = get_address(bid.offerToken)
         bid.v = bid.v + (bid.v < 27) * 27
 
-        print("bid.v", bid.v)
-        print("bid.signerAddress", bid.signerAddress)
-
         response = self.contract.functions.checkBid(asdict(bid)).call()
 
         errors = response[0]

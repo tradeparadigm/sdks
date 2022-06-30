@@ -41,19 +41,18 @@ taker_wallet = Wallet(taker_public, taker_private)
 total_size = 10**18
 min_bid_amount = total_size
 min_price = 1
-# offerToCreate = Offer(
-#     osqth_token_address,
-#     opyn_usdc_token_address,
-#     min_price,
-#     min_bid_amount,
-#     total_size
-# )
+offerToCreate = Offer(
+    osqth_token_address,
+    opyn_usdc_token_address,
+    min_price,
+    min_bid_amount,
+    total_size
+)
 # settlement_contract.create_offer(offerToCreate, taker_wallet)
 
 offerId = settlement_contract.get_offer_counter()
 maker_order_amount = 10**18
 maker_nonce = settlement_contract.nonce(maker_wallet.public_key)
-print('maker_nonce', maker_nonce)
 maker_message = MessageToSign(
     offerId=offerId,
     bidId=1,
@@ -67,10 +66,9 @@ maker_message = MessageToSign(
 )
 print("maker_public", maker_public)
 signed_maker_order = maker_wallet.sign_bid_data(domain, maker_message)
-# print('signed_maker_order', signed_maker_order)
 on_chain_signer = settlement_contract.get_bid_signer(signed_maker_order)
 print('on_chain_signer', on_chain_signer)
 result = settlement_contract.validate_bid(signed_maker_order)
-print(result)
+# print(result)
 # offer_details = settlement_contract.get_offer_details(offerId)
 # print('offerDetails', offer_details)
