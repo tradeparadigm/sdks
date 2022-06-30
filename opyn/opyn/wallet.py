@@ -58,6 +58,7 @@ class Wallet:
 
         self.private_key = private_key
         self.public_key = public_key
+
         if self.private_key:
             self.signer = eth_keys.keys.PrivateKey(bytes.fromhex(self.private_key[2:]))
             if not self.public_key:
@@ -74,16 +75,13 @@ class Wallet:
         """
         signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
 
-        print('signature', signature)
-        print('signature.v', signature.v)
-        
         return {
-            "v": signature.v + 27,
-            "r": hex_zero_pad(hex(signature.r), 32),
+            "v": signature.v + 27, 
+            "r": hex_zero_pad(hex(signature.r), 32), 
             "s": hex_zero_pad(hex(signature.s), 32)
         }
 
-    def _sign_type_data_v4(self, domain: Domain, types: dict, value: dict ) -> dict:
+    def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> str:
         """Sign a hash of typed data V4 which follows EIP712 convention:
         https://eips.ethereum.org/EIPS/eip-712
 
@@ -104,7 +102,6 @@ class Wallet:
 
         domain_dict = {k: v for k, v in asdict(domain).items() if v is not None}
 
-        print('domain_dict', domain_dict)
         return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
     def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign) -> BidData:
@@ -135,7 +132,7 @@ class Wallet:
         if message_to_sign.signerAddress != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
-        signature = self._sign_type_data_v4(domain, MESSAGE_TYPES, asdict(message_to_sign))
+        signature = self._sign_type_data_v4(domain, asdict(message_to_sign), MESSAGE_TYPES)
         print('signature', signature)
         
         return BidData(
