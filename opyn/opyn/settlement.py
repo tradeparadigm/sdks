@@ -17,6 +17,7 @@ from opyn.contract import ContractConnection
 from opyn.utils import get_address
 from opyn.definitions import Offer, BidData
 from opyn.wallet import Wallet
+from shutil import ExecError
 
 # ---------------------------------------------------------------------------
 # Settlement Contract
@@ -122,7 +123,10 @@ class SettlementContract(ContractConnection):
         bid.offerToken = get_address(bid.offerToken)
         bid.v = bid.v + (bid.v < 27) * 27
 
-        response = self.contract.functions.checkBid(tuple(asdict(bid).values())).call()
+        print("bid.v", bid.v)
+        print("bid.signerAddress", bid.signerAddress)
+
+        response = self.contract.functions.checkBid(asdict(bid)).call()
 
         errors = response[0]
         if errors == 0:
@@ -135,6 +139,14 @@ class SettlementContract(ContractConnection):
                     for msg in response[1][:errors]
                 ],
             }
+
+    def get_bid_signer(self, bid: BidData) -> str:
+        if not isinstance(bid, BidData):
+            raise TypeError("Invalid signed bid")
+
+        signer_address = self.contract.functions.getBidSigner(asdict(bid)).call()
+
+        return signer_address;
 
     def nonce(self, owner: str) -> int:
         """

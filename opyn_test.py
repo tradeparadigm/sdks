@@ -24,7 +24,7 @@ rpc_uri = rpc[current_chain] + rpc_token
 osqth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
 opyn_usdc_token_address = "0x27415c30d8c87437becbd4f98474f26e712047f4"
 
-settlement_contract_address = "0xc2e46d84a7d454f46b2a2edb16e86fb2d28336e4"
+settlement_contract_address = "0x4F9A08dC25e417599E642ad8b63C58712FEcB338"
 settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
 settlement_contract = SettlementContract(settlement_config)
 
@@ -38,32 +38,38 @@ taker_public = os.getenv('TAKER_PubKEY')
 taker_private = os.getenv('TAKER_PrivKEY')
 taker_wallet = Wallet(taker_public, taker_private)
 
-sell_amount = 1000*10**6
-offerToCreate = Offer(
-    osqth_token_address,
-    opyn_usdc_token_address,
-    10*10**6,
-    sell_amount,
-    sell_amount
-)
-settlement_contract.create_offer(offerToCreate, taker_wallet)
+total_size = 10**18
+min_bid_amount = total_size
+min_price = 1
+# offerToCreate = Offer(
+#     osqth_token_address,
+#     opyn_usdc_token_address,
+#     min_price,
+#     min_bid_amount,
+#     total_size
+# )
+# settlement_contract.create_offer(offerToCreate, taker_wallet)
 
 offerId = settlement_contract.get_offer_counter()
 maker_order_amount = 10**18
 maker_nonce = settlement_contract.nonce(maker_wallet.public_key)
+print('maker_nonce', maker_nonce)
 maker_message = MessageToSign(
     offerId=offerId,
-    bidId=2,
-    signerAddress=maker_public,
-    bidderAddress=maker_public,
+    bidId=1,
+    signerAddress=maker_wallet.public_key,
+    bidderAddress=maker_wallet.public_key,
     bidToken=opyn_usdc_token_address,
     offerToken=osqth_token_address,
     bidAmount=maker_order_amount,
-    sellAmount=sell_amount,
+    sellAmount=1000*10**6,
     nonce=maker_nonce
 )
+print("maker_public", maker_public)
 signed_maker_order = maker_wallet.sign_bid_data(domain, maker_message)
-print('signed_maker_order', signed_maker_order)
+# print('signed_maker_order', signed_maker_order)
+on_chain_signer = settlement_contract.get_bid_signer(signed_maker_order)
+print('on_chain_signer', on_chain_signer)
 result = settlement_contract.validate_bid(signed_maker_order)
 print(result)
 # offer_details = settlement_contract.get_offer_details(offerId)

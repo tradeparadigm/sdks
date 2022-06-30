@@ -74,6 +74,9 @@ class Wallet:
         """
         signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
 
+        print('signature', signature)
+        print('signature.v', signature.v)
+        
         return {
             "v": signature.v + 27,
             "r": hex_zero_pad(hex(signature.r), 32),
@@ -101,6 +104,7 @@ class Wallet:
 
         domain_dict = {k: v for k, v in asdict(domain).items() if v is not None}
 
+        print('domain_dict', domain_dict)
         return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
     def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign) -> BidData:
@@ -123,13 +127,17 @@ class Wallet:
         if not self.private_key:
             raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
 
-        signerWallet = get_address(message_to_sign.signerAddress)
+        message_to_sign.signerAddress = get_address(message_to_sign.signerAddress)
+        message_to_sign.bidderAddress = get_address(message_to_sign.bidderAddress)
+        message_to_sign.bidToken = get_address(message_to_sign.bidToken)
+        message_to_sign.offerToken = get_address(message_to_sign.offerToken)
 
-        if signerWallet != self.public_key:
+        if message_to_sign.signerAddress != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
         signature = self._sign_type_data_v4(domain, MESSAGE_TYPES, asdict(message_to_sign))
-
+        print('signature', signature)
+        
         return BidData(
             offerId=message_to_sign.offerId,
             bidId=message_to_sign.bidId,

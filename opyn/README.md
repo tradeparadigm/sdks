@@ -112,9 +112,29 @@ payload = MessageToSign(
 
 wallet = Wallet(public_key=wallet_public_key, private_key=wallet_private_key)
 
-bid = wallet.sign_bid_data(domain, payload)
-pprint(asdict(bid))
+signed_bid = wallet.sign_bid_data(domain, payload)
+pprint(asdict(signed_bid))
 ```
+
+### Validate signed bid
+
+```python
+result = settlement_contract.validate_bid(signed_maker_order)
+print(result)
+```
+
+Example output
+```
+{
+    'errors': 4, 
+    'messages': [
+        'SIGNATURE_MISMATCHED', 
+        'BID_EXCEED_TOTAL_SIZE', 
+        'BIDDER_ALLOWANCE_LOW', 
+        'SELLER_ALLOWANCE_LOW'
+    ]                       
+}
+```                                                         
 
 ### Fetching offer details
 
