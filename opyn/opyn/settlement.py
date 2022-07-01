@@ -15,6 +15,7 @@ from web3 import Web3
 from dataclasses import asdict
 from opyn.contract import ContractConnection
 from opyn.utils import get_address
+from opyn.encode import ADDRESS_ZERO
 from opyn.definitions import Offer, BidData
 from opyn.wallet import Wallet
 from shutil import ExecError
