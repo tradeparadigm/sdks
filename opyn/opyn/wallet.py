@@ -21,6 +21,7 @@ from opyn.utils import hex_zero_pad, get_address
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
+# "OpynRfq(uint256 offerId, uint256 bidId, address signerAddress, address bidderAddress, address bidToken, address offerToken, uint256 bidAmount, uint256 sellAmount, uint256 nonce)"
 MESSAGE_TYPES = {
     "OpynRfq": [
         {"name": "offerId", "type": "uint256"},
@@ -58,6 +59,7 @@ class Wallet:
 
         self.private_key = private_key
         self.public_key = public_key
+
         if self.private_key:
             self.signer = eth_keys.keys.PrivateKey(bytes.fromhex(self.private_key[2:]))
             if not self.public_key:
@@ -75,20 +77,20 @@ class Wallet:
         signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
 
         return {
-            "v": signature.v + 27,
-            "r": hex_zero_pad(hex(signature.r), 32),
+            "v": signature.v + 27, 
+            "r": hex_zero_pad(hex(signature.r), 32), 
             "s": hex_zero_pad(hex(signature.s), 32)
         }
 
-    def _sign_type_data_v4(self, domain: Domain, types: dict, value: dict ) -> dict:
+    def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> str:
         """Sign a hash of typed data V4 which follows EIP712 convention:
         https://eips.ethereum.org/EIPS/eip-712
 
         Args:
             domain (dict): Dictionary containing domain parameters including
-              name, version, chainId, verifyingContract and salt (optional)
-            types (dict): Dictionary of types and their fields
+              name, version, chainId, verifyingContract
             value (dict): Dictionary of values for each field in types
+            types (dict): Dictionary of types and their fields
 
         Raises:
             TypeError: Domain argument is not an instance of Domain class
@@ -108,7 +110,7 @@ class Wallet:
 
         Args:
             domain (dict): Dictionary containing domain parameters including
-              name, version, chainId, verifyingContract and salt (optional)
+              name, version, chainId, verifyingContract
             message_to_sign (MessageToSign): Unsigned Order Data
 
         Raises:
@@ -123,13 +125,17 @@ class Wallet:
         if not self.private_key:
             raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
 
-        signerWallet = get_address(message_to_sign.signerAddress)
+        message_to_sign.signerAddress = get_address(message_to_sign.signerAddress)
+        message_to_sign.bidderAddress = get_address(message_to_sign.bidderAddress)
+        message_to_sign.bidToken = get_address(message_to_sign.bidToken)
+        message_to_sign.offerToken = get_address(message_to_sign.offerToken)
 
-        if signerWallet != self.public_key:
+        if message_to_sign.signerAddress != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
-        signature = self._sign_type_data_v4(domain, MESSAGE_TYPES, asdict(message_to_sign))
-
+        signature = self._sign_type_data_v4(domain, asdict(message_to_sign), MESSAGE_TYPES)
+        print('signature', signature)
+        
         return BidData(
             offerId=message_to_sign.offerId,
             bidId=message_to_sign.bidId,

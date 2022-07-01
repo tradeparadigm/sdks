@@ -15,8 +15,9 @@ from web3 import Web3
 from dataclasses import asdict
 from opyn.contract import ContractConnection
 from opyn.utils import get_address
-from opyn.definitions import Offer
+from opyn.definitions import Offer, BidData
 from opyn.wallet import Wallet
+from shutil import ExecError
 
 # ---------------------------------------------------------------------------
 # Settlement Contract
@@ -97,6 +98,52 @@ class SettlementContract(ContractConnection):
             'minPrice': details[2],
             'minBidSize': details[4]
         }
+
+    def validate_bid(self, bid: BidData) -> str:
+        """
+        Method to validate bid
+
+        Args:
+            bid (dict): Bid dictionary containing offerId, bidId, signerAddress,
+            bidderAddress, bidToken, offerToken, bidAmount, sellAmount, v, r, and s
+
+        Raises:
+            TypeError: Bid argument is not an instance of SignedBid
+
+        Returns:
+            response (dict): Dictionary containing number of errors (errors)
+            and the corresponding error messages (messages)
+        """
+        if not isinstance(bid, BidData):
+            raise TypeError("Invalid signed bid")
+
+        bid.signerAddress = get_address(bid.signerAddress)
+        bid.bidderAddress = get_address(bid.bidderAddress)
+        bid.bidToken = get_address(bid.bidToken)
+        bid.offerToken = get_address(bid.offerToken)
+        bid.v = bid.v + (bid.v < 27) * 27
+
+        response = self.contract.functions.checkBid(asdict(bid)).call()
+
+        errors = response[0]
+        if errors == 0:
+            return {"errors": 0}
+        else:
+            return {
+                "errors": errors,
+                "messages": [
+                    Web3.toText(msg).replace("\x00", "")
+                    for msg in response[1][:errors]
+                ],
+            }
+
+    def get_bid_signer(self, bid: BidData) -> str:
+        if not isinstance(bid, BidData):
+            raise TypeError("Invalid signed bid")
+
+        signer_address = self.contract.functions.getBidSigner(asdict(bid)).call()
+
+        return signer_address;
 
     def nonce(self, owner: str) -> int:
         """
