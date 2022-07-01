@@ -130,3 +130,6 @@ dmypy.json
 
 notebooks
 *.ipynb
+
+#poetry
+poetry.lock
