@@ -21,6 +21,7 @@ from opyn.utils import hex_zero_pad, get_address
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
+# "OpynRfq(uint256 offerId, uint256 bidId, address signerAddress, address bidderAddress, address bidToken, address offerToken, uint256 bidAmount, uint256 sellAmount, uint256 nonce)"
 MESSAGE_TYPES = {
     "OpynRfq": [
         {"name": "offerId", "type": "uint256"},
@@ -87,9 +88,9 @@ class Wallet:
 
         Args:
             domain (dict): Dictionary containing domain parameters including
-              name, version, chainId, verifyingContract and salt (optional)
-            types (dict): Dictionary of types and their fields
+              name, version, chainId, verifyingContract
             value (dict): Dictionary of values for each field in types
+            types (dict): Dictionary of types and their fields
 
         Raises:
             TypeError: Domain argument is not an instance of Domain class
@@ -109,7 +110,7 @@ class Wallet:
 
         Args:
             domain (dict): Dictionary containing domain parameters including
-              name, version, chainId, verifyingContract and salt (optional)
+              name, version, chainId, verifyingContract
             message_to_sign (MessageToSign): Unsigned Order Data
 
         Raises:
