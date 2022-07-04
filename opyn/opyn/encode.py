@@ -344,6 +344,9 @@ class TypedDataEncoder:
 
     domainFields.sort(key=lambda x: DOMAIN_FIELD_NAMES.index(x['name']))
 
+    print('domainFields', domainFields)
+    print('domain', domain)
+
     return TypedDataEncoder._hash_struct(
       'EIP712Domain',
       { 'EIP712Domain': domainFields },

@@ -73,6 +73,39 @@ class SettlementContract(ContractConnection):
             return self.contract.events.CreateOffer() \
                 .processReceipt(tx_receipt)[0]["args"]["offerId"]
 
+    def settle_offer(self, offer_id: int, bid: BidData, wallet: Wallet) -> str:
+        """
+        Method to on-chain settle bid
+        """
+        if not isinstance(bid, BidData):
+            raise TypeError("Invalid bid")
+        
+        bid.signerAddress = get_address(bid.signerAddress)
+        bid.bidderAddress = get_address(bid.bidderAddress)
+        bid.bidToken = get_address(bid.bidToken)
+        bid.offerToken = get_address(bid.offerToken)
+
+        nonce = self.w3.eth.get_transaction_count(wallet.public_key) 
+        tx = self.contract.functions.settleOffer(offer_id, (asdict(bid))) \
+            .buildTransaction({
+                "nonce": nonce,
+                "gas": 3000000,
+            })
+
+        signed_tx = self.w3.eth.account \
+            .sign_transaction(tx, private_key=wallet.private_key)
+
+        self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+
+        tx_receipt = self.w3.eth \
+            .wait_for_transaction_receipt(signed_tx.hash, timeout=600)
+        
+        if tx_receipt.status == 0:
+            raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
+        else:
+            return self.contract.events.SettleOffer() \
+                .processReceipt(tx_receipt)[0]["args"]["offerId"]
+
     def get_offer_details(self, offer_id: int) -> dict:
         """
         Method to get bid details
@@ -95,8 +128,8 @@ class SettlementContract(ContractConnection):
         return {
             'seller': details[0],
             'offerToken': details[1],
-            'bidToken': details[3],
-            'minPrice': details[2],
+            'bidToken': details[2],
+            'minPrice': details[3],
             'minBidSize': details[4]
         }
 

@@ -21,18 +21,18 @@ from opyn.utils import hex_zero_pad, get_address
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-# "OpynRfq(uint256 offerId, uint256 bidId, address signerAddress, address bidderAddress, address bidToken, address offerToken, uint256 bidAmount, uint256 sellAmount, uint256 nonce)"
+# "RFQ(uint256 offerId, address bidderAddress, uint256 bidId, address signerAddress, uint256 bidAmount, address offerToken, uint256 sellAmount, address bidToken, uint256 nonce)"
 MESSAGE_TYPES = {
-    "OpynRfq": [
+    "RFQ": [
         {"name": "offerId", "type": "uint256"},
+        {"name": "bidderAddress", "type": "address"},
         {"name": "bidId", "type": "uint256"},
         {"name": "signerAddress", "type": "address"},
-        {"name": "bidderAddress", "type": "address"},
-        {"name": "bidToken", "type": "address"},
-        {"name": "offerToken", "type": "address"},
         {"name": "bidAmount", "type": "uint256"},
+        {"name": "offerToken", "type": "address"},
         {"name": "sellAmount", "type": "uint256"},
-        {"name": "nonce", "type": "uint256"}
+        {"name": "bidToken", "type": "address"},
+        {"name": "nonce", "type": "uint256"},
     ]
 }
 MIN_ALLOWANCE = 100000000
@@ -76,6 +76,7 @@ class Wallet:
         """
         signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
 
+        print('signature.v', signature.v)
         return {
             "v": signature.v + 27, 
             "r": hex_zero_pad(hex(signature.r), 32), 
@@ -138,13 +139,13 @@ class Wallet:
         
         return BidData(
             offerId=message_to_sign.offerId,
+            bidderAddress=message_to_sign.bidderAddress,
             bidId=message_to_sign.bidId,
             signerAddress=message_to_sign.signerAddress,
-            bidderAddress=message_to_sign.bidderAddress,
-            bidToken=message_to_sign.bidToken,
-            offerToken=message_to_sign.offerToken,
             bidAmount=message_to_sign.bidAmount,
+            offerToken=message_to_sign.offerToken,
             sellAmount=message_to_sign.sellAmount,
+            bidToken=message_to_sign.bidToken,
             v=signature["v"],
             r=signature["r"],
             s=signature["s"],

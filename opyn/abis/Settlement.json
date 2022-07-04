@@ -224,6 +224,11 @@
             "type": "uint256"
           },
           {
+            "internalType": "address",
+            "name": "bidderAddress",
+            "type": "address"
+          },
+          {
             "internalType": "uint256",
             "name": "bidId",
             "type": "uint256"
@@ -234,14 +239,9 @@
             "type": "address"
           },
           {
-            "internalType": "address",
-            "name": "bidderAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "bidToken",
-            "type": "address"
+            "internalType": "uint256",
+            "name": "bidAmount",
+            "type": "uint256"
           },
           {
             "internalType": "address",
@@ -250,13 +250,13 @@
           },
           {
             "internalType": "uint256",
-            "name": "bidAmount",
+            "name": "sellAmount",
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "sellAmount",
-            "type": "uint256"
+            "internalType": "address",
+            "name": "bidToken",
+            "type": "address"
           },
           {
             "internalType": "uint8",
@@ -357,6 +357,11 @@
             "type": "uint256"
           },
           {
+            "internalType": "address",
+            "name": "bidderAddress",
+            "type": "address"
+          },
+          {
             "internalType": "uint256",
             "name": "bidId",
             "type": "uint256"
@@ -367,14 +372,9 @@
             "type": "address"
           },
           {
-            "internalType": "address",
-            "name": "bidderAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "bidToken",
-            "type": "address"
+            "internalType": "uint256",
+            "name": "bidAmount",
+            "type": "uint256"
           },
           {
             "internalType": "address",
@@ -383,13 +383,13 @@
           },
           {
             "internalType": "uint256",
-            "name": "bidAmount",
+            "name": "sellAmount",
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "sellAmount",
-            "type": "uint256"
+            "internalType": "address",
+            "name": "bidToken",
+            "type": "address"
           },
           {
             "internalType": "uint8",
@@ -509,6 +509,11 @@
             "type": "uint256"
           },
           {
+            "internalType": "address",
+            "name": "bidderAddress",
+            "type": "address"
+          },
+          {
             "internalType": "uint256",
             "name": "bidId",
             "type": "uint256"
@@ -519,14 +524,9 @@
             "type": "address"
           },
           {
-            "internalType": "address",
-            "name": "bidderAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "bidToken",
-            "type": "address"
+            "internalType": "uint256",
+            "name": "bidAmount",
+            "type": "uint256"
           },
           {
             "internalType": "address",
@@ -535,13 +535,13 @@
           },
           {
             "internalType": "uint256",
-            "name": "bidAmount",
+            "name": "sellAmount",
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "sellAmount",
-            "type": "uint256"
+            "internalType": "address",
+            "name": "bidToken",
+            "type": "address"
           },
           {
             "internalType": "uint8",
