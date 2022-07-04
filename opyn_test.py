@@ -48,7 +48,7 @@ offerToCreate = Offer(
     min_bid_amount,
     total_size
 )
-# settlement_contract.create_offer(offerToCreate, taker_wallet)
+settlement_contract.create_offer(offerToCreate, taker_wallet)
 
 offerId = settlement_contract.get_offer_counter()
 maker_order_amount = 10**18

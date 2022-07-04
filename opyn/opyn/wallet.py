@@ -90,8 +90,8 @@ class Wallet:
         Args:
             domain (dict): Dictionary containing domain parameters including
               name, version, chainId, verifyingContract
-            value (dict): Dictionary of values for each field in types
             types (dict): Dictionary of types and their fields
+            value (dict): Dictionary of values for each field in types
 
         Raises:
             TypeError: Domain argument is not an instance of Domain class
@@ -106,7 +106,7 @@ class Wallet:
 
         return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
-    def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign) -> BidData:
+    def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign, types: dict = MESSAGE_TYPES) -> BidData:
         """Sign a bid using _sign_type_data_v4
 
         Args:
@@ -134,7 +134,7 @@ class Wallet:
         if message_to_sign.signerAddress != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
-        signature = self._sign_type_data_v4(domain, asdict(message_to_sign), MESSAGE_TYPES)
+        signature = self._sign_type_data_v4(domain, asdict(message_to_sign), types)
         print('signature', signature)
         
         return BidData(
