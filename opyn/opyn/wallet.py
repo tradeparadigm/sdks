@@ -23,7 +23,7 @@ from opyn.utils import hex_zero_pad, get_address
 # ---------------------------------------------------------------------------
 # "OpynRfq(uint256 offerId, uint256 bidId, address signerAddress, address bidderAddress, address bidToken, address offerToken, uint256 bidAmount, uint256 sellAmount, uint256 nonce)"
 MESSAGE_TYPES = {
-    "OpynRfq": [
+    "RFQ": [
         {"name": "offerId", "type": "uint256"},
         {"name": "bidId", "type": "uint256"},
         {"name": "signerAddress", "type": "address"},
