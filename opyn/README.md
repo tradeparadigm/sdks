@@ -203,4 +203,4 @@ TAKER_PrivKEY=
 ## Settlement Contract Addresses
 
 - Mainnet:
-- Ropsten: 0xD19440e4D2Fe504E8C463d4844541734ec3C6b9e
+- Ropsten: 0x635f8703b4E00357C5a323424423e001c07b8f65

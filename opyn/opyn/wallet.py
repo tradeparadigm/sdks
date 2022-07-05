@@ -24,13 +24,8 @@ from opyn.utils import get_address
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-RFQ_TYPES = {
-    "EIP712Domain": [
-        {"name": "name", "type": "string"},
-        {"name": "version", "type": "string"},
-        {"name": "chainId", "type": "uint256"},
-        {"name": "verifyingContract", "type": "address"},
-    ],
+# "OpynRfq(uint256 offerId, uint256 bidId, address signerAddress, address bidderAddress, address bidToken, address offerToken, uint256 bidAmount, uint256 sellAmount, uint256 nonce)"
+MESSAGE_TYPES = {
     "RFQ": [
         {"name": "offerId", "type": "uint256"},
         {"name": "bidId", "type": "uint256"},
