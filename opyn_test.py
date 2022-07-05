@@ -24,11 +24,11 @@ rpc_uri = rpc[current_chain] + rpc_token
 osqth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
 opyn_usdc_token_address = "0x27415c30d8c87437becbd4f98474f26e712047f4"
 
-settlement_contract_address = "0x4F9A08dC25e417599E642ad8b63C58712FEcB338"
+settlement_contract_address = "0x635f8703b4E00357C5a323424423e001c07b8f65"
 settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
 settlement_contract = SettlementContract(settlement_config)
 
-domain = Domain("OPYN RFQ", "1", 3, settlement_contract_address)
+domain = Domain("OPYN BRIDGE", "1", 3, settlement_contract_address)
 
 maker_public = os.getenv('MAKER_PubKEY')
 maker_private = os.getenv('MAKER_PrivKEY')
@@ -48,7 +48,7 @@ offerToCreate = Offer(
     min_bid_amount,
     total_size
 )
-# settlement_contract.create_offer(offerToCreate, taker_wallet)
+settlement_contract.create_offer(offerToCreate, taker_wallet)
 
 offerId = settlement_contract.get_offer_counter()
 maker_order_amount = 10**18
@@ -64,11 +64,11 @@ maker_message = MessageToSign(
     sellAmount=1000*10**6,
     nonce=maker_nonce
 )
-print("maker_public", maker_public)
 signed_maker_order = maker_wallet.sign_bid_data(domain, maker_message)
 on_chain_signer = settlement_contract.get_bid_signer(signed_maker_order)
+print("maker_public", maker_public)
 print('on_chain_signer', on_chain_signer)
 result = settlement_contract.validate_bid(signed_maker_order)
-# print(result)
+print(result)
 # offer_details = settlement_contract.get_offer_details(offerId)
 # print('offerDetails', offer_details)

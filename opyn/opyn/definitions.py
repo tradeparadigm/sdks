@@ -28,7 +28,7 @@ class Domain:
     # https://web3py.readthedocs.io/en/stable/web3.eth.html#web3.eth.Eth.chain_id
     """
     name: str
-    version: int
+    version: str
     chainId: int
     verifyingContract: str
 
