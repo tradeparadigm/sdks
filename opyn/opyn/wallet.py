@@ -35,7 +35,6 @@ MESSAGE_TYPES = {
         {"name": "nonce", "type": "uint256"}
     ]
 }
-# TEST(uint256 offerId, address signerAddress)
 TEST_TYPES = {
     "TEST": [
         {"name": "offerId", "type": "uint256"},
@@ -118,6 +117,8 @@ class Wallet:
 
         domain_dict = {k: v for k, v in asdict(domain).items() if v is not None}
 
+        print('python hashed message', TypedDataEncoder._hash(domain_dict, types, value))
+
         return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
     def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign) -> BidData:
@@ -187,8 +188,6 @@ class Wallet:
 
         signature = self._sign_type_data_v4(domain, asdict(message_to_sign), TEST_TYPES)
         print('signature', signature)
-
-        print(message_to_sign.bidId)
         
         return TestData(
             offerId=message_to_sign.offerId,
