@@ -364,7 +364,6 @@ class TypedDataEncoder:
         data (str): Encoded message
     """
 
-    print('TypedDataEncoder._from(types).hash(value)', TypedDataEncoder._from(types).hash(value))
     return hex_concat([
       '0x1901',
       TypedDataEncoder.hash_domain(domain),
@@ -389,7 +388,7 @@ class TypedDataEncoder:
     print('domain', domain)
     print('types', types)
     print('value', value)
-    print('TypedDataEncoder.encode(domain, types, value)', TypedDataEncoder.encode(domain, types, value))
+    print('Python encode packed==TypedDataEncoder.encode(domain, types, value)', TypedDataEncoder.encode(domain, types, value))
 
     return Web3.keccak(
       hexstr=TypedDataEncoder.encode(domain, types, value)
