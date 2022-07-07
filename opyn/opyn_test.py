@@ -26,7 +26,7 @@ opyn_usdc_token_address = "0x27415c30d8c87437becbd4f98474f26e712047f4"
 
 # settlement contract with offerId only 0x482bA3fB860F0Ec536EB0361728530Fcd8919e84
 # settlement contract with offerId and bidId 0x650A912C9D87aa5792435802527FBBFA8b11D8E4
-settlement_contract_address = "0x650A912C9D87aa5792435802527FBBFA8b11D8E4"
+settlement_contract_address = "0x482bA3fB860F0Ec536EB0361728530Fcd8919e84"
 settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
 settlement_contract = SettlementContract(settlement_config)
 
@@ -71,21 +71,20 @@ maker_nonce = settlement_contract.nonce(maker_wallet.public_key)
 # # offer_details = settlement_contract.get_offer_details(offerId)
 # # print('offerDetails', offer_details)
 
-print('offerId', offerId, type(offerId))
 maker_message = TestToSign(
-    offerId=offerId,
-    bidId=1,
+    offerId=2,
+    # bidId=1,
 )
 signed_maker_order = maker_wallet.sign_test_data(domain, maker_message)
 on_chain_signer = settlement_contract.get_test_signer(signed_maker_order)
 on_chain_hashed_msg = settlement_contract.get_hashed_message(signed_maker_order)
 on_chain_abi_encode = settlement_contract.get_encode(signed_maker_order)
 on_chain_encode_packed = settlement_contract.get_encode_packed(signed_maker_order)
-print("maker_public", maker_public)
+print("signer pub key", maker_public)
 print('on_chain_signer', on_chain_signer)
-print('on_chain_hashed_msg', on_chain_hashed_msg.hex())
-print('on_chain_abi_encode', on_chain_abi_encode.hex())
-print('get_encode_packed', on_chain_encode_packed.hex())
+print('contract keccak256\(abi.encodePacked\) (hashed msg)', on_chain_hashed_msg.hex())
+# print("contract abi.encode", on_chain_abi_encode.hex())
+print('contract encodePacked', on_chain_encode_packed.hex())
 
 # result = settlement_contract.validate_bid(signed_maker_order)
 # print(result)

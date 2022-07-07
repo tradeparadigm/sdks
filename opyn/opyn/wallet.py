@@ -40,7 +40,7 @@ MESSAGE_TYPES = {
 TEST_TYPES = {
     "TEST": [
         {"name": "offerId", "type": "uint256"},
-        {"name": "bidId", "type": "uint256"},
+        # {"name": "bidId", "type": "uint256"},
     ]
 }
 
@@ -83,14 +83,12 @@ class Wallet:
         Returns:
             signature (dict): Signature split into v, r, s components
         """
+        print('python hashed msg', messageHash[2:])
         signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
 
-        print("python signer", signature.verify_msg_hash(bytes.fromhex(messageHash[2:]), self.signer.public_key))
-        print("python signer", signature.recover_public_key_from_msg_hash(bytes.fromhex(messageHash[2:])).to_address())
-        print("self.signer.public_key", self.signer.public_key.recover_from_msg_hash(bytes.fromhex(messageHash[2:]), signature))
-        print('signature.r', signature.r)
-        print('hex(signature.r)', hex(signature.r))
-        print('signature.r after', hex_zero_pad(hex(signature.r), 32))
+        # print("python signer", signature.verify_msg_hash(bytes.fromhex(messageHash[2:]), self.signer.public_key))
+        # print("python signer", signature.recover_public_key_from_msg_hash(bytes.fromhex(messageHash[2:])).to_address())
+        # print("self.signer.public_key", self.signer.public_key.recover_from_msg_hash(bytes.fromhex(messageHash[2:]), signature))
 
         return {
             "v": signature.v + 27, 
@@ -118,8 +116,6 @@ class Wallet:
             raise TypeError("Invalid domain parameters")
 
         domain_dict = {k: v for k, v in asdict(domain).items() if v is not None}
-
-        print('python hashed message', TypedDataEncoder._hash(domain_dict, types, value))
 
         return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
 
@@ -151,14 +147,8 @@ class Wallet:
         if message_to_sign.signerAddress != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
-        data = {
-            "types": types,
-            "domain": asdict(domain),
-            "primaryType": "RFQ",
-            "message": asdict(message_to_sign),
-        }
-        signature = sign_typed_data(data, Web3.toBytes(hexstr=self.private_key))
-
+        signature = self._sign_type_data_v4(domain, asdict(message_to_sign), MESSAGE_TYPES)
+        
         return BidData(
             offerId=message_to_sign.offerId,
             bidId=message_to_sign.bidId,
@@ -194,11 +184,10 @@ class Wallet:
             raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
 
         signature = self._sign_type_data_v4(domain, asdict(message_to_sign), TEST_TYPES)
-        print('signature', signature)
         
         return TestData(
             offerId=message_to_sign.offerId,
-            bidId=message_to_sign.bidId,
+            # bidId=message_to_sign.bidId,
             v=signature["v"],
             r=signature["r"],
             s=signature["s"],
