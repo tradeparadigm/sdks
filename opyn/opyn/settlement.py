@@ -155,6 +155,15 @@ class SettlementContract(ContractConnection):
 
         return signer_address;
 
+    def get_hashed_message(self, bid: TestData) -> str:
+        if not isinstance(bid, TestData):
+            raise TypeError("Invalid signed bid")
+
+        hashed_msg = self.contract.functions.getHashedMessage(asdict(bid)).call()
+
+        return hashed_msg;
+
+
     def nonce(self, owner: str) -> int:
         """
         Method to get nonces
