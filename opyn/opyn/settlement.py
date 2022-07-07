@@ -171,6 +171,14 @@ class SettlementContract(ContractConnection):
 
         return abi_encode;
 
+    def get_encode_packed(self, bid: TestData) -> str:
+        if not isinstance(bid, TestData):
+            raise TypeError("Invalid signed bid")
+
+        abi_encode_packed = self.contract.functions.getEncodePacked(asdict(bid)).call()
+
+        return abi_encode_packed;
+
     def nonce(self, owner: str) -> int:
         """
         Method to get nonces
