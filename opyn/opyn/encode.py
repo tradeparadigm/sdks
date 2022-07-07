@@ -255,7 +255,7 @@ class TypedDataEncoder:
       return self._encoderCache[type]
     else:
       encoder = self._get_encoder(type)
-      
+
     return encoder
 
   def encode_data(self, type: str, value: dict) -> str:
@@ -364,6 +364,7 @@ class TypedDataEncoder:
         data (str): Encoded message
     """
 
+    print('TypedDataEncoder._from(types).hash(value)', TypedDataEncoder._from(types).hash(value))
     return hex_concat([
       '0x1901',
       TypedDataEncoder.hash_domain(domain),

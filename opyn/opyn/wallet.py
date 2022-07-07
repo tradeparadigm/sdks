@@ -38,7 +38,7 @@ MESSAGE_TYPES = {
 TEST_TYPES = {
     "TEST": [
         {"name": "offerId", "type": "uint256"},
-        {"name": "bidId", "type": "uint256"},
+        # {"name": "bidId", "type": "uint256"},
     ]
 }
 
@@ -191,7 +191,6 @@ class Wallet:
         
         return TestData(
             offerId=message_to_sign.offerId,
-            bidId=message_to_sign.bidId,
             v=signature["v"],
             r=signature["r"],
             s=signature["s"],
