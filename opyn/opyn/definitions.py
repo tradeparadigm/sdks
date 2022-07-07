@@ -59,6 +59,19 @@ class BidData:
     s: str
 
 @dataclass
+class TestToSign:
+    offerId: int
+    bidId: int
+
+@dataclass
+class TestData:
+    offerId: int
+    bidId: int
+    v: int
+    r: str
+    s: str
+
+@dataclass
 class ContractConfig:
     """Configuration needed to connect to a Contract"""
     address: str

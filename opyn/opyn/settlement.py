@@ -16,7 +16,7 @@ from dataclasses import asdict
 from opyn.contract import ContractConnection
 from opyn.utils import get_address
 from opyn.encode import ADDRESS_ZERO
-from opyn.definitions import Offer, BidData
+from opyn.definitions import Offer, BidData, TestData
 from opyn.wallet import Wallet
 from shutil import ExecError
 
@@ -143,6 +143,14 @@ class SettlementContract(ContractConnection):
             raise TypeError("Invalid signed bid")
 
         signer_address = self.contract.functions.getBidSigner(asdict(bid)).call()
+
+        return signer_address;
+
+    def get_test_signer(self, bid: TestData) -> str:
+        if not isinstance(bid, TestData):
+            raise TypeError("Invalid signed bid")
+
+        signer_address = self.contract.functions.getTestSigner(asdict(bid)).call()
 
         return signer_address;
 
