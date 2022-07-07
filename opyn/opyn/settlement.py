@@ -162,6 +162,13 @@ class SettlementContract(ContractConnection):
 
         return hashed_msg;
 
+    def get_encode(self, bid: TestData) -> str:
+        if not isinstance(bid, TestData):
+            raise TypeError("Invalid signed bid")
+
+        abi_encode = self.contract.functions.getEncode(asdict(bid)).call()
+
+        return abi_encode;
 
     def nonce(self, owner: str) -> int:
         """

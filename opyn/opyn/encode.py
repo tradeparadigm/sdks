@@ -255,7 +255,7 @@ class TypedDataEncoder:
       return self._encoderCache[type]
     else:
       encoder = self._get_encoder(type)
-
+      
     return encoder
 
   def encode_data(self, type: str, value: dict) -> str:
@@ -384,6 +384,27 @@ class TypedDataEncoder:
     Returns:
         hash (str): Hash of message
     """
+
+    print('domain', domain)
+    print('types', types)
+    print('value', value)
+    print('TypedDataEncoder.encode(domain, types, value)', TypedDataEncoder.encode(domain, types, value))
+
     return Web3.keccak(
       hexstr=TypedDataEncoder.encode(domain, types, value)
     ).hex()
+
+
+# keccak256(
+#                 abi.encodePacked(
+#                     "\x19\x01",
+#                     DOMAIN_SEPARATOR,
+#                     keccak256(
+#                         abi.encode(
+#                             _TEST_TYPEHASH,
+#                             _test.offerId,
+#                             _test.bidId
+#                         )
+#                     )
+#                 )
+#             );
