@@ -17,8 +17,9 @@ from shutil import ExecError
 from web3 import Web3
 
 from opyn.contract import ContractConnection
-from opyn.definitions import BidData, Offer
-from opyn.utils import ADDRESS_ZERO, get_address
+from opyn.utils import get_address
+from opyn.encode import ADDRESS_ZERO
+from opyn.definitions import Offer, BidData, TestData
 from opyn.wallet import Wallet
 
 
@@ -145,6 +146,14 @@ class SettlementContract(ContractConnection):
         signer_address = self.contract.functions.getBidSigner(asdict(bid)).call()
 
         return signer_address
+
+    def get_test_signer(self, bid: TestData) -> str:
+        if not isinstance(bid, TestData):
+            raise TypeError("Invalid signed bid")
+
+        signer_address = self.contract.functions.getTestSigner(asdict(bid)).call()
+
+        return signer_address;
 
     def nonce(self, owner: str) -> int:
         """

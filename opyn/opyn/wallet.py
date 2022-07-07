@@ -14,10 +14,9 @@ from dataclasses import asdict
 # Imports
 # ---------------------------------------------------------------------------
 import eth_keys
-from py_eth_sig_utils.signing import sign_typed_data
-from web3 import Web3
-
-from opyn.definitions import BidData, ContractConfig, Domain, MessageToSign
+from dataclasses import asdict
+from opyn.encode import TypedDataEncoder
+from opyn.definitions import  Domain, MessageToSign, BidData, ContractConfig, TestToSign, TestData
 from opyn.erc20 import ERC20Contract
 from opyn.utils import get_address
 
@@ -38,6 +37,14 @@ MESSAGE_TYPES = {
         {"name": "nonce", "type": "uint256"},
     ],
 }
+# TEST(uint256 offerId, address signerAddress)
+TEST_TYPES = {
+    "TEST": [
+        {"name": "offerId", "type": "uint256"},
+        {"name": "bidId", "type": "uint256"},
+    ]
+}
+
 MIN_ALLOWANCE = 100000000
 
 
@@ -68,10 +75,55 @@ class Wallet:
             if not self.public_key:
                 self.public_key = get_address(self.signer.public_key.to_address())
 
-    def sign_bid_data(
-        self, domain: Domain, message_to_sign: MessageToSign, types: dict = RFQ_TYPES
-    ) -> BidData:
-        """Sign a bid using py_eth_sig_utils
+    def sign_msg(self, messageHash: str) -> dict:
+        """Sign a hash message using the signer object
+
+        Args:
+            messageHash (str): Message to signed in hex format with 0x prefix
+
+        Returns:
+            signature (dict): Signature split into v, r, s components
+        """
+        signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
+
+        print("python signer", signature.verify_msg_hash(bytes.fromhex(messageHash[2:]), self.signer.public_key))
+        print("python signer", signature.recover_public_key_from_msg_hash(bytes.fromhex(messageHash[2:])).to_address())
+        print("self.signer.public_key", self.signer.public_key.recover_from_msg_hash(bytes.fromhex(messageHash[2:]), signature))
+        print('signature.r', signature.r)
+        print('hex(signature.r)', hex(signature.r))
+        print('signature.r after', hex_zero_pad(hex(signature.r), 32))
+
+        return {
+            "v": signature.v + 27, 
+            "r": hex_zero_pad(hex(signature.r), 32), 
+            "s": hex_zero_pad(hex(signature.s), 32)
+        }
+
+    def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> str:
+        """Sign a hash of typed data V4 which follows EIP712 convention:
+        https://eips.ethereum.org/EIPS/eip-712
+
+        Args:
+            domain (dict): Dictionary containing domain parameters including
+              name, version, chainId, verifyingContract
+            value (dict): Dictionary of values for each field in types
+            types (dict): Dictionary of types and their fields
+
+        Raises:
+            TypeError: Domain argument is not an instance of Domain class
+
+        Returns:
+            signature (dict): Signature split into v, r, s components
+        """
+        if not isinstance(domain, Domain):
+            raise TypeError("Invalid domain parameters")
+
+        domain_dict = {k: v for k, v in asdict(domain).items() if v is not None}
+
+        return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
+
+    def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign) -> BidData:
+        """Sign a bid using _sign_type_data_v4
 
         Args:
             domain (dict): Dictionary containing domain parameters including
@@ -118,6 +170,39 @@ class Wallet:
             v=signature[0],
             r=Web3.toHex(signature[1].to_bytes(32, 'big')),
             s=Web3.toHex(signature[2].to_bytes(32, 'big')),
+        )
+
+    def sign_test_data(self, domain: Domain, message_to_sign: TestToSign) -> BidData:
+        """Sign a bid using _sign_type_data_v4
+
+        Args:
+            domain (dict): Dictionary containing domain parameters including
+              name, version, chainId, verifyingContract
+            message_to_sign (MessageToSign): Unsigned Order Data
+
+        Raises:
+            TypeError: message_to_sign argument is not an instance of MessageToSign class
+
+        Returns:
+            signedBid (dict): Bid combined with the generated signature
+        """
+        if not isinstance(message_to_sign, TestToSign):
+            raise TypeError("Invalid message_to_sign(TestToSign)")
+
+        if not self.private_key:
+            raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
+
+        signature = self._sign_type_data_v4(domain, asdict(message_to_sign), TEST_TYPES)
+        print('signature', signature)
+
+        print(message_to_sign.bidId)
+        
+        return TestData(
+            offerId=message_to_sign.offerId,
+            bidId=message_to_sign.bidId,
+            v=signature["v"],
+            r=signature["r"],
+            s=signature["s"],
         )
 
     def verify_allowance(self, settlement_config: ContractConfig, token_address: str) -> bool:
