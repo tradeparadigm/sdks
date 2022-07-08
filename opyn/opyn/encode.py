@@ -154,7 +154,6 @@ class TypedDataEncoder:
         uniqueNames[fieldName] = True
 
         baseType = re.sub('\[[^()]*\]', '', field['type'])
-
         if baseType == name:
           raise ValueError(f'Circular type reference: {baseType}')
 
@@ -282,6 +281,9 @@ class TypedDataEncoder:
     Returns:
         hash (str): Hash of encoded data
     """
+    # print('name to encode', name)
+    # print('value to encode', value)
+    # print('python abi.encode', self.encode_data(name, value))
     return Web3.keccak(hexstr=self.encode_data(name, value)).hex()
 
   def hash(self, value: dict) -> str:
@@ -363,7 +365,7 @@ class TypedDataEncoder:
     Returns:
         data (str): Encoded message
     """
-
+  
     return hex_concat([
       '0x1901',
       TypedDataEncoder.hash_domain(domain),
@@ -385,10 +387,10 @@ class TypedDataEncoder:
         hash (str): Hash of message
     """
 
-    print('domain', domain)
-    print('types', types)
-    print('value', value)
-    print('Python encode packed==TypedDataEncoder.encode(domain, types, value)', TypedDataEncoder.encode(domain, types, value))
+    # print('domain', domain)
+    # print('types', types)
+    # print('value', value)
+    # print('Python encode packed==TypedDataEncoder.encode(domain, types, value)', TypedDataEncoder.encode(domain, types, value))
 
     return Web3.keccak(
       hexstr=TypedDataEncoder.encode(domain, types, value)

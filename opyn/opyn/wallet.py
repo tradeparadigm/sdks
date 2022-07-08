@@ -17,6 +17,11 @@ from opyn.encode import TypedDataEncoder
 from opyn.definitions import  Domain, MessageToSign, BidData, ContractConfig, TestToSign, TestData
 from opyn.erc20 import ERC20Contract
 from opyn.utils import hex_zero_pad, get_address
+from eip712_structs import make_domain
+from web3 import Web3
+from eth_account import Account
+from eth_account.messages import encode_structured_data
+from py_eth_sig_utils.signing import v_r_s_to_signature, sign_typed_data
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -38,7 +43,7 @@ MESSAGE_TYPES = {
 TEST_TYPES = {
     "TEST": [
         {"name": "offerId", "type": "uint256"},
-        # {"name": "bidId", "type": "uint256"},
+        {"name": "bidId", "type": "uint256"},
     ]
 }
 
@@ -145,8 +150,51 @@ class Wallet:
         if message_to_sign.signerAddress != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
-        signature = self._sign_type_data_v4(domain, asdict(message_to_sign), MESSAGE_TYPES)
-        
+        data = {
+            "types": {
+                "EIP712Domain": [
+                    {"name": "name", "type": "string"},
+                    {"name": "version", "type": "string"},
+                    {"name": "chainId", "type": "uint256"},
+                    {"name": "verifyingContract", "type": "address"},
+                ],
+                "TEST": [
+                    {"name": "offerId", "type": "uint256"},
+                    {"name": "bidId", "type": "uint256"},
+                    {"name": "signerAddress", "type": "address"},
+                    {"name": "bidderAddress", "type": "address"},
+                    {"name": "bidToken", "type": "address"},
+                    {"name": "offerToken", "type": "address"},
+                    {"name": "bidAmount", "type": "uint256"},
+                    {"name": "sellAmount", "type": "uint256"},
+                    {"name": "nonce", "type": "uint256"},
+                ],
+            },
+            "domain": {
+                "name": domain.name,
+                "version": domain.version,
+                "chainId": domain.chainId,
+                "verifyingContract": domain.verifyingContract,
+            },
+            "primaryType": "TEST",
+            "message": {
+                "offerId": message_to_sign.offerId,
+                "bidId": message_to_sign.bidId,
+                "signerAddress": message_to_sign.signerAddress,
+                "bidderAddress": message_to_sign.bidderAddress,
+                "bidToken": message_to_sign.bidToken,
+                "offerToken": message_to_sign.offerToken,
+                "bidAmount": message_to_sign.bidAmount,
+                "sellAmount": message_to_sign.sellAmount,
+                "nonce": message_to_sign.nonce,
+            },
+        }
+        message = encode_structured_data(data)
+        signed = Account.from_key(self.private_key).sign_message(message)
+
+        print('signed', signed)
+        print('r', Web3.toHex(Web3.toBytes(signed.r).rjust(32, b"\0")))
+
         return BidData(
             offerId=message_to_sign.offerId,
             bidId=message_to_sign.bidId,
@@ -156,10 +204,25 @@ class Wallet:
             offerToken=message_to_sign.offerToken,
             bidAmount=message_to_sign.bidAmount,
             sellAmount=message_to_sign.sellAmount,
-            v=signature["v"],
-            r=signature["r"],
-            s=signature["s"],
+            v=signed.v,
+            r=Web3.toHex(Web3.toBytes(signed.r).rjust(32, b"\0")),
+            s=Web3.toHex(Web3.toBytes(signed.s).rjust(32, b"\0"))
         )
+
+        # signature = self._sign_type_data_v4(domain, asdict(message_to_sign), MESSAGE_TYPES)        
+        # return BidData(
+        #     offerId=message_to_sign.offerId,
+        #     bidId=message_to_sign.bidId,
+        #     signerAddress=message_to_sign.signerAddress,
+        #     bidderAddress=message_to_sign.bidderAddress,
+        #     bidToken=message_to_sign.bidToken,
+        #     offerToken=message_to_sign.offerToken,
+        #     bidAmount=message_to_sign.bidAmount,
+        #     sellAmount=message_to_sign.sellAmount,
+        #     v=signature["v"],
+        #     r=signature["r"],
+        #     s=signature["s"],
+        # )
 
     def sign_test_data(self, domain: Domain, message_to_sign: TestToSign) -> BidData:
         """Sign a bid using _sign_type_data_v4
@@ -181,14 +244,56 @@ class Wallet:
         if not self.private_key:
             raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
 
-        signature = self._sign_type_data_v4(domain, asdict(message_to_sign), TEST_TYPES)
-        
+        data = {
+            "types": {
+                "EIP712Domain": [
+                    {"name": "name", "type": "string"},
+                    {"name": "version", "type": "string"},
+                    {"name": "chainId", "type": "uint256"},
+                    {"name": "verifyingContract", "type": "address"},
+                ],
+                "TEST": [
+                    {"name": "offerId", "type": "uint256"},
+                    {"name": "bidId", "type": "uint256"},
+                ],
+            },
+            "domain": {
+                "name": domain.name,
+                "version": domain.version,
+                "chainId": domain.chainId,
+                "verifyingContract": domain.verifyingContract,
+            },
+            "primaryType": "TEST",
+            "message": {
+                "offerId": message_to_sign.offerId,
+                "bidId": message_to_sign.bidId,
+            },
+        }
+
+        signature = sign_typed_data(data, Web3.toBytes(hexstr=self.private_key))
+        print('sig', signature)
+
+        # # message = encode_structured_data(data)
+        # # signed = Account.from_key(self.private_key).sign_message(message)
+        # # print('signed', signed)
+        # print('r', Web3.toHex(Web3.toBytes(signature[1]).rjust(32, b"\0")))
+        # print('s', Web3.toHex(Web3.toBytes(signature[2]).rjust(32, b"\0")))
+        print('r', Web3.toHex(signature[1]))
+        print('s', Web3.toHex(signature[2]))
+
+        # return TestData(
+        #     offerId=message_to_sign.offerId,
+        #     bidId=message_to_sign.bidId,
+        #     v=signature[0],
+        #     r=Web3.toHex(Web3.toBytes(signature[1]).rjust(32, b"\0")),
+        #     s=Web3.toHex(Web3.toBytes(signature[2]).rjust(32, b"\0"))
+        # )
         return TestData(
             offerId=message_to_sign.offerId,
-            # bidId=message_to_sign.bidId,
-            v=signature["v"],
-            r=signature["r"],
-            s=signature["s"],
+            bidId=message_to_sign.bidId,
+            v=signature[0],
+            r=Web3.toHex(signature[1].to_bytes(32, 'big')),
+            s=Web3.toHex(signature[2].to_bytes(32, 'big'))
         )
 
     def verify_allowance(self, settlement_config: ContractConfig, token_address: str) -> bool:
