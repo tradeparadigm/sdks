@@ -14,8 +14,7 @@
 from dataclasses import dataclass
 
 from opyn.chains import Chains
-
-
+from eip712_structs import EIP712Struct
 # ---------------------------------------------------------------------------
 # Data Classes
 # ---------------------------------------------------------------------------
@@ -66,12 +65,12 @@ class BidData:
 @dataclass
 class TestToSign:
     offerId: int
-    # bidId: int
+    bidId: int
 
 @dataclass
 class TestData:
     offerId: int
-    # bidId: int
+    bidId: int
     v: int
     r: str
     s: str

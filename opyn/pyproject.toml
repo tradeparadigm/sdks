@@ -31,4 +31,6 @@ eth-utils = '1.10.0'
 PyJWT = '2.3.0'
 web3 = '5.28.0'
 python-dotenv = "^0.20.0"
+requests = "^2.28.0"
+eip712-structs = "^1.1.0"
 py-eth-sig-utils = "^0.4.0"
