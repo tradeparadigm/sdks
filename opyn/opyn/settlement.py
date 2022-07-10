@@ -14,9 +14,8 @@
 from web3 import Web3
 from dataclasses import asdict
 from opyn.contract import ContractConnection
-from opyn.utils import get_address
-from opyn.encode import ADDRESS_ZERO
-from opyn.definitions import Offer, BidData, TestData
+from opyn.utils import get_address, ADDRESS_ZERO
+from opyn.definitions import Offer, BidData
 from opyn.wallet import Wallet
 from shutil import ExecError
 
@@ -145,38 +144,6 @@ class SettlementContract(ContractConnection):
         signer_address = self.contract.functions.getBidSigner(asdict(bid)).call()
 
         return signer_address;
-
-    def get_test_signer(self, bid: TestData) -> str:
-        if not isinstance(bid, TestData):
-            raise TypeError("Invalid signed bid")
-
-        signer_address = self.contract.functions.getTestSigner(asdict(bid)).call()
-
-        return signer_address;
-
-    def get_hashed_message(self, bid: TestData) -> str:
-        if not isinstance(bid, TestData):
-            raise TypeError("Invalid signed bid")
-
-        hashed_msg = self.contract.functions.getHashedMessage(asdict(bid)).call()
-
-        return hashed_msg;
-
-    def get_encode(self, bid: TestData) -> str:
-        if not isinstance(bid, TestData):
-            raise TypeError("Invalid signed bid")
-
-        abi_encode = self.contract.functions.getEncode(asdict(bid)).call()
-
-        return abi_encode;
-
-    def get_encode_packed(self, bid: TestData) -> str:
-        if not isinstance(bid, TestData):
-            raise TypeError("Invalid signed bid")
-
-        abi_encode_packed = self.contract.functions.getEncodePacked(asdict(bid)).call()
-
-        return abi_encode_packed;
 
     def nonce(self, owner: str) -> int:
         """
