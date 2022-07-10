@@ -24,9 +24,7 @@ rpc_uri = rpc[current_chain] + rpc_token
 osqth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
 opyn_usdc_token_address = "0x27415c30d8c87437becbd4f98474f26e712047f4"
 
-# settlement contract with offerId only 0x482bA3fB860F0Ec536EB0361728530Fcd8919e84
-# settlement contract with offerId and bidId 0xc33b323441c807edc2dadca6c611817ca66ac617
-settlement_contract_address = "0xc33b323441c807edc2dadca6c611817ca66ac617"
+settlement_contract_address = "0x68441e58FabDa8ADc456c676002F6334A58a7F0f"
 settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
 settlement_contract = SettlementContract(settlement_config)
 
@@ -46,46 +44,27 @@ min_price = 1
 offerToCreate = Offer(
     osqth_token_address, opyn_usdc_token_address, min_price, min_bid_amount, total_size
 )
-# settlement_contract.create_offer(offerToCreate, taker_wallet)
+settlement_contract.create_offer(offerToCreate, taker_wallet)
 
 offerId = settlement_contract.get_offer_counter()
 maker_order_amount = 10**18
 maker_nonce = settlement_contract.nonce(maker_wallet.public_key)
-# maker_message = MessageToSign(
-#     offerId=offerId,
-#     bidId=1,
-#     signerAddress=maker_wallet.public_key,
-#     bidderAddress=maker_wallet.public_key,
-#     bidToken=opyn_usdc_token_address,
-#     offerToken=osqth_token_address,
-#     bidAmount=maker_order_amount,
-#     sellAmount=1000*10**6,
-#     nonce=maker_nonce
-# )
-# signed_maker_order = maker_wallet.sign_bid_data(domain, maker_message)
-# on_chain_signer = settlement_contract.get_bid_signer(signed_maker_order)
-# print("maker_public", maker_public)
-# print('on_chain_signer', on_chain_signer)
-# result = settlement_contract.validate_bid(signed_maker_order)
-# print(result)
-# # offer_details = settlement_contract.get_offer_details(offerId)
-# # print('offerDetails', offer_details)
-
-maker_message = TestToSign(
-    offerId=2,
-    bidId=3,
+maker_message = MessageToSign(
+    offerId=offerId,
+    bidId=1,
+    signerAddress=maker_wallet.public_key,
+    bidderAddress=maker_wallet.public_key,
+    bidToken=opyn_usdc_token_address,
+    offerToken=osqth_token_address,
+    bidAmount=maker_order_amount,
+    sellAmount=1000*10**6,
+    nonce=maker_nonce
 )
-signed_maker_order = maker_wallet.sign_test_data(domain, maker_message)
-print('signed_maker_order', signed_maker_order)
-on_chain_signer = settlement_contract.get_test_signer(signed_maker_order)
-# on_chain_hashed_msg = settlement_contract.get_hashed_message(signed_maker_order)
-# on_chain_abi_encode = settlement_contract.get_encode(signed_maker_order)
-# on_chain_encode_packed = settlement_contract.get_encode_packed(signed_maker_order)
-print("signer pub key", maker_public)
+signed_maker_order = maker_wallet.sign_bid_data(domain, maker_message)
+on_chain_signer = settlement_contract.get_bid_signer(signed_maker_order)
+print("maker_public", maker_public)
 print('on_chain_signer', on_chain_signer)
-# print('contract keccak256\(abi.encodePacked\) (hashed msg)', on_chain_hashed_msg.hex())
-# print("contract abi.encode", on_chain_abi_encode.hex())
-# print('contract encodePacked', on_chain_encode_packed.hex())
-
-# result = settlement_contract.validate_bid(signed_maker_order)
-# print(result)
+result = settlement_contract.validate_bid(signed_maker_order)
+print(result)
+offer_details = settlement_contract.get_offer_details(offerId)
+print('offerDetails', offer_details)

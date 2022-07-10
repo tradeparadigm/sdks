@@ -14,7 +14,6 @@
 from dataclasses import dataclass
 
 from opyn.chains import Chains
-from eip712_structs import EIP712Struct
 # ---------------------------------------------------------------------------
 # Data Classes
 # ---------------------------------------------------------------------------
@@ -33,7 +32,6 @@ class Domain:
 @dataclass
 class MessageToSign:
     """Bid message to sign off-chain"""
-
     offerId: int
     bidId: int
     signerAddress: str
@@ -48,7 +46,6 @@ class MessageToSign:
 @dataclass
 class BidData:
     """Bid data to send on-chain containing bid information and signature"""
-
     offerId: int
     bidId: int
     signerAddress: str
@@ -61,19 +58,6 @@ class BidData:
     r: str
     s: str
 
-
-@dataclass
-class TestToSign:
-    offerId: int
-    bidId: int
-
-@dataclass
-class TestData:
-    offerId: int
-    bidId: int
-    v: int
-    r: str
-    s: str
 
 @dataclass
 class ContractConfig:
