@@ -87,6 +87,7 @@ settlement_contract.create_offer(offerToCreate, taker_wallet)
 offerId = settlement_contract.get_offer_counter()
 ```
 ### Get signer nonce to use for signing bid
+
 ```python
 signer_pub_key = "0x0..."
 nonce = settlement_contract.nonce(signer_pub_key)
