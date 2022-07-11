@@ -104,16 +104,17 @@ wallet_private_key = ""
 usdc_token_address = "0x..."
 osqth_token_address = "0x.."
 
+nonce = settlement_contract.nonce(wallet_public_key)
 payload = MessageToSign(
-    offerId="1",
-    bidId="1",
+    offerId=1,
+    bidId=1,
     signerAddress=wallet_public_key,
     bidderAddress=wallet_public_key,
     bidToken=usdc_token_address,
     offerToken=osqth_token_address,
     bidAmount=1e18,
     sellAmount=1000e6,
-    nonce="1"
+    nonce=nonce
 )
 
 wallet = Wallet(public_key=wallet_public_key, private_key=wallet_private_key)
