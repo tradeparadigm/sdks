@@ -66,7 +66,7 @@ rpc = {
 }
 rpc_uri = rpc[current_chain] + rpc_token
 
-settlement_contract_address = "0x73834097f5e7c8a8b2465c80a8362d8737d8c8cd"
+settlement_contract_address = "0x0..."
 settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
 settlement_contract = SettlementContract(settlement_config)
 
@@ -159,7 +159,7 @@ rpc = {
 }
 rpc_uri = rpc[current_chain] + rpc_token
 
-settlement_contract_address = "0x73834097f5e7c8a8b2465c80a8362d8737d8c8cd"
+settlement_contract_address = "0x0..."
 settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
 settlement_contract = SettlementContract(settlement_config)
 
