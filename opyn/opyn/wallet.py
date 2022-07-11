@@ -21,27 +21,6 @@ from py_eth_sig_utils.signing import sign_typed_data
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-# "OpynRfq(uint256 offerId, uint256 bidId, address signerAddress, address bidderAddress, address bidToken, address offerToken, uint256 bidAmount, uint256 sellAmount, uint256 nonce)"
-MESSAGE_TYPES = {
-    "RFQ": [
-        {"name": "offerId", "type": "uint256"},
-        {"name": "bidId", "type": "uint256"},
-        {"name": "signerAddress", "type": "address"},
-        {"name": "bidderAddress", "type": "address"},
-        {"name": "bidToken", "type": "address"},
-        {"name": "offerToken", "type": "address"},
-        {"name": "bidAmount", "type": "uint256"},
-        {"name": "sellAmount", "type": "uint256"},
-        {"name": "nonce", "type": "uint256"}
-    ]
-}
-TEST_TYPES = {
-    "TEST": [
-        {"name": "offerId", "type": "uint256"},
-        {"name": "bidId", "type": "uint256"},
-    ]
-}
-
 MIN_ALLOWANCE = 100000000
 
 
