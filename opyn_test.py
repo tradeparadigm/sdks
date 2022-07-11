@@ -24,7 +24,7 @@ rpc_uri = rpc[current_chain] + rpc_token
 osqth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
 opyn_usdc_token_address = "0x27415c30d8c87437becbd4f98474f26e712047f4"
 
-settlement_contract_address = "0x68441e58FabDa8ADc456c676002F6334A58a7F0f"
+settlement_contract_address = "0xD9747e016E89dE7186B0C459E82d0D72740c7FCd"
 settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
 settlement_contract = SettlementContract(settlement_config)
 

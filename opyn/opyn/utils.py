@@ -18,8 +18,7 @@ import re
 # Constants
 # ---------------------------------------------------------------------------
 PADDING = bytearray([0] * 32)
-ADDRESS_ZERO = hex_zero_pad(Web3.toHex(0), 20)
-
+ADDRESS_ZERO = "0x0000000000000000000000000000000000000000"
 
 # ---------------------------------------------------------------------------
 # Utilities
@@ -50,86 +49,3 @@ def get_address(address: str) -> str:
     return Web3.toChecksumAddress(address)
   except ValueError:
     raise ValueError(f'Invalid address: {address}')
-
-def hex_concat(items: list) -> str:
-  """
-  Concatenate list of hexes with 0x prefix
-
-  Args:
-      items (str): List of hexes with 0x prefix
-
-  Returns:
-      hex (str): Concatenated hex
-  """
-  result = '0x'
-  for i in items:
-    result += i[2:]
-  return result
-
-def is_hex_string(value: str, length: int=None) -> bool:
-  """
-  Check if string is a hex with a specified length
-
-  Args:
-      value (str): Hex string
-      length (int) (optional): Supposed length of hex
-
-  Returns:
-      isHex (bool): Boolean whether the given value is 
-        hex of a given length
-  """
-  if not isinstance(value, str) or not re.match('^0x[0-9A-Fa-f]*$', value):
-    return False
-  if length and len(value) != (2 + 2 * length):
-    return False
-  return True
-
-def hex_zero_pad(value: str, length: int) -> str:
-  """
-  Add zero padding on the left
-
-  Args:
-      value (str): Hex string
-      length (int): Desired hex length
-
-  Returns:
-      hex (object): Hex with padding
-  """
-  if not is_hex_string(value):
-    raise ValueError(f'Invalid hex string: {value}')
-  elif (len(value) > 2 * length + 2):
-    raise ValueError(f'Value out of range: {value}, {length}')
-  
-  while (len(value) < 2 * length + 2):
-    value = '0x0' + value[2:]
-  
-  return value
-
-def hex_pad_right(value: str) -> str:
-  """
-  Add zero padding on the right to create hex of length 32
-
-  Args:
-      value (str): Hex string
-
-  Returns:
-      hex (object): Hex with padding
-  """
-  padOffset = len(value) % 32
-  if padOffset > 0:
-    return hex_concat([value, PADDING.hex()[padOffset:]])
-  return value
-
-def encode_type(name: str, fields: list) -> str:
-  """
-  Encode struct types
-
-  Args:
-      name (str): Name of struct
-      fields (list): List of dictionary fields with name and type
-
-  Returns:
-      data (object): Encoded type
-  """
-  fields = ','.join([i['type'] + ' ' + i['name'] for i in fields])
-  return f'{name}({fields})'
