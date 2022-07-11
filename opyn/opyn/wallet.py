@@ -12,29 +12,15 @@
 # Imports
 # ---------------------------------------------------------------------------
 import eth_keys
-from dataclasses import asdict
-from opyn.encode import TypedDataEncoder
 from opyn.definitions import  Domain, MessageToSign, BidData, ContractConfig
 from opyn.erc20 import ERC20Contract
-from opyn.utils import hex_zero_pad, get_address
+from opyn.utils import get_address
+from web3 import Web3
+from py_eth_sig_utils.signing import sign_typed_data
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-# "OpynRfq(uint256 offerId, uint256 bidId, address signerAddress, address bidderAddress, address bidToken, address offerToken, uint256 bidAmount, uint256 sellAmount, uint256 nonce)"
-MESSAGE_TYPES = {
-    "RFQ": [
-        {"name": "offerId", "type": "uint256"},
-        {"name": "bidId", "type": "uint256"},
-        {"name": "signerAddress", "type": "address"},
-        {"name": "bidderAddress", "type": "address"},
-        {"name": "bidToken", "type": "address"},
-        {"name": "offerToken", "type": "address"},
-        {"name": "bidAmount", "type": "uint256"},
-        {"name": "sellAmount", "type": "uint256"},
-        {"name": "nonce", "type": "uint256"}
-    ]
-}
 MIN_ALLOWANCE = 100000000
 
 
@@ -65,48 +51,8 @@ class Wallet:
             if not self.public_key:
                 self.public_key = get_address(self.signer.public_key.to_address())
 
-    def sign_msg(self, messageHash: str) -> dict:
-        """Sign a hash message using the signer object
-
-        Args:
-            messageHash (str): Message to signed in hex format with 0x prefix
-
-        Returns:
-            signature (dict): Signature split into v, r, s components
-        """
-        signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
-
-        return {
-            "v": signature.v + 27, 
-            "r": hex_zero_pad(hex(signature.r), 32), 
-            "s": hex_zero_pad(hex(signature.s), 32)
-        }
-
-    def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> str:
-        """Sign a hash of typed data V4 which follows EIP712 convention:
-        https://eips.ethereum.org/EIPS/eip-712
-
-        Args:
-            domain (dict): Dictionary containing domain parameters including
-              name, version, chainId, verifyingContract
-            value (dict): Dictionary of values for each field in types
-            types (dict): Dictionary of types and their fields
-
-        Raises:
-            TypeError: Domain argument is not an instance of Domain class
-
-        Returns:
-            signature (dict): Signature split into v, r, s components
-        """
-        if not isinstance(domain, Domain):
-            raise TypeError("Invalid domain parameters")
-
-        domain_dict = {k: v for k, v in asdict(domain).items() if v is not None}
-
-        return self.sign_msg(TypedDataEncoder._hash(domain_dict, types, value))
-
     def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign) -> BidData:
-        """Sign a bid using _sign_type_data_v4
+        """Sign a bid using py_eth_sig_utils
 
         Args:
             domain (dict): Dictionary containing domain parameters including
@@ -133,9 +79,47 @@ class Wallet:
         if message_to_sign.signerAddress != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
-        signature = self._sign_type_data_v4(domain, asdict(message_to_sign), MESSAGE_TYPES)
-        print('signature', signature)
-        
+        data = {
+            "types": {
+                "EIP712Domain": [
+                    {"name": "name", "type": "string"},
+                    {"name": "version", "type": "string"},
+                    {"name": "chainId", "type": "uint256"},
+                    {"name": "verifyingContract", "type": "address"},
+                ],
+                "RFQ": [
+                    {"name": "offerId", "type": "uint256"},
+                    {"name": "bidId", "type": "uint256"},
+                    {"name": "signerAddress", "type": "address"},
+                    {"name": "bidderAddress", "type": "address"},
+                    {"name": "bidToken", "type": "address"},
+                    {"name": "offerToken", "type": "address"},
+                    {"name": "bidAmount", "type": "uint256"},
+                    {"name": "sellAmount", "type": "uint256"},
+                    {"name": "nonce", "type": "uint256"},
+                ],
+            },
+            "domain": {
+                "name": domain.name,
+                "version": domain.version,
+                "chainId": domain.chainId,
+                "verifyingContract": domain.verifyingContract,
+            },
+            "primaryType": "RFQ",
+            "message": {
+                "offerId": message_to_sign.offerId,
+                "bidId": message_to_sign.bidId,
+                "signerAddress": message_to_sign.signerAddress,
+                "bidderAddress": message_to_sign.bidderAddress,
+                "bidToken": message_to_sign.bidToken,
+                "offerToken": message_to_sign.offerToken,
+                "bidAmount": message_to_sign.bidAmount,
+                "sellAmount": message_to_sign.sellAmount,
+                "nonce": message_to_sign.nonce,
+            },
+        }
+        signature = sign_typed_data(data, Web3.toBytes(hexstr=self.private_key))
+
         return BidData(
             offerId=message_to_sign.offerId,
             bidId=message_to_sign.bidId,
@@ -145,9 +129,9 @@ class Wallet:
             offerToken=message_to_sign.offerToken,
             bidAmount=message_to_sign.bidAmount,
             sellAmount=message_to_sign.sellAmount,
-            v=signature["v"],
-            r=signature["r"],
-            s=signature["s"],
+            v=signature[0],
+            r=Web3.toHex(signature[1].to_bytes(32, 'big')),
+            s=Web3.toHex(signature[2].to_bytes(32, 'big'))
         )
 
     def verify_allowance(self, settlement_config: ContractConfig, token_address: str) -> bool:

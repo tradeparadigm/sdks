@@ -13,7 +13,6 @@
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
 from opyn.chains import Chains
-
 # ---------------------------------------------------------------------------
 # Data Classes
 # ---------------------------------------------------------------------------
@@ -21,11 +20,6 @@ from opyn.chains import Chains
 class Domain:
     """
     Domain parameters for signatures
-
-    # TODO: see if you can leverage this ID
-    # to know which chain we are using
-    # maybe to do in the smart contract itself
-    # https://web3py.readthedocs.io/en/stable/web3.eth.html#web3.eth.Eth.chain_id
     """
     name: str
     version: str
@@ -34,6 +28,7 @@ class Domain:
 
 @dataclass
 class MessageToSign:
+    """Bid message to sign off-chain"""
     offerId: int
     bidId: int
     signerAddress: str
@@ -46,6 +41,7 @@ class MessageToSign:
 
 @dataclass
 class BidData:
+    """Bid data to send on-chain containing bid information and signature"""
     offerId: int
     bidId: int
     signerAddress: str
