@@ -87,7 +87,6 @@ settlement_contract.create_offer(offerToCreate, taker_wallet)
 offerId = settlement_contract.get_offer_counter()
 ```
 ### Get signer nonce to use for signing bid
-
 ```python
 signer_pub_key = "0x0..."
 nonce = settlement_contract.nonce(signer_pub_key)
@@ -203,4 +202,4 @@ TAKER_PrivKEY=
 ## Settlement Contract Addresses
 
 - Mainnet:
-- Ropsten: 0x635f8703b4E00357C5a323424423e001c07b8f65
+- Ropsten: 0xD19440e4D2Fe504E8C463d4844541734ec3C6b9e
