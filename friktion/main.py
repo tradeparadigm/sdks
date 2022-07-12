@@ -35,7 +35,6 @@ OPTIONS_CONTRACT_KEY = PublicKey("GriGJSF84XdPq6Td6u6Hu8oqKgwTXY94fvwJrJf1gQTW")
 # GIVE_MINT = PublicKey("")
 # RECEIVE_MINT = PublicKey("")
 
-
 async def main_def():
 
     client = AsyncClient(c.url)
