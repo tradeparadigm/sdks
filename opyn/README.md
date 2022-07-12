@@ -66,7 +66,7 @@ rpc = {
 }
 rpc_uri = rpc[current_chain] + rpc_token
 
-settlement_contract_address = "0x73834097f5e7c8a8b2465c80a8362d8737d8c8cd"
+settlement_contract_address = "0x0..."
 settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
 settlement_contract = SettlementContract(settlement_config)
 
@@ -86,6 +86,12 @@ settlement_contract.create_offer(offerToCreate, taker_wallet)
 
 offerId = settlement_contract.get_offer_counter()
 ```
+### Get signer nonce to use for signing bid
+
+```python
+signer_pub_key = "0x0..."
+nonce = settlement_contract.nonce(signer_pub_key)
+```
 
 ### Signing bid order
 
@@ -98,16 +104,17 @@ wallet_private_key = ""
 usdc_token_address = "0x..."
 osqth_token_address = "0x.."
 
+nonce = settlement_contract.nonce(wallet_public_key)
 payload = MessageToSign(
-    offerId="1",
-    bidId="1",
+    offerId=1,
+    bidId=1,
     signerAddress=wallet_public_key,
     bidderAddress=wallet_public_key,
     bidToken=usdc_token_address,
     offerToken=osqth_token_address,
     bidAmount=1e18,
     sellAmount=1000e6,
-    nonce="1"
+    nonce=nonce
 )
 
 wallet = Wallet(public_key=wallet_public_key, private_key=wallet_private_key)
@@ -153,7 +160,7 @@ rpc = {
 }
 rpc_uri = rpc[current_chain] + rpc_token
 
-settlement_contract_address = "0x73834097f5e7c8a8b2465c80a8362d8737d8c8cd"
+settlement_contract_address = "0x0..."
 settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
 settlement_contract = SettlementContract(settlement_config)
 
@@ -192,3 +199,8 @@ TAKER_PrivKEY=
 - Make sure to build the Opyn module
 - Run `pip3 install -I opyn/dist/opyn-0.1.0-py3-none-any.whl`
 - Run python3 opyn_test.py
+
+## Settlement Contract Addresses
+
+- Mainnet:
+- Ropsten: 0xD19440e4D2Fe504E8C463d4844541734ec3C6b9e
