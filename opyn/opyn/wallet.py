@@ -14,6 +14,7 @@ from dataclasses import asdict
 # Imports
 # ---------------------------------------------------------------------------
 import eth_keys
+from dataclasses import asdict
 from opyn.definitions import  Domain, MessageToSign, BidData, ContractConfig
 from opyn.erc20 import ERC20Contract
 from opyn.utils import get_address
@@ -23,6 +24,25 @@ from py_eth_sig_utils.signing import sign_typed_data
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
+RFQ_TYPES = {
+    "EIP712Domain": [
+        {"name": "name", "type": "string"},
+        {"name": "version", "type": "string"},
+        {"name": "chainId", "type": "uint256"},
+        {"name": "verifyingContract", "type": "address"},
+    ],
+    "RFQ": [
+        {"name": "offerId", "type": "uint256"},
+        {"name": "bidId", "type": "uint256"},
+        {"name": "signerAddress", "type": "address"},
+        {"name": "bidderAddress", "type": "address"},
+        {"name": "bidToken", "type": "address"},
+        {"name": "offerToken", "type": "address"},
+        {"name": "bidAmount", "type": "uint256"},
+        {"name": "sellAmount", "type": "uint256"},
+        {"name": "nonce", "type": "uint256"},
+    ]
+}
 MIN_ALLOWANCE = 100000000
 
 
@@ -53,7 +73,7 @@ class Wallet:
             if not self.public_key:
                 self.public_key = get_address(self.signer.public_key.to_address())
 
-    def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign) -> BidData:
+    def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign, types: dict = RFQ_TYPES) -> BidData:
         """Sign a bid using py_eth_sig_utils
 
         Args:
@@ -82,43 +102,10 @@ class Wallet:
             raise ValueError("Signer wallet address mismatch")
 
         data = {
-            "types": {
-                "EIP712Domain": [
-                    {"name": "name", "type": "string"},
-                    {"name": "version", "type": "string"},
-                    {"name": "chainId", "type": "uint256"},
-                    {"name": "verifyingContract", "type": "address"},
-                ],
-                "RFQ": [
-                    {"name": "offerId", "type": "uint256"},
-                    {"name": "bidId", "type": "uint256"},
-                    {"name": "signerAddress", "type": "address"},
-                    {"name": "bidderAddress", "type": "address"},
-                    {"name": "bidToken", "type": "address"},
-                    {"name": "offerToken", "type": "address"},
-                    {"name": "bidAmount", "type": "uint256"},
-                    {"name": "sellAmount", "type": "uint256"},
-                    {"name": "nonce", "type": "uint256"},
-                ],
-            },
-            "domain": {
-                "name": domain.name,
-                "version": domain.version,
-                "chainId": domain.chainId,
-                "verifyingContract": domain.verifyingContract,
-            },
+            "types": types,
+            "domain": asdict(domain),
             "primaryType": "RFQ",
-            "message": {
-                "offerId": message_to_sign.offerId,
-                "bidId": message_to_sign.bidId,
-                "signerAddress": message_to_sign.signerAddress,
-                "bidderAddress": message_to_sign.bidderAddress,
-                "bidToken": message_to_sign.bidToken,
-                "offerToken": message_to_sign.offerToken,
-                "bidAmount": message_to_sign.bidAmount,
-                "sellAmount": message_to_sign.sellAmount,
-                "nonce": message_to_sign.nonce,
-            },
+            "message": asdict(message_to_sign),
         }
         signature = sign_typed_data(data, Web3.toBytes(hexstr=self.private_key))
 
