@@ -8,18 +8,19 @@
 """ Module to call Swap contract """
 # ---------------------------------------------------------------------------
 
+from dataclasses import asdict
+from shutil import ExecError
+
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
 from web3 import Web3
-from dataclasses import asdict
 
 from ribbon.contract import ContractConnection
-from ribbon.definitions import SignedBid, Offer
-from ribbon.wallet import Wallet
-from ribbon.utils import get_address
+from ribbon.definitions import Offer, SignedBid
 from ribbon.encode import ADDRESS_ZERO
-from shutil import ExecError
+from ribbon.utils import get_address
+from ribbon.wallet import Wallet
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -76,7 +77,7 @@ class SwapContract(ContractConnection):
             'minPrice': details[2],
             'minBidSize': details[4],
             'totalSize': details[5],
-            'availableSize': details[6]
+            'availableSize': details[6],
         }
 
     def validate_bid(self, bid: SignedBid) -> str:
@@ -120,7 +121,7 @@ class SwapContract(ContractConnection):
         Method to create offer
 
         Args:
-            offer (dict): Offer dictionary containing necessary parameters 
+            offer (dict): Offer dictionary containing necessary parameters
                 to create a new offer
             wallet (Wallet): Wallet class instance
 
@@ -137,28 +138,21 @@ class SwapContract(ContractConnection):
         offer.oToken = get_address(offer.oToken)
         offer.biddingToken = get_address(offer.biddingToken)
 
-        nonce = self.w3.eth.get_transaction_count(wallet.public_key) 
-        tx = self.contract.functions.createOffer(
-            *list(asdict(offer).values())
-        ).buildTransaction(
+        nonce = self.w3.eth.get_transaction_count(wallet.public_key)
+        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).buildTransaction(
             {
                 "nonce": nonce,
                 "gas": GAS_LIMIT,
             }
         )
 
-        signed_tx = self.w3.eth.account \
-            .sign_transaction(tx, private_key=wallet.private_key)
+        signed_tx = self.w3.eth.account.sign_transaction(tx, private_key=wallet.private_key)
 
         self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
 
-        tx_receipt = self.w3.eth \
-            .wait_for_transaction_receipt(signed_tx.hash, timeout=600)
-        
+        tx_receipt = self.w3.eth.wait_for_transaction_receipt(signed_tx.hash, timeout=600)
+
         if tx_receipt.status == 0:
             raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
         else:
-            return self.contract.events.NewOffer() \
-                .processReceipt(tx_receipt)[0]["args"]["swapId"]
-
-        
+            return self.contract.events.NewOffer().processReceipt(tx_receipt)[0]["args"]["swapId"]

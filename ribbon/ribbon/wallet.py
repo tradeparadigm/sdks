@@ -8,16 +8,17 @@
 """ Module for wallet utilities """
 # ---------------------------------------------------------------------------
 
+from dataclasses import asdict
+
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
 import eth_keys
-from dataclasses import asdict
 
+from ribbon.definitions import Bid, ContractConfig, Domain, SignedBid
 from ribbon.encode import TypedDataEncoder
-from ribbon.definitions import Domain, Bid, SignedBid, ContractConfig
 from ribbon.erc20 import ERC20Contract
-from ribbon.utils import hex_zero_pad, get_address
+from ribbon.utils import get_address, hex_zero_pad
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -74,9 +75,9 @@ class Wallet:
         signature = self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:]))
 
         return {
-            "v": signature.v + 27, 
-            "r": hex_zero_pad(hex(signature.r), 32), 
-            "s": hex_zero_pad(hex(signature.s), 32)
+            "v": signature.v + 27,
+            "r": hex_zero_pad(hex(signature.r), 32),
+            "s": hex_zero_pad(hex(signature.s), 32),
         }
 
     def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> str:

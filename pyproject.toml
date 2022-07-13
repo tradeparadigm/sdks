@@ -16,4 +16,3 @@ skip-string-normalization = true # don't force double quotes
 [tool.isort]
 profile = "hug"
 line_length = 99
-

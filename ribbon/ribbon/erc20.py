@@ -26,6 +26,7 @@ class ERC20Contract(ContractConnection):
     Args:
         config (ContractConfig): Configuration to setup the Contract
     """
+
     abi_location = "abis/ERC20.json"
 
     def __init__(self, config: ContractConfig):
@@ -51,9 +52,7 @@ class ERC20Contract(ContractConnection):
         owner_address = get_address(owner)
         spender_address = get_address(spender)
 
-        response = self.contract.functions.allowance(
-            owner_address, spender_address
-        ).call()
+        response = self.contract.functions.allowance(owner_address, spender_address).call()
 
         return response
 

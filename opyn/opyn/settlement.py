@@ -8,16 +8,19 @@
 """ Module to call Swap contract """
 # ---------------------------------------------------------------------------
 
+from dataclasses import asdict
+from shutil import ExecError
+
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
 from web3 import Web3
-from dataclasses import asdict
+
 from opyn.contract import ContractConnection
-from opyn.utils import get_address, ADDRESS_ZERO
-from opyn.definitions import Offer, BidData
+from opyn.definitions import BidData, Offer
+from opyn.utils import ADDRESS_ZERO, get_address
 from opyn.wallet import Wallet
-from shutil import ExecError
+
 
 # ---------------------------------------------------------------------------
 # Settlement Contract
@@ -29,12 +32,13 @@ class SettlementContract(ContractConnection):
     Args:
         config (ContractConfig): Configuration to setup the Contract
     """
+
     def create_offer(self, offer: Offer, wallet: Wallet) -> str:
         """
         Method to create offer
 
         Args:
-            offer (dict): Offer dictionary containing necessary parameters 
+            offer (dict): Offer dictionary containing necessary parameters
                 to create a new offer
             wallet (Wallet): Wallet class instance
 
@@ -51,26 +55,26 @@ class SettlementContract(ContractConnection):
         offer.offerToken = get_address(offer.offerToken)
         offer.bidToken = get_address(offer.bidToken)
 
-        nonce = self.w3.eth.get_transaction_count(wallet.public_key) 
-        tx = self.contract.functions.createOffer(*list(asdict(offer).values())) \
-            .buildTransaction({
+        nonce = self.w3.eth.get_transaction_count(wallet.public_key)
+        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).buildTransaction(
+            {
                 "nonce": nonce,
                 "gas": 3000000,
-            })
+            }
+        )
 
-        signed_tx = self.w3.eth.account \
-            .sign_transaction(tx, private_key=wallet.private_key)
+        signed_tx = self.w3.eth.account.sign_transaction(tx, private_key=wallet.private_key)
 
         self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
 
-        tx_receipt = self.w3.eth \
-            .wait_for_transaction_receipt(signed_tx.hash, timeout=600)
-        
+        tx_receipt = self.w3.eth.wait_for_transaction_receipt(signed_tx.hash, timeout=600)
+
         if tx_receipt.status == 0:
             raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
         else:
-            return self.contract.events.CreateOffer() \
-                .processReceipt(tx_receipt)[0]["args"]["offerId"]
+            return self.contract.events.CreateOffer().processReceipt(tx_receipt)[0]["args"][
+                "offerId"
+            ]
 
     def get_offer_details(self, offer_id: int) -> dict:
         """
@@ -96,7 +100,7 @@ class SettlementContract(ContractConnection):
             'offerToken': details[1],
             'bidToken': details[3],
             'minPrice': details[2],
-            'minBidSize': details[4]
+            'minBidSize': details[4],
         }
 
     def validate_bid(self, bid: BidData) -> str:
@@ -131,10 +135,7 @@ class SettlementContract(ContractConnection):
         else:
             return {
                 "errors": errors,
-                "messages": [
-                    Web3.toText(msg).replace("\x00", "")
-                    for msg in response[1][:errors]
-                ],
+                "messages": [Web3.toText(msg).replace("\x00", "") for msg in response[1][:errors]],
             }
 
     def get_bid_signer(self, bid: BidData) -> str:
@@ -143,7 +144,7 @@ class SettlementContract(ContractConnection):
 
         signer_address = self.contract.functions.getBidSigner(asdict(bid)).call()
 
-        return signer_address;
+        return signer_address
 
     def nonce(self, owner: str) -> int:
         """

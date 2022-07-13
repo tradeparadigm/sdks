@@ -15,6 +15,7 @@ from opyn.contract import ContractConnection
 from opyn.definitions import ContractConfig
 from opyn.utils import get_address
 
+
 # ---------------------------------------------------------------------------
 # ERC20 Contract
 # ---------------------------------------------------------------------------
@@ -25,6 +26,7 @@ class ERC20Contract(ContractConnection):
     Args:
         config (ContractConfig): Configuration to setup the Contract
     """
+
     abi_location = "abis/ERC20.json"
 
     def __init__(self, config: ContractConfig):
@@ -50,9 +52,7 @@ class ERC20Contract(ContractConnection):
         owner_address = get_address(owner)
         spender_address = get_address(spender)
 
-        response = self.contract.functions.allowance(
-            owner_address, spender_address
-        ).call()
+        response = self.contract.functions.allowance(owner_address, spender_address).call()
 
         return response
 
@@ -76,14 +76,12 @@ class ERC20Contract(ContractConnection):
         return response
 
     def approve(self, publicKey: str, privateKey: str, spender: str, amount: str):
-        nonce = self.w3.eth.get_transaction_count(publicKey) 
-        tx = self.contract.functions.approve(get_address(spender), amount) \
-            .buildTransaction({
-                "nonce": nonce
-            })
+        nonce = self.w3.eth.get_transaction_count(publicKey)
+        tx = self.contract.functions.approve(get_address(spender), amount).buildTransaction(
+            {"nonce": nonce}
+        )
 
-        signed_tx = self.w3.eth.account \
-            .sign_transaction(tx, private_key=privateKey)
+        signed_tx = self.w3.eth.account.sign_transaction(tx, private_key=privateKey)
 
         self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
 

@@ -7,18 +7,18 @@
 # ---------------------------------------------------------------------------
 
 import os
+
+from dotenv import load_dotenv
+
 from opyn.definitions import *
 from opyn.settlement import SettlementContract
 from opyn.wallet import Wallet
-from dotenv import load_dotenv
 
 load_dotenv()
 
 rpc_token = os.getenv('RPC_TOKEN')
 current_chain = Chains.ROPSTEN
-rpc = {
-    Chains.ROPSTEN: os.getenv('RPC_URL')
-}
+rpc = {Chains.ROPSTEN: os.getenv('RPC_URL')}
 rpc_uri = rpc[current_chain] + rpc_token
 
 osqth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
@@ -42,11 +42,7 @@ total_size = 10**18
 min_bid_amount = total_size
 min_price = 1
 offerToCreate = Offer(
-    osqth_token_address,
-    opyn_usdc_token_address,
-    min_price,
-    min_bid_amount,
-    total_size
+    osqth_token_address, opyn_usdc_token_address, min_price, min_bid_amount, total_size
 )
 settlement_contract.create_offer(offerToCreate, taker_wallet)
 
@@ -61,8 +57,8 @@ maker_message = MessageToSign(
     bidToken=opyn_usdc_token_address,
     offerToken=osqth_token_address,
     bidAmount=maker_order_amount,
-    sellAmount=1000*10**6,
-    nonce=maker_nonce
+    sellAmount=1000 * 10**6,
+    nonce=maker_nonce,
 )
 signed_maker_order = maker_wallet.sign_bid_data(domain, maker_message)
 on_chain_signer = settlement_contract.get_bid_signer(signed_maker_order)
