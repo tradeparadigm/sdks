@@ -12,7 +12,10 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
+
 from opyn.chains import Chains
+
+
 # ---------------------------------------------------------------------------
 # Data Classes
 # ---------------------------------------------------------------------------
@@ -21,14 +24,17 @@ class Domain:
     """
     Domain parameters for signatures
     """
+
     name: str
     version: str
     chainId: int
     verifyingContract: str
 
+
 @dataclass
 class MessageToSign:
     """Bid message to sign off-chain"""
+
     offerId: int
     bidId: int
     signerAddress: str
@@ -37,11 +43,13 @@ class MessageToSign:
     offerToken: str
     bidAmount: int
     sellAmount: int
-    nonce: int 
+    nonce: int
+
 
 @dataclass
 class BidData:
     """Bid data to send on-chain containing bid information and signature"""
+
     offerId: int
     bidId: int
     signerAddress: str
@@ -54,16 +62,20 @@ class BidData:
     r: str
     s: str
 
+
 @dataclass
 class ContractConfig:
     """Configuration needed to connect to a Contract"""
+
     address: str
     rpc_uri: str
     chain_id: Chains = Chains.ETHEREUM
 
+
 @dataclass
 class Offer:
     """On-chain offer"""
+
     offerToken: str
     bidToken: str
     minPrice: int

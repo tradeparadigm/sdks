@@ -24,6 +24,7 @@ class oTokenContract(ERC20Contract):
     Args:
         config (ContractConfig): Configuration to setup the Contract
     """
+
     abi_location = 'abis/oToken.json'
 
     def get_otoken_details(self) -> dict:

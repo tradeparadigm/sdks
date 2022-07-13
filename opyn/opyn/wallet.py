@@ -8,16 +8,18 @@
 """ Module for wallet utilities """
 # ---------------------------------------------------------------------------
 
+from dataclasses import asdict
+
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
 import eth_keys
-from dataclasses import asdict
-from opyn.definitions import  Domain, MessageToSign, BidData, ContractConfig
+from py_eth_sig_utils.signing import sign_typed_data
+from web3 import Web3
+
+from opyn.definitions import BidData, ContractConfig, Domain, MessageToSign
 from opyn.erc20 import ERC20Contract
 from opyn.utils import get_address
-from web3 import Web3
-from py_eth_sig_utils.signing import sign_typed_data
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -39,7 +41,7 @@ RFQ_TYPES = {
         {"name": "bidAmount", "type": "uint256"},
         {"name": "sellAmount", "type": "uint256"},
         {"name": "nonce", "type": "uint256"},
-    ]
+    ],
 }
 MIN_ALLOWANCE = 100000000
 
@@ -71,7 +73,9 @@ class Wallet:
             if not self.public_key:
                 self.public_key = get_address(self.signer.public_key.to_address())
 
-    def sign_bid_data(self, domain: Domain, message_to_sign: MessageToSign, types: dict = RFQ_TYPES) -> BidData:
+    def sign_bid_data(
+        self, domain: Domain, message_to_sign: MessageToSign, types: dict = RFQ_TYPES
+    ) -> BidData:
         """Sign a bid using py_eth_sig_utils
 
         Args:
@@ -118,7 +122,7 @@ class Wallet:
             sellAmount=message_to_sign.sellAmount,
             v=signature[0],
             r=Web3.toHex(signature[1].to_bytes(32, 'big')),
-            s=Web3.toHex(signature[2].to_bytes(32, 'big'))
+            s=Web3.toHex(signature[2].to_bytes(32, 'big')),
         )
 
     def verify_allowance(self, settlement_config: ContractConfig, token_address: str) -> bool:
@@ -139,13 +143,12 @@ class Wallet:
         token = ERC20Contract(token_config)
 
         allowance = (
-            token.get_allowance(self.public_key, settlement_config.address)
-            / token.decimals
+            token.get_allowance(self.public_key, settlement_config.address) / token.decimals
         )
 
         return allowance > MIN_ALLOWANCE
 
-    def allow_more(self, settlement_config: ContractConfig, token_address: str, amount: str): 
+    def allow_more(self, settlement_config: ContractConfig, token_address: str, amount: str):
         """Increase settlement contract allowance
 
         Args:

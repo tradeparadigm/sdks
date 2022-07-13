@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Created By: Steven@Ribbon
 # Created Date: 04/04/2022
 # version ='0.1.0'
@@ -22,27 +22,27 @@ ALGORITHM = 'EdDSA'
 # Authenticator
 # ---------------------------------------------------------------------------
 class Authenticator:
-  """
-  Object to generate JWT signature
-
-  Args:
-      key (str): API key
-
-  Attributes:
-      key (str): API key in PKSI format
-  """
-  def __init__(self, key: str):
-    self.key = '-----BEGIN PRIVATE KEY-----\n' \
-      + key + '\n-----END PRIVATE KEY-----'
-
-  def sign_jwt(self, payload: dict):
     """
-    Method to generate JWT signature
+    Object to generate JWT signature
 
     Args:
-        payload (dict): payload to sign
+        key (str): API key
 
-    Returns:
-        jwt (dict): JWT signature
+    Attributes:
+        key (str): API key in PKSI format
     """
-    return jwt.encode(payload, self.key, algorithm=ALGORITHM)
+
+    def __init__(self, key: str):
+        self.key = '-----BEGIN PRIVATE KEY-----\n' + key + '\n-----END PRIVATE KEY-----'
+
+    def sign_jwt(self, payload: dict):
+        """
+        Method to generate JWT signature
+
+        Args:
+            payload (dict): payload to sign
+
+        Returns:
+            jwt (dict): JWT signature
+        """
+        return jwt.encode(payload, self.key, algorithm=ALGORITHM)
