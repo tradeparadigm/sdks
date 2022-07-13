@@ -192,29 +192,3 @@ auth = Authenticator(api_key)
 jwtSignature = auth.sign_jwt({"some": "payload"})
 print(jwtSignature)
 ```
-
-## Development
-
-To contribute to this package you may set up a dedicated container:
-```bash
-$ pwd
-[...]/sdks/ribbon
-
-# open a container with python
-$ docker run -it --rm \
-    -v $(pwd):/tmp/code -w /tmp/code \
-    -p 8888:8888 \
-    python:3.10 \
-    bash
-
-# install the library in development mode
-pip3 install -e /code
-
-# run code that accesses the ribbon sdk
-python3 my_examples.py
-
-# optional: add and use ipython/jypiter
-pip3 install ipython jupyter
-jupyter notebook --allow-root --no-browser --ip=0.0.0.0
-# now browse the http://127.0.0.1:8888/?token=... link in the output
-```
