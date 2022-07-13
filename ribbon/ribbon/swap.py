@@ -37,6 +37,8 @@ DETAILED_ERROR_MESSAGES = {
     "SELLER_BALANCE_LOW": "Seller has insufficienct oToken balance.",
 }
 
+GAS_LIMIT = 200000
+
 # ---------------------------------------------------------------------------
 # Swap Contract
 # ---------------------------------------------------------------------------
@@ -136,11 +138,14 @@ class SwapContract(ContractConnection):
         offer.biddingToken = get_address(offer.biddingToken)
 
         nonce = self.w3.eth.get_transaction_count(wallet.public_key) 
-        tx = self.contract.functions.createOffer(*list(asdict(offer).values())) \
-            .buildTransaction({
+        tx = self.contract.functions.createOffer(
+            *list(asdict(offer).values())
+        ).buildTransaction(
+            {
                 "nonce": nonce,
-                "gas": 150000,
-            })
+                "gas": GAS_LIMIT,
+            }
+        )
 
         signed_tx = self.w3.eth.account \
             .sign_transaction(tx, private_key=wallet.private_key)
