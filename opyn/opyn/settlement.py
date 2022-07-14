@@ -97,10 +97,12 @@ class SettlementContract(ContractConnection):
 
         return {
             'seller': details[0],
-            'offerToken': details[1],
-            'bidToken': details[3],
-            'minPrice': details[2],
+            'oToken': details[1],
+            'biddingToken': details[2],
+            'minPrice': details[3],
             'minBidSize': details[4],
+            'totalSize': details[5],
+            'availableSize': details[5],
         }
 
     def validate_bid(self, bid: BidData) -> str:
