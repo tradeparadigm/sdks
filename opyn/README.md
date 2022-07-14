@@ -15,7 +15,7 @@ python3 -m pip install \
 
 There are different things you are able to do with this package.
 
-### Define domain 
+### Define domain
 
 ```python
 from opyn.definitions import Chains, ContractConfig, Domain
@@ -45,6 +45,7 @@ print(asdict(domain))
 ```
 
 This may output something similar to:
+
 ```python
 {'name': 'OPYN RFQ', 'version': '1', 'chainId': 3, 'verifyingContract': '0x...'}
 ```
@@ -86,6 +87,7 @@ settlement_contract.create_offer(offerToCreate, taker_wallet)
 
 offerId = settlement_contract.get_offer_counter()
 ```
+
 ### Get signer nonce to use for signing bid
 
 ```python
@@ -131,17 +133,18 @@ print(result)
 ```
 
 Example output
+
 ```
 {
-    'errors': 4, 
+    'errors': 4,
     'messages': [
-        'SIGNATURE_MISMATCHED', 
-        'BID_EXCEED_TOTAL_SIZE', 
-        'BIDDER_ALLOWANCE_LOW', 
+        'SIGNATURE_MISMATCHED',
+        'BID_EXCEED_TOTAL_SIZE',
+        'BIDDER_ALLOWANCE_LOW',
         'SELLER_ALLOWANCE_LOW'
-    ]                       
+    ]
 }
-```                                                         
+```
 
 ### Fetching offer details
 
@@ -188,6 +191,7 @@ print(check)
 ### How to run test file
 
 - Make sure to have the following environment variables in `.env` file:
+
 ```
 RPC_TOKEN=
 RPC_URL=
@@ -196,6 +200,7 @@ MAKER_PrivKEY=
 TAKER_PubKEY=
 TAKER_PrivKEY=
 ```
+
 - Make sure to build the Opyn module
 - Run `pip3 install -I opyn/dist/opyn-0.1.0-py3-none-any.whl`
 - Run python3 opyn_test.py
@@ -203,4 +208,4 @@ TAKER_PrivKEY=
 ## Settlement Contract Addresses
 
 - Mainnet:
-- Ropsten: 0xD19440e4D2Fe504E8C463d4844541734ec3C6b9e
+- Ropsten: 0xc18DAA3DBE4B0F0810c8A4EeABc225713313204e
