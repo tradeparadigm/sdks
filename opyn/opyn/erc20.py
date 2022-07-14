@@ -75,13 +75,16 @@ class ERC20Contract(ContractConnection):
 
         return response
 
-    def approve(self, publicKey: str, privateKey: str, spender: str, amount: str):
-        nonce = self.w3.eth.get_transaction_count(publicKey)
-        tx = self.contract.functions.approve(get_address(spender), amount).buildTransaction(
-            {"nonce": nonce}
-        )
+    def approve(self, publicKey: str, privateKey: str, spender: str, amount: int):
+        nonce = self.w3.eth.get_transaction_count(publicKey) 
+        tx = self.contract.functions.approve(get_address(spender), amount) \
+            .buildTransaction({
+                "nonce": nonce,
+                "gas": 3000000,
+            })
 
-        signed_tx = self.w3.eth.account.sign_transaction(tx, private_key=privateKey)
+        signed_tx = self.w3.eth.account \
+            .sign_transaction(tx, private_key=privateKey)
 
         self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
 

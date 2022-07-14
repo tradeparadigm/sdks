@@ -146,7 +146,7 @@ class Wallet:
 
         return allowance > MIN_ALLOWANCE
 
-    def allow_more(self, settlement_config: ContractConfig, token_address: str, amount: str):
+    def allow_more(self, settlement_config: ContractConfig, token_address: str, amount: int): 
         """Increase settlement contract allowance
 
         Args:
