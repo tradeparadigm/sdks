@@ -14,6 +14,8 @@
 from dataclasses import dataclass
 
 from opyn.chains import Chains
+
+
 # ---------------------------------------------------------------------------
 # Data Classes
 # ---------------------------------------------------------------------------
@@ -32,6 +34,7 @@ class Domain:
 @dataclass
 class MessageToSign:
     """Bid message to sign off-chain"""
+
     offerId: int
     bidId: int
     signerAddress: str
@@ -46,6 +49,7 @@ class MessageToSign:
 @dataclass
 class BidData:
     """Bid data to send on-chain containing bid information and signature"""
+
     offerId: int
     bidId: int
     signerAddress: str

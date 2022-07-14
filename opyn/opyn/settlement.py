@@ -17,8 +17,8 @@ from shutil import ExecError
 from web3 import Web3
 
 from opyn.contract import ContractConnection
-from opyn.utils import get_address, ADDRESS_ZERO
-from opyn.definitions import Offer, BidData
+from opyn.definitions import BidData, Offer
+from opyn.utils import ADDRESS_ZERO, get_address
 from opyn.wallet import Wallet
 
 

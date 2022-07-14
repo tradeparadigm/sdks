@@ -57,8 +57,8 @@ maker_message = MessageToSign(
     bidToken=opyn_usdc_token_address,
     offerToken=osqth_token_address,
     bidAmount=maker_order_amount,
-    sellAmount=1000*10**6,
-    nonce=maker_nonce
+    sellAmount=1000 * 10**6,
+    nonce=maker_nonce,
 )
 signed_maker_order = maker_wallet.sign_bid_data(domain, maker_message)
 on_chain_signer = settlement_contract.get_bid_signer(signed_maker_order)
@@ -68,4 +68,4 @@ result = settlement_contract.validate_bid(signed_maker_order)
 print(result)
 offer_details = settlement_contract.get_offer_details(offerId)
 print('offerDetails', offer_details)
-maker_wallet.allow_more(settlement_config, osqth_token_address, 1*10**18)
+maker_wallet.allow_more(settlement_config, osqth_token_address, 1 * 10**18)
