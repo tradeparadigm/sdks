@@ -1,7 +1,10 @@
 from __future__ import annotations
+
 import typing
+
 from solana.publickey import PublicKey
-from solana.transaction import TransactionInstruction, AccountMeta
+from solana.transaction import AccountMeta, TransactionInstruction
+
 from ..program_id import PROGRAM_ID
 
 
@@ -28,20 +31,14 @@ def exec(accounts: ExecAccounts) -> TransactionInstruction:
             is_signer=False,
             is_writable=True,
         ),
-        AccountMeta(
-            pubkey=accounts["counterparty_give_pool"], is_signer=False, is_writable=True
-        ),
+        AccountMeta(pubkey=accounts["counterparty_give_pool"], is_signer=False, is_writable=True),
         AccountMeta(
             pubkey=accounts["whitelist_token_account"],
             is_signer=False,
             is_writable=False,
         ),
-        AccountMeta(
-            pubkey=accounts["system_program"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["token_program"], is_signer=False, is_writable=False
-        ),
+        AccountMeta(pubkey=accounts["system_program"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["token_program"], is_signer=False, is_writable=False),
     ]
     identifier = b"2\x10s3\xa8z9-"
     encoded_args = b""

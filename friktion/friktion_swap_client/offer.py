@@ -1,6 +1,9 @@
 from typing import Union
+
 from friktion_swap_client.friktion_anchor.accounts.swap_order import SwapOrder
 from solana.publickey import PublicKey
+
+
 class Offer(object):
     oToken: PublicKey
     biddingToken: PublicKey
@@ -15,7 +18,7 @@ class Offer(object):
         biddingToken: PublicKey,
         offerAmount: int,
         minPrice: int,
-        minBidSize: int
+        minBidSize: int,
     ):
         self.oToken = oToken
         self.biddingToken = biddingToken
@@ -32,7 +35,7 @@ class Offer(object):
             swap_order.receive_mint,
             swap_order.give_size,
             0,
-            swap_order.give_size
+            swap_order.give_size,
         )
         o.swapOrderAddress = address
         return o

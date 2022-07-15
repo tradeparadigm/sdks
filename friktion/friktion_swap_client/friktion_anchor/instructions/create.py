@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 import typing
-from solana.publickey import PublicKey
-from solana.transaction import TransactionInstruction, AccountMeta
+
 import borsh_construct as borsh
+from solana.publickey import PublicKey
+from solana.transaction import AccountMeta, TransactionInstruction
+
 from ..program_id import PROGRAM_ID
 
 
@@ -52,27 +55,13 @@ def create(args: CreateArgs, accounts: CreateAccounts) -> TransactionInstruction
         AccountMeta(pubkey=accounts["give_pool"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["give_mint"], is_signer=False, is_writable=False),
         AccountMeta(pubkey=accounts["receive_pool"], is_signer=False, is_writable=True),
-        AccountMeta(
-            pubkey=accounts["receive_mint"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["creator_give_pool"], is_signer=False, is_writable=True
-        ),
-        AccountMeta(
-            pubkey=accounts["counterparty"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["whitelist_token_mint"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["options_contract"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["system_program"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["token_program"], is_signer=False, is_writable=False
-        ),
+        AccountMeta(pubkey=accounts["receive_mint"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["creator_give_pool"], is_signer=False, is_writable=True),
+        AccountMeta(pubkey=accounts["counterparty"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["whitelist_token_mint"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["options_contract"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["system_program"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["token_program"], is_signer=False, is_writable=False),
         AccountMeta(pubkey=accounts["rent"], is_signer=False, is_writable=False),
     ]
     identifier = b"\x18\x1e\xc8(\x05\x1c\x07w"

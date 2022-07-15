@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 import typing
-from solana.publickey import PublicKey
-from solana.transaction import TransactionInstruction, AccountMeta
+
 import borsh_construct as borsh
+from solana.publickey import PublicKey
+from solana.transaction import AccountMeta, TransactionInstruction
+
 from ..program_id import PROGRAM_ID
 
 
@@ -49,9 +52,7 @@ class NewContractAccounts(typing.TypedDict):
     rent: PublicKey
 
 
-def new_contract(
-    args: NewContractArgs, accounts: NewContractAccounts
-) -> TransactionInstruction:
+def new_contract(args: NewContractArgs, accounts: NewContractAccounts) -> TransactionInstruction:
     keys: list[AccountMeta] = [
         AccountMeta(pubkey=accounts["payer"], is_signer=True, is_writable=True),
         AccountMeta(pubkey=accounts["admin_key"], is_signer=False, is_writable=False),
@@ -59,28 +60,14 @@ def new_contract(
         AccountMeta(pubkey=accounts["contract"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["writer_mint"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["option_mint"], is_signer=False, is_writable=True),
-        AccountMeta(
-            pubkey=accounts["underlying_mint"], is_signer=False, is_writable=True
-        ),
+        AccountMeta(pubkey=accounts["underlying_mint"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["quote_mint"], is_signer=False, is_writable=True),
-        AccountMeta(
-            pubkey=accounts["underlying_pool"], is_signer=False, is_writable=True
-        ),
-        AccountMeta(
-            pubkey=accounts["claimable_pool"], is_signer=False, is_writable=True
-        ),
-        AccountMeta(
-            pubkey=accounts["mint_fee_account"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["exercise_fee_account"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["system_program"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["token_program"], is_signer=False, is_writable=False
-        ),
+        AccountMeta(pubkey=accounts["underlying_pool"], is_signer=False, is_writable=True),
+        AccountMeta(pubkey=accounts["claimable_pool"], is_signer=False, is_writable=True),
+        AccountMeta(pubkey=accounts["mint_fee_account"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["exercise_fee_account"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["system_program"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["token_program"], is_signer=False, is_writable=False),
         AccountMeta(pubkey=accounts["rent"], is_signer=False, is_writable=False),
     ]
     identifier = b'\n\xd4,"c\x7f\xc3\x8f'

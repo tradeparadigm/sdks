@@ -1,11 +1,18 @@
-from calendar import day_abbr
-from friktion_swap_client.offer import Offer
-from friktion_swap_client.swap import *
-import time
 import asyncio
-from spl.token.async_client import AsyncToken
-from friktion_swap_client.friktion_anchor.types.order_status import *
+import time
+
+from anchorpy import Wallet
+from friktion_swap_client.bid_details import BidDetails
+from friktion_swap_client.friktion_anchor.accounts.swap_order import SwapOrder
+from friktion_swap_client.friktion_anchor.types.order_status import Created, Filled
+from friktion_swap_client.offer import Offer
+from friktion_swap_client.swap import MIN_REQUIRED_ALLOWANCE, Network, SwapContract
+from friktion_swap_client.swap_order_template import SwapOrderTemplate
+from solana.publickey import PublicKey
+from solana.rpc.async_api import AsyncClient
 from solana.rpc.core import RPCException
+from spl.token.async_client import AsyncToken
+from spl.token.constants import TOKEN_PROGRAM_ID
 from spl.token.instructions import get_associated_token_address
 
 c = SwapContract(Network.DEVNET)
@@ -27,59 +34,42 @@ OPTIONS_CONTRACT_KEY = PublicKey("GriGJSF84XdPq6Td6u6Hu8oqKgwTXY94fvwJrJf1gQTW")
 # GIVE_MINT = PublicKey("")
 # RECEIVE_MINT = PublicKey("")
 
+
 async def main_def():
 
     client = AsyncClient(c.url)
     await client.is_connected()
-    
-    give_token = AsyncToken(
-        client,
-        GIVE_MINT,
-        TOKEN_PROGRAM_ID,
-        wallet.payer
-    )
-    receive_token = AsyncToken(
-        client,
-        RECEIVE_MINT,
-        TOKEN_PROGRAM_ID,
-        wallet.payer
-    )
 
-    ### create offer ###
+    give_token = AsyncToken(client, GIVE_MINT, TOKEN_PROGRAM_ID, wallet.payer)
+    receive_token = AsyncToken(client, RECEIVE_MINT, TOKEN_PROGRAM_ID, wallet.payer)
 
-    creator_give_pool_key = get_associated_token_address(
-        wallet.public_key,
-        GIVE_MINT
-    )
-
-    creator_receive_pool_key = get_associated_token_address(
-        wallet.public_key,
-        RECEIVE_MINT
-    )
-
-    counterparty_receive_pool_key = get_associated_token_address(
-        wallet.public_key,
-        RECEIVE_MINT
-    )
+    # create offer
+    creator_give_pool_key = get_associated_token_address(wallet.public_key, GIVE_MINT)
+    creator_receive_pool_key = get_associated_token_address(wallet.public_key, RECEIVE_MINT)
+    counterparty_receive_pool_key = get_associated_token_address(wallet.public_key, RECEIVE_MINT)
 
     # create associated token accounts
     try:
         await give_token.create_associated_token_account(wallet.public_key)
     except RPCException as e:
-        print('DEBUG: already created associated token account. Ignore this usually!\n e = {}'.format(e))
+        print(f'DEBUG: already created associated token account. Ignore this usually!\n{e=}')
 
     try:
         await receive_token.create_associated_token_account(wallet.public_key)
     except RPCException as e:
-        print('DEBUG: already created associated token account. Ignore this usually!\n e = {}'.format(e))
-         
+        print(f'DEBUG: already created associated token account. Ignore this usually!\n{e=}')
 
     try:
-        print('current allowance: ', c.get_allowance_and_amount(RECEIVE_MINT, counterparty_receive_pool_key))
+        print(
+            'current allowance: ',
+            c.get_allowance_and_amount(RECEIVE_MINT, counterparty_receive_pool_key),
+        )
         assert c.verify_allowance(RECEIVE_MINT, counterparty_receive_pool_key)
     except AssertionError:
         print("allowance needs to be delegated, doing...")
-        c.give_allowance(wallet, counterparty_receive_pool_key, RECEIVE_MINT,  MIN_REQUIRED_ALLOWANCE)
+        c.give_allowance(
+            wallet, counterparty_receive_pool_key, RECEIVE_MINT, MIN_REQUIRED_ALLOWANCE
+        )
         time.sleep(5.0)
         assert c.verify_allowance(RECEIVE_MINT, counterparty_receive_pool_key)
 
@@ -87,14 +77,15 @@ async def main_def():
 
     # create a dummy offer for testing purposes
     (swap_order_pre_fill, swap_order_key) = await c.create_offer(
-        wallet, SwapOrderTemplate.from_offer(
+        wallet,
+        SwapOrderTemplate.from_offer(
             Offer(
                 oToken=GIVE_MINT,
                 biddingToken=RECEIVE_MINT,
                 offerAmount=1,
                 minPrice=0,
-                minBidSize=1
-            ), 
+                minBidSize=1,
+            ),
             OPTIONS_CONTRACT_KEY,
             1,
             int(time.time()) + 10000,
@@ -103,7 +94,7 @@ async def main_def():
             True,
             False,
             WHITELIST_TOKEN_MINT,
-        )
+        ),
     )
 
     assert swap_order_pre_fill.status == Created()
@@ -114,17 +105,16 @@ async def main_def():
 
     print('2. taker executes bid against offer...')
 
-    bid_details =  BidDetails(
-            wallet.public_key, swap_order_pre_fill.order_id,
-            creator_give_pool_key,
-            creator_receive_pool_key,
-            1,
-            1
-        )
-    # fill offer via bid
-    await c.validate_bid(
-        bid_details,
+    bid_details = BidDetails(
+        wallet.public_key,
+        swap_order_pre_fill.order_id,
+        creator_give_pool_key,
+        creator_receive_pool_key,
+        1,
+        1,
     )
+    # fill offer via bid
+    await c.validate_bid(bid_details)
 
     bid_msg = bid_details.as_signed_msg(wallet, 1, 1)
     await c.validate_and_exec_bid_msg(wallet, bid_details, bid_msg, offer_pre_fill)
@@ -139,18 +129,18 @@ async def main_def():
 
     assert swap_order_post_fill.status == Filled()
 
-    print(
-        'otoken details =',
-        await c.get_otoken_details_for_offer(offer_post_fill)
-    )
+    print('otoken details =', await c.get_otoken_details_for_offer(offer_post_fill))
 
     print('order post fill: {}'.format(swap_order_post_fill))
 
     print('3. creator reclaims assets...')
 
-    await c.reclaim_assets_post_fill(wallet, swap_order_key, creator_give_pool_key, creator_receive_pool_key)
+    await c.reclaim_assets_post_fill(
+        wallet, swap_order_key, creator_give_pool_key, creator_receive_pool_key
+    )
     print('Finished!')
-    
+
     await client.close()
-    
+
+
 asyncio.run(main_def())

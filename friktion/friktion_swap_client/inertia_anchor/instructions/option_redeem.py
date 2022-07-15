@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 import typing
-from solana.publickey import PublicKey
-from solana.transaction import TransactionInstruction, AccountMeta
+
 import borsh_construct as borsh
+from solana.publickey import PublicKey
+from solana.transaction import AccountMeta, TransactionInstruction
+
 from ..program_id import PROGRAM_ID
 
 
@@ -28,13 +31,9 @@ def option_redeem(
     args: OptionRedeemArgs, accounts: OptionRedeemAccounts
 ) -> TransactionInstruction:
     keys: list[AccountMeta] = [
-        AccountMeta(
-            pubkey=accounts["redeemer_authority"], is_signer=True, is_writable=False
-        ),
+        AccountMeta(pubkey=accounts["redeemer_authority"], is_signer=True, is_writable=False),
         AccountMeta(pubkey=accounts["contract"], is_signer=False, is_writable=False),
-        AccountMeta(
-            pubkey=accounts["writer_token_source"], is_signer=False, is_writable=True
-        ),
+        AccountMeta(pubkey=accounts["writer_token_source"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["writer_mint"], is_signer=False, is_writable=True),
         AccountMeta(
             pubkey=accounts["contract_underlying_tokens"],
@@ -46,9 +45,7 @@ def option_redeem(
             is_signer=False,
             is_writable=True,
         ),
-        AccountMeta(
-            pubkey=accounts["token_program"], is_signer=False, is_writable=False
-        ),
+        AccountMeta(pubkey=accounts["token_program"], is_signer=False, is_writable=False),
         AccountMeta(pubkey=accounts["clock"], is_signer=False, is_writable=False),
     ]
     identifier = b"\x14\x0c\xaa\x94\x11\x81XZ"

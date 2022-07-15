@@ -1,15 +1,13 @@
-from anchorpy import Wallet
+import sys
+
+from friktion_swap_client.constants import WHITELIST_TOKEN_MINT
 from friktion_swap_client.offer import Offer
 from solana.publickey import PublicKey
-import sys
-sys.path.insert(0, "/Users/alexwlezien/Friktion/paradigm-integration/friktion-anchor")
-from .friktion_anchor.accounts import SwapOrder, UserOrders
-from .friktion_anchor.program_id import PROGRAM_ID
-from .friktion_anchor.instructions import create
-from solana.rpc.async_api import AsyncClient
-from .constants import WHITELIST_TOKEN_MINT
 
-class SwapOrderTemplate():
+sys.path.insert(0, "/Users/alexwlezien/Friktion/paradigm-integration/friktion-anchor")
+
+
+class SwapOrderTemplate:
 
     options_contract_key: PublicKey
 
@@ -18,7 +16,7 @@ class SwapOrderTemplate():
     expiry: int
     is_counterparty_provided: bool
     is_whitelisted: bool
-    
+
     give_mint: PublicKey
     receive_mint: PublicKey
 
@@ -26,14 +24,20 @@ class SwapOrderTemplate():
     counterparty: PublicKey
     whitelist_token_mint: PublicKey
 
-    def __init__(self, options_contract_key: PublicKey, give_size: int, receive_size: int, 
-                expiry: int, give_mint: PublicKey,
-                receive_mint: PublicKey, creator_give_pool: PublicKey,
-                counterparty: PublicKey,
-                is_counterparty_provided: bool = True, 
-                is_whitelisted: bool = False,
-                whitelist_token_mint: PublicKey = WHITELIST_TOKEN_MINT
-        ):
+    def __init__(
+        self,
+        options_contract_key: PublicKey,
+        give_size: int,
+        receive_size: int,
+        expiry: int,
+        give_mint: PublicKey,
+        receive_mint: PublicKey,
+        creator_give_pool: PublicKey,
+        counterparty: PublicKey,
+        is_counterparty_provided: bool = True,
+        is_whitelisted: bool = False,
+        whitelist_token_mint: PublicKey = WHITELIST_TOKEN_MINT,
+    ):
         self.options_contract_key = options_contract_key
         self.give_size = give_size
         self.receive_size = receive_size
@@ -48,13 +52,7 @@ class SwapOrderTemplate():
         self.whitelist_token_mint = whitelist_token_mint
 
     def as_offer(self) -> Offer:
-        return Offer(
-            self.give_mint,
-            self.receive_mint,
-            self.give_size,
-            0,
-            self.give_size
-        )
+        return Offer(self.give_mint, self.receive_mint, self.give_size, 0, self.give_size)
 
     @staticmethod
     def from_offer(
@@ -62,12 +60,12 @@ class SwapOrderTemplate():
         options_contract: PublicKey,
         # placeholder: can be any number, will be deprecated soon
         receive_amount: int,
-        expiry: int, 
+        expiry: int,
         creator_give_pool: PublicKey,
         counterparty: PublicKey,
-        is_counterparty_provided: bool = True, 
+        is_counterparty_provided: bool = True,
         is_whitelisted: bool = False,
-        whitelist_token_mint: PublicKey = WHITELIST_TOKEN_MINT
+        whitelist_token_mint: PublicKey = WHITELIST_TOKEN_MINT,
     ):
         return SwapOrderTemplate(
             options_contract,
@@ -80,5 +78,5 @@ class SwapOrderTemplate():
             counterparty,
             is_counterparty_provided,
             is_whitelisted,
-            whitelist_token_mint
+            whitelist_token_mint,
         )
