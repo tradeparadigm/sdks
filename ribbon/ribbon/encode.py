@@ -15,7 +15,7 @@ import re
 # ---------------------------------------------------------------------------
 from web3 import Web3
 
-from ribbon.utils import *
+from ribbon.utils import encode_type, get_address, hex_concat, hex_pad_right, hex_zero_pad, id
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -32,6 +32,7 @@ DOMAIN_FIELD_TYPES = {
 HEX_TRUE = hex_zero_pad(Web3.toHex(1), 32)
 HEX_FALSE = hex_zero_pad(Web3.toHex(0), 32)
 ADDRESS_ZERO = hex_zero_pad(Web3.toHex(0), 20)
+
 
 # ---------------------------------------------------------------------------
 # Helper Functions

@@ -13,3 +13,9 @@ repos:
   hooks:
   - id: isort
     args: [--sp=pyproject.toml]
+- repo: https://gitlab.com/pycqa/flake8
+  rev: 4.0.1
+  hooks:
+  - id: flake8
+    entry: pflake8
+    additional_dependencies: [pyproject-flake8]

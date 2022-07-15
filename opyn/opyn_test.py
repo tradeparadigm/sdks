@@ -10,7 +10,7 @@ import os
 
 from dotenv import load_dotenv
 
-from opyn.definitions import *
+from opyn.definitions import Chains, ContractConfig, Domain, MessageToSign, Offer
 from opyn.settlement import SettlementContract
 from opyn.wallet import Wallet
 
