@@ -12,24 +12,24 @@ This python SDK enables interaction with the on-chain Friktion swap program. Thi
       (NOTE: ANCHOR_PROVIDER_URL determines if devnet, testnet, mainnet, etc)
       (NOTE: make sure you have SOL in the ANCHOR_WALLET for the correct cluster)
 
-Example for step #3: 
+Example for step #3:
      ```export ANCHOR_PROVIDER_URL=https://api.devnet.solana.com```
      ```export ANCHOR_WALLET=~/.config/solana/id.json```
-    
+
 4. ```solana-keygen pubkey $ANCHOR_WALLET | xargs solana airdrop 1```
 5. ensure you have devnet tokens for the GIVE_MINT and RECEIVE_MINT specified at the top of ```main.py```
 
 ## Testing
 
 The following command will run a script that 1. creates an offer 2. fetches the offer (and asserts that it is available to execute), 3. fills the offer with a corresponding bid
-```cd friktion-swap-client && python3 main.py```
+```cd friktion && python3 main.py```
 
 ## Basic Usage
 
 ```main.py``` should be used as a reference whenever possible. However, if it is not available below are some samples of python code using the SDK.
 
 **Creating Offer**
-```python   
+```python
 offer_1 = await c.create_offer(
         wallet, SwapOrderTemplate(
             1, 1, int(time.time()) + 10000,

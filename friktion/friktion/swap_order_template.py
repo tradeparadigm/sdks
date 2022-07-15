@@ -1,8 +1,9 @@
 import sys
 
-from friktion_swap_client.constants import WHITELIST_TOKEN_MINT
-from friktion_swap_client.offer import Offer
 from solana.publickey import PublicKey
+
+from friktion.constants import WHITELIST_TOKEN_MINT
+from friktion.offer import Offer
 
 sys.path.insert(0, "/Users/alexwlezien/Friktion/paradigm-integration/friktion-anchor")
 

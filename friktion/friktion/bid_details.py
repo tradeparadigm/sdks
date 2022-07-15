@@ -1,7 +1,8 @@
 from anchorpy import Wallet
-from friktion_swap_client.pda import SwapOrderAddresses
 from nacl import signing  # type: ignore
 from solana.publickey import PublicKey
+
+from friktion.pda import SwapOrderAddresses
 
 
 class BidDetails:
