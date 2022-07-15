@@ -1,10 +1,13 @@
-from typing import Dict, List, Tuple
-from typing_extensions import Self
-from friktion_swap_client.friktion_anchor.accounts.swap_order import SwapOrder
-from friktion_swap_client.friktion_anchor.accounts.user_orders import UserOrders
-from friktion_swap_client.friktion_anchor.program_id import PROGRAM_ID
-from solana.rpc.async_api import AsyncClient
+from typing import Tuple
+
 from solana.publickey import PublicKey
+from solana.rpc.async_api import AsyncClient
+
+from friktion_swap_client.friktion_anchor.accounts.swap_order import SwapOrder
+from friktion_swap_client.friktion_anchor.accounts.user_orders import \
+    UserOrders
+from friktion_swap_client.friktion_anchor.program_id import PROGRAM_ID
+
 
 def find_swap_order_address(user: PublicKey, order_id: int) -> Tuple[PublicKey, int]:
     seeds = [str.encode("swapOrder"), bytes(user), order_id.to_bytes(8, byteorder="little")]
