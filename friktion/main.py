@@ -75,12 +75,13 @@ async def main_def():
          
 
     try:
-        print('current allowance: ', c.verify_allowance(wallet, RECEIVE_MINT, counterparty_receive_pool_key, True))
+        print('current allowance: ', c.get_allowance_and_amount(RECEIVE_MINT, counterparty_receive_pool_key))
+        assert c.verify_allowance(RECEIVE_MINT, counterparty_receive_pool_key)
     except AssertionError:
         print("allowance needs to be delegated, doing...")
         c.give_allowance(wallet, counterparty_receive_pool_key, RECEIVE_MINT,  MIN_REQUIRED_ALLOWANCE)
         time.sleep(5.0)
-        c.verify_allowance(wallet, RECEIVE_MINT, counterparty_receive_pool_key, True)
+        assert c.verify_allowance(RECEIVE_MINT, counterparty_receive_pool_key)
 
     print('1. creator initializes swap offer...')
 
@@ -122,10 +123,7 @@ async def main_def():
         )
     # fill offer via bid
     await c.validate_bid(
-        wallet,
         bid_details,
-        swap_order_pre_fill,
-        offer_pre_fill
     )
 
     bid_msg = bid_details.as_signed_msg(wallet, 1, 1)

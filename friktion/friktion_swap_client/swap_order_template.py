@@ -1,6 +1,5 @@
 from anchorpy import Wallet
 from friktion_swap_client.offer import Offer
-from numpy import rec
 from solana.publickey import PublicKey
 import sys
 sys.path.insert(0, "/Users/alexwlezien/Friktion/paradigm-integration/friktion-anchor")
