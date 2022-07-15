@@ -1,14 +1,16 @@
 import typing
-from dataclasses import dataclass
 from base64 import b64decode
-from solana.publickey import PublicKey
-from solana.rpc.async_api import AsyncClient
-from solana.rpc.commitment import Commitment
+from dataclasses import dataclass
+
 import borsh_construct as borsh
+from anchorpy.borsh_extension import BorshPubkey
 from anchorpy.coder.accounts import ACCOUNT_DISCRIMINATOR_SIZE
 from anchorpy.error import AccountInvalidDiscriminator
 from anchorpy.utils.rpc import get_multiple_accounts
-from anchorpy.borsh_extension import BorshPubkey
+from solana.publickey import PublicKey
+from solana.rpc.async_api import AsyncClient
+from solana.rpc.commitment import Commitment
+
 from ..program_id import PROGRAM_ID
 
 
@@ -20,9 +22,7 @@ class UserOrdersJSON(typing.TypedDict):
 @dataclass
 class UserOrders:
     discriminator: typing.ClassVar = b" CbS.\x05\x06\x91"
-    layout: typing.ClassVar = borsh.CStruct(
-        "user" / BorshPubkey, "curr_order_id" / borsh.U64
-    )
+    layout: typing.ClassVar = borsh.CStruct("user" / BorshPubkey, "curr_order_id" / borsh.U64)
     user: PublicKey
     curr_order_id: int
 
@@ -63,9 +63,7 @@ class UserOrders:
     @classmethod
     def decode(cls, data: bytes) -> "UserOrders":
         if data[:ACCOUNT_DISCRIMINATOR_SIZE] != cls.discriminator:
-            raise AccountInvalidDiscriminator(
-                "The discriminator for this account is invalid"
-            )
+            raise AccountInvalidDiscriminator("The discriminator for this account is invalid")
         dec = UserOrders.layout.parse(data[ACCOUNT_DISCRIMINATOR_SIZE:])
         return cls(
             user=dec.user,

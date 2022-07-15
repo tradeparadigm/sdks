@@ -1,9 +1,12 @@
 from __future__ import annotations
+
 import typing
-from solana.publickey import PublicKey
-from solana.transaction import TransactionInstruction, AccountMeta
-from anchorpy.borsh_extension import BorshPubkey
+
 import borsh_construct as borsh
+from anchorpy.borsh_extension import BorshPubkey
+from solana.publickey import PublicKey
+from solana.transaction import AccountMeta, TransactionInstruction
+
 from ..program_id import PROGRAM_ID
 
 
@@ -35,9 +38,7 @@ class ExecMsgAccounts(typing.TypedDict):
 def exec_msg(args: ExecMsgArgs, accounts: ExecMsgAccounts) -> TransactionInstruction:
     keys: list[AccountMeta] = [
         AccountMeta(pubkey=accounts["authority"], is_signer=True, is_writable=False),
-        AccountMeta(
-            pubkey=accounts["delegate_authority"], is_signer=False, is_writable=False
-        ),
+        AccountMeta(pubkey=accounts["delegate_authority"], is_signer=False, is_writable=False),
         AccountMeta(pubkey=accounts["swap_order"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["give_pool"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["receive_pool"], is_signer=False, is_writable=True),
@@ -46,23 +47,15 @@ def exec_msg(args: ExecMsgArgs, accounts: ExecMsgAccounts) -> TransactionInstruc
             is_signer=False,
             is_writable=True,
         ),
-        AccountMeta(
-            pubkey=accounts["counterparty_give_pool"], is_signer=False, is_writable=True
-        ),
+        AccountMeta(pubkey=accounts["counterparty_give_pool"], is_signer=False, is_writable=True),
         AccountMeta(
             pubkey=accounts["whitelist_token_account"],
             is_signer=False,
             is_writable=False,
         ),
-        AccountMeta(
-            pubkey=accounts["instruction_sysvar"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["system_program"], is_signer=False, is_writable=False
-        ),
-        AccountMeta(
-            pubkey=accounts["token_program"], is_signer=False, is_writable=False
-        ),
+        AccountMeta(pubkey=accounts["instruction_sysvar"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["system_program"], is_signer=False, is_writable=False),
+        AccountMeta(pubkey=accounts["token_program"], is_signer=False, is_writable=False),
     ]
     identifier = b"\xf8\x9d\x0f\xda\xc4\xb8\xf5\xb1"
     encoded_args = layout.build(

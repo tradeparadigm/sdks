@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 import typing
-from solana.publickey import PublicKey
-from solana.transaction import TransactionInstruction, AccountMeta
+
 import borsh_construct as borsh
+from solana.publickey import PublicKey
+from solana.transaction import AccountMeta, TransactionInstruction
+
 from ..program_id import PROGRAM_ID
 
 
@@ -27,22 +30,16 @@ class OptionWriteAccounts(typing.TypedDict):
     clock: PublicKey
 
 
-def option_write(
-    args: OptionWriteArgs, accounts: OptionWriteAccounts
-) -> TransactionInstruction:
+def option_write(args: OptionWriteArgs, accounts: OptionWriteAccounts) -> TransactionInstruction:
     keys: list[AccountMeta] = [
-        AccountMeta(
-            pubkey=accounts["writer_authority"], is_signer=True, is_writable=True
-        ),
+        AccountMeta(pubkey=accounts["writer_authority"], is_signer=True, is_writable=True),
         AccountMeta(pubkey=accounts["contract"], is_signer=False, is_writable=False),
         AccountMeta(
             pubkey=accounts["user_underlying_funding_tokens"],
             is_signer=False,
             is_writable=True,
         ),
-        AccountMeta(
-            pubkey=accounts["underlying_pool"], is_signer=False, is_writable=True
-        ),
+        AccountMeta(pubkey=accounts["underlying_pool"], is_signer=False, is_writable=True),
         AccountMeta(
             pubkey=accounts["writer_token_destination"],
             is_signer=False,
@@ -55,12 +52,8 @@ def option_write(
         ),
         AccountMeta(pubkey=accounts["writer_mint"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["option_mint"], is_signer=False, is_writable=True),
-        AccountMeta(
-            pubkey=accounts["fee_destination"], is_signer=False, is_writable=True
-        ),
-        AccountMeta(
-            pubkey=accounts["token_program"], is_signer=False, is_writable=False
-        ),
+        AccountMeta(pubkey=accounts["fee_destination"], is_signer=False, is_writable=True),
+        AccountMeta(pubkey=accounts["token_program"], is_signer=False, is_writable=False),
         AccountMeta(pubkey=accounts["clock"], is_signer=False, is_writable=False),
     ]
     identifier = b"\xbd#\xdc\x18\xe0_r\x1b"
