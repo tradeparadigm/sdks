@@ -2,18 +2,19 @@ import asyncio
 import time
 
 from anchorpy import Wallet
-from friktion_swap_client.bid_details import BidDetails
-from friktion_swap_client.friktion_anchor.accounts.swap_order import SwapOrder
-from friktion_swap_client.friktion_anchor.types.order_status import Created, Filled
-from friktion_swap_client.offer import Offer
-from friktion_swap_client.swap import MIN_REQUIRED_ALLOWANCE, Network, SwapContract
-from friktion_swap_client.swap_order_template import SwapOrderTemplate
 from solana.publickey import PublicKey
 from solana.rpc.async_api import AsyncClient
 from solana.rpc.core import RPCException
 from spl.token.async_client import AsyncToken
 from spl.token.constants import TOKEN_PROGRAM_ID
 from spl.token.instructions import get_associated_token_address
+
+from friktion.bid_details import BidDetails
+from friktion.friktion_anchor.accounts.swap_order import SwapOrder
+from friktion.friktion_anchor.types.order_status import Created, Filled
+from friktion.offer import Offer
+from friktion.swap import MIN_REQUIRED_ALLOWANCE, Network, SwapContract
+from friktion.swap_order_template import SwapOrderTemplate
 
 c = SwapContract(Network.DEVNET)
 

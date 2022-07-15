@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "friktion-swap-client"
+name = "friktion"
 version = "0.1.0"
 description = ""
 authors = ["bigdefidev <bigdefidev@protonmail.com>"]

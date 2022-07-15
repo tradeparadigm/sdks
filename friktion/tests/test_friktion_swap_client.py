@@ -1,4 +1,4 @@
-from friktion_swap_client import __version__
+from friktion import __version__
 
 
 def test_version():

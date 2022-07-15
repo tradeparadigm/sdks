@@ -1,7 +1,8 @@
 from typing import Union
 
-from friktion_swap_client.friktion_anchor.accounts.swap_order import SwapOrder
 from solana.publickey import PublicKey
+
+from friktion.friktion_anchor.accounts.swap_order import SwapOrder
 
 
 class Offer(object):

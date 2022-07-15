@@ -9,14 +9,6 @@ from typing import Tuple
 
 import spl.token._layouts as layouts
 from anchorpy import Provider, Wallet
-from friktion_swap_client.friktion_anchor.instructions import cancel, claim
-from friktion_swap_client.inertia_anchor.accounts import OptionsContract
-from friktion_swap_client.offer import Offer
-from friktion_swap_client.pda import (
-    DELEGATE_AUTHORITY_ADDRESS,
-    SwapOrderAddresses,
-    find_swap_order_address,
-)
 from nacl import signing
 from solana.keypair import Keypair
 from solana.publickey import PublicKey
@@ -30,6 +22,11 @@ from solana.utils.helpers import decode_byte_string
 from spl.token.async_client import AsyncToken
 from spl.token.client import Token
 from spl.token.constants import TOKEN_PROGRAM_ID
+
+from friktion.friktion_anchor.instructions import cancel, claim
+from friktion.inertia_anchor.accounts import OptionsContract
+from friktion.offer import Offer
+from friktion.pda import DELEGATE_AUTHORITY_ADDRESS, SwapOrderAddresses, find_swap_order_address
 
 from .bid_details import BidDetails
 from .friktion_anchor.accounts import SwapOrder
