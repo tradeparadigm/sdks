@@ -1,5 +1,4 @@
 import dataclasses
-import os
 from enum import Enum
 from importlib import import_module
 
@@ -16,16 +15,16 @@ OPYN = 'opyn'
 FRIKTION = 'friktion'
 VENUES = [RIBBON, OPYN]
 
-DOV_VRFQ_RPC_TOKEN = os.environ["DOV_VRFQ_RPC_TOKEN"]
+# DOV_VRFQ_RPC_TOKEN = os.environ["DOV_VRFQ_RPC_TOKEN"]
 
 VENUE_CONFIGURATION = {
     RIBBON: {
         "chain_id": RibbonChains.KOVAN,
-        "rpc_uri": f"https://kovan.infura.io/v3/{DOV_VRFQ_RPC_TOKEN}",
+        # "rpc_uri": f"https://kovan.infura.io/v3/{DOV_VRFQ_RPC_TOKEN}",
     },
     OPYN: {
         "chain_id": OpynChains.ROPSTEN,
-        "rpc_uri": f"https://ropsten.infura.io/v3/{DOV_VRFQ_RPC_TOKEN}",
+        # "rpc_uri": f"https://ropsten.infura.io/v3/{DOV_VRFQ_RPC_TOKEN}",
     },
     FRIKTION: {},
 }
