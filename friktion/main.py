@@ -99,7 +99,7 @@ async def main_def():
 
     assert swap_order_pre_fill.status == Created()
 
-    offer_pre_fill: Offer = await c.get_offer_details(
+    offer_pre_fill: Offer = await c.get_offer_details_for_user(
         wallet.public_key, swap_order_pre_fill.order_id
     )
 
@@ -119,7 +119,7 @@ async def main_def():
     bid_msg = bid_details.as_signed_msg(wallet, 1, 1)
     await c.validate_and_exec_bid_msg(wallet, bid_details, bid_msg, offer_pre_fill)
 
-    offer_post_fill: Offer = await c.get_offer_details(
+    offer_post_fill: Offer = await c.get_offer_details_for_user(
         wallet.public_key, swap_order_pre_fill.order_id
     )
 
