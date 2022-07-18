@@ -35,6 +35,8 @@ from .friktion_anchor.program_id import PROGRAM_ID
 from .swap_order_template import SwapOrderTemplate
 
 
+GLOBAL_FRIKTION_AUTHORITY = PublicKey("7wYqGsQmfVigMSratssoPddfLU1P5srZcM32nvKAgWkj")
+
 def get_token_account(token_account_pk: PublicKey):
     http_client = Client(commitment=Processed)
     resp = http_client.get_account_info(token_account_pk)
@@ -186,7 +188,10 @@ class SwapContract:
 
         return acc
 
-    async def get_offer_details(self, user: PublicKey, order_id: int) -> Offer:
+    async def get_offer_details(self, order_id: int) -> Offer:
+        return await self.get_offer_details_for_user(GLOBAL_FRIKTION_AUTHORITY, order_id)
+
+    async def get_offer_details_for_user(self, user: PublicKey, order_id: int) -> Offer:
         """
         Method to get offer details
         Args:
@@ -204,7 +209,7 @@ class SwapContract:
     async def validate_bid(self, bid_details: BidDetails) -> dict:
         swap_order_creator: PublicKey = bid_details.swap_order_owner
         order_id: int = bid_details.order_id
-        offer: Offer = await self.get_offer_details(swap_order_creator, order_id)
+        offer: Offer = await self.get_offer_details_for_user(swap_order_creator, order_id)
         swap_order: SwapOrder = await self.get_swap_order(swap_order_creator, order_id)
         if bid_details.bid_size < offer.minBidSize:
             return {"error": "bid size is below min bid size"}
