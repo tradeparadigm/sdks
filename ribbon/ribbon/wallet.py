@@ -19,7 +19,6 @@ from ribbon.definitions import Bid, ContractConfig, Domain, SignedBid
 from ribbon.encode import TypedDataEncoder
 from ribbon.erc20 import ERC20Contract
 from ribbon.utils import get_address, hex_zero_pad
-from ribbon.swap import SwapContract
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -168,20 +167,3 @@ class Wallet:
         )
 
         return allowance > MIN_ALLOWANCE
-
-    def verify_authority(self, swap_config: ContractConfig, delegate_address: str) -> bool:
-        """Verify that the delegate is valid for a given wallet
-
-        Args:
-            config (ContractConfig): Configuration to setup the Swap Contract
-            authority_address (str): Address of the authority
-
-        Returns:
-            verified (bool): True if the authority is set for the wallet
-        """
-        swap = SwapContract(
-            address=swap_config.address,
-            rpc_uri=swap_config.rpc_uri,
-            chain_id=swap_config.chain_id,
-        )
-        return swap.verify_authority(self.public_key, delegate_address)

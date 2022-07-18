@@ -123,7 +123,7 @@ class SwapContract(ContractConnection):
                 ],
             }
 
-    def verify_authority(self, wallet: str, authority: str) -> bool:
+    def validate_authority(self, wallet: Wallet, authority_address: str) -> bool:
         """
         Method to verify authority
 
@@ -134,8 +134,8 @@ class SwapContract(ContractConnection):
         Returns:
             verified (bool): True if the authority is set for the wallet
         """
-        authorized = self.contract.functions.authorized(wallet, authority).call()
-        return authorized
+        authorized = self.contract.functions.authorized(wallet.public_key).call()
+        return authorized == authority_address
 
     def create_offer(self, offer: Offer, wallet: Wallet) -> str:
         """
