@@ -1,0 +1,36 @@
+name: Test SDKs
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'release/*'
+  workflow_dispatch:
+
+# Cancel previous running jobs on the same branch
+concurrency:
+  group: test-sdks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install SDKs
+        run: |
+          # TODO: move me in a requirements file
+          pip install pytest
+          pip install ./opyn ./ribbon
+
+      - name: Run pytest
+        run: |
+          # pytest --capture=no -vv --exitfirst tests
+          pytest --capture=no -vv tests
