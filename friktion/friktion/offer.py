@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 
 from solana.publickey import PublicKey
 
@@ -11,7 +11,7 @@ class Offer(object):
     offerAmount: int
     minPrice: int
     minBidSize: int
-    swapOrderAddress: Union[PublicKey, None]
+    swapOrderAddress: Optional[PublicKey]
 
     def __init__(
         self,
@@ -20,23 +20,22 @@ class Offer(object):
         offerAmount: int,
         minPrice: int,
         minBidSize: int,
+        swapOrderAddress: PublicKey = None,
     ):
         self.oToken = oToken
         self.biddingToken = biddingToken
         self.offerAmount = offerAmount
         self.minPrice = minPrice
         self.minBidSize = minBidSize
-
-        self.swapOrderAddress = None
+        self.swapOrderAddress = swapOrderAddress
 
     @staticmethod
     def from_swap_order(swap_order: SwapOrder, address: PublicKey):
-        o = Offer(
+        return Offer(
             swap_order.give_mint,
             swap_order.receive_mint,
             swap_order.give_size,
             0,
             swap_order.give_size,
+            swapOrderAddress=address,
         )
-        o.swapOrderAddress = address
-        return o

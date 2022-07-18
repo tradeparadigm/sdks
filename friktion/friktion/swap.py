@@ -26,7 +26,7 @@ from spl.token.constants import TOKEN_PROGRAM_ID
 from friktion.friktion_anchor.instructions import cancel, claim
 from friktion.inertia_anchor.accounts import OptionsContract
 from friktion.offer import Offer
-from friktion.pda import DELEGATE_AUTHORITY_ADDRESS, SwapOrderAddresses, find_swap_order_address
+from friktion.pda import DELEGATE_AUTHORITY_ADDRESS, SwapOrderAddresses
 
 from .bid_details import BidDetails
 from .friktion_anchor.accounts import SwapOrder
@@ -34,8 +34,8 @@ from .friktion_anchor.instructions import create, exec, exec_msg
 from .friktion_anchor.program_id import PROGRAM_ID
 from .swap_order_template import SwapOrderTemplate
 
-
 GLOBAL_FRIKTION_AUTHORITY = PublicKey("7wYqGsQmfVigMSratssoPddfLU1P5srZcM32nvKAgWkj")
+
 
 def get_token_account(token_account_pk: PublicKey):
     http_client = Client(commitment=Processed)
@@ -113,19 +113,8 @@ class SwapContract:
         acct_info = token.get_account_info(token_account)
         return acct_info.delegated_amount, acct_info.amount
 
-    """
-    Object used to interact with swap contract
-    Args:
-        config (ContractConfig): Configuration to setup the Contract
-    """
-
-    async def get_otoken_details_for_offer(self, offer: Offer):
-        if offer.swapOrderAddress is None:
-            raise Exception(
-                'can only get otoken details on an offer associated with an existin swap order'
-            )
-        print('swap order address = ', offer.swapOrderAddress)
-        swap_order = await self.get_swap_order_for_key(offer.swapOrderAddress)
+    async def get_offered_token_details(self, swap_order_addr: PublicKey):
+        swap_order = await self.get_swap_order(swap_order_addr)
         options_contract = await self.get_options_contract_for_key(swap_order.options_contract)
         ul_factor = await self._get_token_norm_factor(options_contract.underlying_mint)
         quote_factor = await self._get_token_norm_factor(options_contract.quote_mint)
@@ -167,50 +156,29 @@ class SwapContract:
         await client.close()
         return acc
 
-    async def get_swap_order_for_key(self, key: PublicKey) -> SwapOrder:
+    async def get_swap_order(self, swap_order_addr: PublicKey) -> SwapOrder:
         client = AsyncClient(self.url)
         await client.is_connected()
 
-        acc = await SwapOrder.fetch(client, key)
+        acc = await SwapOrder.fetch(client, swap_order_addr)
 
         if acc is None:
-            raise ValueError("No swap order found for key = ", key)
+            raise ValueError(f"No swap order found for key = {swap_order_addr}")
 
         await client.close()
         return acc
 
-    async def get_swap_order(self, user: PublicKey, order_id: int) -> SwapOrder:
-        [addr, bump] = find_swap_order_address(user, order_id)
+    async def get_offer_details(self, swap_order_addr: PublicKey) -> Offer:
+        swap_order = await self.get_swap_order(swap_order_addr)
+        return Offer.from_swap_order(swap_order, swap_order_addr)
 
-        acc = await self.get_swap_order_for_key(addr)
-        if acc is None:
-            raise ValueError("No swap found for user = ", user, ', order id = ', order_id)
+    async def validate_bid(self, swap_order_addr: PublicKey, bid_details: BidDetails) -> dict:
+        offer: Offer = await self.get_offer_details(swap_order_addr)
 
-        return acc
+        # TODO: evaluate adding expiry to the offer so it not necessary
+        #       to call get_swap_order again
+        swap_order: SwapOrder = await self.get_swap_order(swap_order_addr)
 
-    async def get_offer_details(self, order_id: int) -> Offer:
-        return await self.get_offer_details_for_user(GLOBAL_FRIKTION_AUTHORITY, order_id)
-
-    async def get_offer_details_for_user(self, user: PublicKey, order_id: int) -> Offer:
-        """
-        Method to get offer details
-        Args:
-            offer_id (int): Offer ID
-        Raises:
-            ValueError: The argument is not a valid offer
-        Returns:
-            details (SwapOrder): Offer details
-        """
-
-        acc = await self.get_swap_order(user, order_id)
-        print('acc = ', acc)
-        return Offer.from_swap_order(acc, find_swap_order_address(user, order_id)[0])
-
-    async def validate_bid(self, bid_details: BidDetails) -> dict:
-        swap_order_creator: PublicKey = bid_details.swap_order_owner
-        order_id: int = bid_details.order_id
-        offer: Offer = await self.get_offer_details_for_user(swap_order_creator, order_id)
-        swap_order: SwapOrder = await self.get_swap_order(swap_order_creator, order_id)
         if bid_details.bid_size < offer.minBidSize:
             return {"error": "bid size is below min bid size"}
         if bid_details.bid_size > offer.offerAmount:
@@ -309,7 +277,7 @@ class SwapContract:
         await client.confirm_transaction(tx_resp)
 
         await asyncio.sleep(1)
-        acc = await self.get_swap_order_for_key(pdas.swap_order_address)
+        acc = await self.get_swap_order(pdas.swap_order_address)
 
         await client.close()
 
@@ -320,7 +288,6 @@ class SwapContract:
         wallet: Wallet,
         bid_details: BidDetails,
         signed_msg: signing.SignedMessage,
-        offer: Offer,
     ):
         """
         Method to execute bid via signed message
@@ -329,18 +296,10 @@ class SwapContract:
         client = AsyncClient(self.url)
         await client.is_connected()
 
-        swap_order_owner = bid_details.swap_order_owner
-        order_id = bid_details.order_id
-
         pdas = SwapOrderAddresses(bid_details.swap_order_owner, bid_details.order_id)
+        swap_order = await self.get_swap_order(pdas.swap_order_address)
 
-        acc = await SwapOrder.fetch(client, pdas.swap_order_address)
-        if acc is None:
-            raise ValueError(
-                "No swap found for user = ", swap_order_owner, ', order id = ', order_id
-            )
-
-        error_dict = await self.validate_bid(bid_details)
+        error_dict = await self.validate_bid(pdas.swap_order_address, bid_details)
         if error_dict['error'] is not None:
             await client.close()
             return error_dict
@@ -356,8 +315,8 @@ class SwapContract:
                 "authority": wallet.public_key,  # signer
                 "delegate_authority": pdas.delegate_authority_address,
                 "swap_order": pdas.swap_order_address,
-                "give_pool": acc.give_pool,
-                "receive_pool": acc.receive_pool,
+                "give_pool": swap_order.give_pool,
+                "receive_pool": swap_order.receive_pool,
                 "counterparty_give_pool": bid_details.counterparty_give_pool,
                 "counterparty_receive_pool": bid_details.counterparty_receive_pool,
                 # pass in a dummy value since not using whitelisting right now
@@ -381,7 +340,7 @@ class SwapContract:
         await client.confirm_transaction(tx_resp)
         await client.close()
 
-    async def validate_and_exec_bid(self, wallet: Wallet, bid_details: BidDetails, offer: Offer):
+    async def validate_and_exec_bid(self, wallet: Wallet, bid_details: BidDetails):
         """
         Method to validate bid
         Args:
@@ -402,14 +361,9 @@ class SwapContract:
             order_id.to_bytes(8, byteorder="little"),
         ]
         [swap_order_addr, _] = PublicKey.find_program_address(seeds, PROGRAM_ID)
+        swap_order = await self.get_swap_order(swap_order_addr)
 
-        acc = await SwapOrder.fetch(client, swap_order_addr)
-        if acc is None:
-            raise ValueError(
-                "No swap found for user = ", swap_order_owner, ', order id = ', order_id
-            )
-
-        error_dict = await self.validate_bid(bid_details)
+        error_dict = await self.validate_bid(swap_order_addr, bid_details)
         if error_dict['error'] is not None:
             await client.close()
             return error_dict
@@ -418,8 +372,8 @@ class SwapContract:
             {
                 "authority": wallet.public_key,  # signer
                 "swap_order": swap_order_addr,
-                "give_pool": acc.give_pool,
-                "receive_pool": acc.receive_pool,
+                "give_pool": swap_order.give_pool,
+                "receive_pool": swap_order.receive_pool,
                 "counterparty_give_pool": bid_details.counterparty_give_pool,
                 "counterparty_receive_pool": bid_details.counterparty_receive_pool,
                 # pass in a dummy value since not using whitelisting right now
@@ -492,7 +446,7 @@ class SwapContract:
         await client.confirm_transaction(tx_resp)
 
         await asyncio.sleep(1)
-        acc = await self.get_swap_order_for_key(pdas.swap_order_address)
+        acc = await self.get_swap_order(pdas.swap_order_address)
 
         await client.close()
 
