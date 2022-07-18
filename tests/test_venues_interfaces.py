@@ -1,13 +1,15 @@
-import pytest
-import os
-from importlib import import_module
 import dataclasses
+import os
 from enum import Enum
+from importlib import import_module
+
+import pytest
+
+from opyn.chains import Chains as OpynChains
+from ribbon.chains import Chains as RibbonChains
 
 # from unittest.mock import patch
 
-from ribbon.chains import Chains as RibbonChains
-from opyn.chains import Chains as OpynChains
 
 RIBBON = 'ribbon'
 OPYN = 'opyn'
@@ -25,8 +27,7 @@ VENUE_CONFIGURATION = {
         "chain_id": OpynChains.ROPSTEN,
         "rpc_uri": f"https://ropsten.infura.io/v3/{DOV_VRFQ_RPC_TOKEN}",
     },
-    FRIKTION: {
-    },
+    FRIKTION: {},
 }
 # https://web3js.readthedocs.io/en/v1.2.11/web3-utils.html
 VALID_ADDRESS = "0xc1912fee45d61c87cc5ea59dae31190fffff232d"
@@ -45,40 +46,38 @@ def contract_config(venue):
     module = import_module(concat_module(venue, "definitions"))
     ContractConfig = getattr(module, "ContractConfig")
 
-    yield ContractConfig(
-        address=VALID_ADDRESS, rpc_uri=rpc_uri, chain_id=chain_id
-    )
+    yield ContractConfig(address=VALID_ADDRESS, rpc_uri=rpc_uri, chain_id=chain_id)
 
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_can_import_sdk_module(venue):
-    """ equivalent to import venue """
+    """equivalent to import venue"""
     import_module(venue)
 
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_can_import_chains_module(venue):
-    """ equivalent to import venue.chains """
+    """equivalent to import venue.chains"""
     import_module(concat_module(venue, "chains"))
 
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_can_import_definitions_module(venue):
-    """ equivalent to import venue.definitions """
+    """equivalent to import venue.definitions"""
     import_module(concat_module(venue, "definitions"))
 
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_can_import_otoken_module(venue):
-    """ equivalent to import venue.otoken """
+    """equivalent to import venue.otoken"""
     import_module(concat_module(venue, "otoken"))
 
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_can_import_settlement_module(venue):
     """
-      equivalent to import venue.settlement for Opyn
-      equivalent to import venue.swap for others
+    equivalent to import venue.settlement for Opyn
+    equivalent to import venue.swap for others
     """
     if venue == OPYN:
         import_module(concat_module(venue, "settlement"))
@@ -88,20 +87,20 @@ def test_can_import_settlement_module(venue):
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_can_import_wallet_module(venue):
-    """ equivalent to import venue.wallet """
+    """equivalent to import venue.wallet"""
     import_module(concat_module(venue, "wallet"))
 
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_can_import_chains_class(venue):
-    """ equivalent to from venue.chains import Chains """
+    """equivalent to from venue.chains import Chains"""
     module = import_module(concat_module(venue, "chains"))
     assert hasattr(module, "Chains")
 
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_can_import_contract_config_class(venue):
-    """ equivalent to from venue.definitions import ContractConfig """
+    """equivalent to from venue.definitions import ContractConfig"""
     module = import_module(concat_module(venue, "definitions"))
     assert hasattr(module, "ContractConfig")
 
@@ -122,7 +121,7 @@ def test_can_import_bid_message_class(venue):
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_can_import_otoken_class(venue):
-    """ equivalent to from venue.otoken import oTokenContract """
+    """equivalent to from venue.otoken import oTokenContract"""
     module = import_module(concat_module(venue, "otoken"))
     assert hasattr(module, "oTokenContract")
 
@@ -143,14 +142,14 @@ def test_can_import_swap_contract_class(venue):
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_can_import_wallet_class(venue):
-    """ equivalent to from venue.wallet import Wallet """
+    """equivalent to from venue.wallet import Wallet"""
     module = import_module(concat_module(venue, "wallet"))
     assert hasattr(module, "Wallet")
 
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_chains_class_is_enum(venue):
-    """ verify venue.chains.Chains """
+    """verify venue.chains.Chains"""
     module = import_module(concat_module(venue, "chains"))
     Chains = getattr(module, "Chains")
 
@@ -160,7 +159,7 @@ def test_chains_class_is_enum(venue):
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_contract_config_is_dataclass(venue):
-    """ verify venue.chains.ContractConfig """
+    """verify venue.chains.ContractConfig"""
     module = import_module(concat_module(venue, "definitions"))
     ContractConfig = getattr(module, "ContractConfig")
 
@@ -170,7 +169,7 @@ def test_contract_config_is_dataclass(venue):
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_contract_config_attributes(venue):
-    """ verify venue.chains.ContractConfig """
+    """verify venue.chains.ContractConfig"""
     module = import_module(concat_module(venue, "definitions"))
     ContractConfig = getattr(module, "ContractConfig")
 
@@ -189,7 +188,7 @@ def test_contract_config_attributes(venue):
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_bid_message_is_dataclass(venue):
-    """ verify venue.chains.MessageToSign """
+    """verify venue.chains.MessageToSign"""
 
     module = import_module(concat_module(venue, "definitions"))
 
@@ -204,7 +203,7 @@ def test_bid_message_is_dataclass(venue):
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_bid_message_attributes(venue):
-    """ verify venue.chains.MessageToSign """
+    """verify venue.chains.MessageToSign"""
 
     module = import_module(concat_module(venue, "definitions"))
 
@@ -237,7 +236,7 @@ def test_bid_message_attributes(venue):
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_otoken_class(venue):
-    """ verify venue.otoken.oTokenContract """
+    """verify venue.otoken.oTokenContract"""
     module = import_module(concat_module(venue, "otoken"))
 
     oTokenContract = getattr(module, "oTokenContract")
@@ -251,8 +250,8 @@ def test_otoken_class(venue):
 @pytest.mark.parametrize("venue", VENUES)
 def test_swap_contract_class(venue):
     """
-      verify venue.settlement.SettlementContract for Opyn
-      verify venue.swap.SwapContract for others
+    verify venue.settlement.SettlementContract for Opyn
+    verify venue.swap.SwapContract for others
     """
 
     if venue == OPYN:
@@ -271,7 +270,7 @@ def test_swap_contract_class(venue):
 
 @pytest.mark.parametrize("venue", VENUES)
 def test_wallet_class(venue):
-    """ verify venue.wallet.Wallet """
+    """verify venue.wallet.Wallet"""
     module = import_module(concat_module(venue, "wallet"))
     Wallet = getattr(module, "Wallet")
 
@@ -300,7 +299,7 @@ def test_wallet_class(venue):
 #         ]
 #         details = class_instance.get_otoken_details()
 
-    #     assert details ...
+#     assert details ...
 
 
 # @pytest.mark.parametrize("venue", VENUES)
