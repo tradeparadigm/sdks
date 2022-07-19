@@ -46,7 +46,7 @@ jobs:
           LINTER_RULES_PATH: ./
 
           # Super linter not following correctly exclusions
-          FILTER_REGEX_EXCLUDE: ()
+          # FILTER_REGEX_EXCLUDE: (.*/xxx/.*|yyy/.*|)
 
           PYTHON_BLACK_CONFIG_FILE: pyproject.toml
           PYTHON_FLAKE8_CONFIG_FILE: pyproject.toml
