@@ -56,8 +56,7 @@ jobs:
 
           ####################################
           # Only runs on files changed since last execution
-          # VALIDATE_ALL_CODEBASE: false
-          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_ALL_CODEBASE: false
           # Also if conflicts are presents, github prevents execution
           ####################################
 
