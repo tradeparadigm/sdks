@@ -9,8 +9,6 @@ RIBBON = 'ribbon'
 OPYN = 'opyn'
 FRIKTION = 'friktion'
 VENUES = [RIBBON, OPYN]
-# DO NOT COMMIT!
-VENUES = [RIBBON]
 
 # DOV_VRFQ_RPC_TOKEN = os.environ["DOV_VRFQ_RPC_TOKEN"]
 
