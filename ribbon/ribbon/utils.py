@@ -21,13 +21,10 @@ from web3 import Web3
 PADDING = bytearray([0] * 32)
 
 
-
-
-
 # ---------------------------------------------------------------------------
 # Utilities
 # ---------------------------------------------------------------------------
-def id(text:str) -> str:
+def id(text: str) -> str:
     """
     Generate the keccak256 of a string
 

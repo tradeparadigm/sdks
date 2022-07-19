@@ -49,7 +49,9 @@ jobs:
           # FILTER_REGEX_EXCLUDE: (.*/xxx/.*|yyy/.*|)
 
           PYTHON_BLACK_CONFIG_FILE: pyproject.toml
-          PYTHON_FLAKE8_CONFIG_FILE: pyproject.toml
+          # Flake8 does not support pyproject.toml ATM
+          # https://github.com/PyCQA/flake8/issues/234
+          PYTHON_FLAKE8_CONFIG_FILE: .flake8
           PYTHON_ISORT_CONFIG_FILE: pyproject.toml
 
           MARKDOWN_CONFIG_FILE: .markdownlint.yaml
