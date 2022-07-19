@@ -28,7 +28,7 @@ jobs:
         run: |
           # TODO: move me in a requirements file
           pip install pytest
-          pip install ./opyn ./ribbon
+          pip install ./template ./opyn ./ribbon
 
       - name: Run pytest
         run: |

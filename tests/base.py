@@ -5,10 +5,13 @@ import pytest
 from opyn.chains import Chains as OpynChains
 from ribbon.chains import Chains as RibbonChains
 
+TEMPLATE = 'template'
 RIBBON = 'ribbon'
 OPYN = 'opyn'
 FRIKTION = 'friktion'
-VENUES = [RIBBON, OPYN]
+VENUES = [TEMPLATE, RIBBON, OPYN]
+# REMOVE ME! Enable Opyn Tests!
+VENUES = [TEMPLATE, RIBBON]
 
 # DOV_VRFQ_RPC_TOKEN = os.environ["DOV_VRFQ_RPC_TOKEN"]
 
