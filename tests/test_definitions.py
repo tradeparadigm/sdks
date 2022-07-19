@@ -14,14 +14,12 @@ class TestDefinitions(TestsBase):
     @pytest.mark.parametrize("venue", VENUES)
     def test_can_import_contract_config_class(self, venue):
         """equivalent to from venue.definitions import ContractConfig"""
-        module = self.import_module(venue, "definitions")
-        assert hasattr(module, "ContractConfig")
+        self.import_class(venue, "definitions", "ContractConfig")
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_can_import_domain_class(self, venue):
         """equivalent to from venue.definitions import Domain"""
-        module = self.import_module(venue, "definitions")
-        assert hasattr(module, "Domain")
+        self.import_class(venue, "definitions", "Domain")
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_can_import_bid_message_class(self, venue):
@@ -29,27 +27,22 @@ class TestDefinitions(TestsBase):
         equivalent to from venue.definitions import MessageToSign for Opyn
         equivalent to from venue.definitions import SignedBid for others
         """
-        module = self.import_module(venue, "definitions")
 
         if venue == OPYN:
-            assert hasattr(module, "MessageToSign")
+            self.import_class(venue, "definitions", "MessageToSign")
         else:
-            assert hasattr(module, "SignedBid")
+            self.import_class(venue, "definitions", "SignedBid")
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_domain_is_dataclass(self, venue):
         """verify venue.chains.Domain"""
-        module = self.import_module(venue, "definitions")
-        Domain = getattr(module, "Domain")
-
-        assert Domain is not None
+        Domain = self.import_class(venue, "definitions", "Domain")
         dataclasses.is_dataclass(Domain)
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_domain_attributes(self, venue):
         """verify venue.chains.Domain"""
-        module = self.import_module(venue, "definitions")
-        Domain = getattr(module, "Domain")
+        Domain = self.import_class(venue, "definitions", "Domain")
 
         class_fields = {f.name: f for f in dataclasses.fields(Domain)}
         assert "name" in class_fields
@@ -65,17 +58,13 @@ class TestDefinitions(TestsBase):
     @pytest.mark.parametrize("venue", VENUES)
     def test_contract_config_is_dataclass(self, venue):
         """verify venue.chains.ContractConfig"""
-        module = self.import_module(venue, "definitions")
-        ContractConfig = getattr(module, "ContractConfig")
-
-        assert ContractConfig is not None
+        ContractConfig = self.import_class(venue, "definitions", "ContractConfig")
         dataclasses.is_dataclass(ContractConfig)
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_contract_config_attributes(self, venue):
         """verify venue.chains.ContractConfig"""
-        module = self.import_module(venue, "definitions")
-        ContractConfig = getattr(module, "ContractConfig")
+        ContractConfig = self.import_class(venue, "definitions", "ContractConfig")
 
         class_fields = {f.name: f for f in dataclasses.fields(ContractConfig)}
         assert "address" in class_fields
@@ -93,26 +82,21 @@ class TestDefinitions(TestsBase):
     def test_bid_message_is_dataclass(self, venue):
         """verify venue.chains.MessageToSign"""
 
-        module = self.import_module(venue, "definitions")
-
         if venue == OPYN:
-            SignedBid = getattr(module, "MessageToSign")
+            SignedBid = self.import_class(venue, "definitions", "MessageToSign")
         else:
-            SignedBid = getattr(module, "SignedBid")
+            SignedBid = self.import_class(venue, "definitions", "SignedBid")
 
-        assert SignedBid is not None
         dataclasses.is_dataclass(SignedBid)
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_bid_message_attributes(self, venue):
         """verify venue.chains.MessageToSign"""
 
-        module = self.import_module(venue, "definitions")
-
         if venue == OPYN:
-            SignedBid = getattr(module, "MessageToSign")
+            SignedBid = self.import_class(venue, "definitions", "MessageToSign")
         else:
-            SignedBid = getattr(module, "SignedBid")
+            SignedBid = self.import_class(venue, "definitions", "SignedBid")
 
         class_fields = {f.name: f for f in dataclasses.fields(SignedBid)}
         assert "swapId" in class_fields

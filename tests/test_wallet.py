@@ -12,16 +12,12 @@ class TestWallet(TestsBase):
     @pytest.mark.parametrize("venue", VENUES)
     def test_can_import_wallet_class(self, venue):
         """equivalent to from venue.wallet import Wallet"""
-        module = self.import_module(venue, "wallet")
-        assert hasattr(module, "Wallet")
+        self.import_class(venue, "wallet", "Wallet")
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_wallet_class(self, venue):
         """verify venue.wallet.Wallet"""
-        module = self.import_module(venue, "wallet")
-        Wallet = getattr(module, "Wallet")
-
-        assert Wallet is not None
+        Wallet = self.import_class(venue, "wallet", "Wallet")
 
         # sign_bid from Ribbon not used by APIs
         # sign_bid_data from Opyn not used by APIs
@@ -42,9 +38,8 @@ class TestWallet(TestsBase):
         NOT IMPLEMENTED
         verify Wallet.verify_allowance
         """
-        module = self.import_module(venue, "wallet")
-        Wallet = getattr(module, "Wallet")
+        Wallet = self.import_class(venue, "wallet", "Wallet")
 
-        assert Wallet is not None
+        print(Wallet)
 
-    #     Wallet("0x...", None).verify_allowance(contract_config, VALID_ADDRESS)
+        # Wallet("0x...", None).verify_allowance(contract_config, VALID_ADDRESS)

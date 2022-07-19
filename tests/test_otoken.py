@@ -14,17 +14,13 @@ class TestOToken(TestsBase):
     @pytest.mark.parametrize("venue", VENUES)
     def test_can_import_otoken_class(self, venue):
         """equivalent to from venue.otoken import oTokenContract"""
-        module = self.import_module(venue, "otoken")
-        assert hasattr(module, "oTokenContract")
+        self.import_class(venue, "otoken", "oTokenContract")
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_otoken_class(self, venue):
         """verify venue.otoken.oTokenContract"""
-        module = self.import_module(venue, "otoken")
+        oTokenContract = self.import_class(venue, "otoken", "oTokenContract")
 
-        oTokenContract = getattr(module, "oTokenContract")
-
-        assert oTokenContract is not None
         assert isinstance(oTokenContract, type)
 
         assert hasattr(oTokenContract, "get_otoken_details")
@@ -35,8 +31,7 @@ class TestOToken(TestsBase):
         NOT IMPLEMENTED
         verify oTokenContract.get_otoken_details
         """
-        module = self.import_module(venue, "otoken")
-        oTokenContract = getattr(module, "oTokenContract")
+        oTokenContract = self.import_class(venue, "otoken", "oTokenContract")
 
         print(oTokenContract)
 

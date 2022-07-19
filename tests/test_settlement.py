@@ -22,11 +22,9 @@ class TestSettlement(TestsBase):
         equivalent to from venue.swap import SwapContract for others
         """
         if venue == OPYN:
-            module = self.import_module(venue, "settlement")
-            assert hasattr(module, "SettlementContract")
+            self.import_class(venue, "settlement", "SettlementContract")
         else:
-            module = self.import_module(venue, "swap")
-            assert hasattr(module, "SwapContract")
+            self.import_class(venue, "swap", "SwapContract")
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_swap_contract_class(self, venue):
@@ -36,13 +34,9 @@ class TestSettlement(TestsBase):
         """
 
         if venue == OPYN:
-            module = self.import_module(venue, "settlement")
-            SwapContract = getattr(module, "SettlementContract")
+            SwapContract = self.import_class(venue, "settlement", "SettlementContract")
         else:
-            module = self.import_module(venue, "swap")
-            SwapContract = getattr(module, "SwapContract")
-
-        assert SwapContract is not None
+            SwapContract = self.import_class(venue, "swap", "SwapContract")
 
         assert hasattr(SwapContract, "get_offer_details")
         assert hasattr(SwapContract, "validate_bid")
@@ -56,13 +50,11 @@ class TestSettlement(TestsBase):
         """
 
         if venue == OPYN:
-            module = self.import_module(venue, "settlement")
-            SwapContract = getattr(module, "SettlementContract")
+            SwapContract = self.import_class(venue, "settlement", "SettlementContract")
         else:
-            module = self.import_module(venue, "swap")
-            SwapContract = getattr(module, "SwapContract")
+            SwapContract = self.import_class(venue, "swap", "SwapContract")
 
-        assert SwapContract is not None
+        print(SwapContract)
 
     #     SwapContract(contract_config).get_offer_details(1)
 
@@ -74,13 +66,11 @@ class TestSettlement(TestsBase):
         """
 
         if venue == OPYN:
-            module = self.import_module(venue, "settlement")
-            SwapContract = getattr(module, "SettlementContract")
+            SwapContract = self.import_class(venue, "settlement", "SettlementContract")
         else:
-            module = self.import_module(venue, "swap")
-            SwapContract = getattr(module, "SwapContract")
+            SwapContract = self.import_class(venue, "swap", "SwapContract")
 
-        assert SwapContract is not None
+        print(SwapContract)
 
     #     SwapContract(contract_config).validate_bid()
 
@@ -92,12 +82,10 @@ class TestSettlement(TestsBase):
         """
 
         if venue == OPYN:
-            module = self.import_module(venue, "settlement")
-            SwapContract = getattr(module, "SettlementContract")
+            SwapContract = self.import_class(venue, "settlement", "SettlementContract")
         else:
-            module = self.import_module(venue, "swap")
-            SwapContract = getattr(module, "SwapContract")
+            SwapContract = self.import_class(venue, "swap", "SwapContract")
 
-        assert SwapContract is not None
+        print(SwapContract)
 
     #     SwapContract(contract_config).create_offer()

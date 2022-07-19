@@ -37,6 +37,17 @@ class TestsBase:
     def import_module(*args: str) -> str:
         return import_module(".".join(args))
 
+    @staticmethod
+    def import_class(*args: str) -> str:
+        module = import_module(".".join(args[0:-1]))
+        cls_name = args[-1]
+        assert hasattr(module, cls_name)
+
+        c = getattr(module, cls_name)
+        assert c is not None
+
+        return c
+
     @pytest.fixture()
     def contract_config(self, venue):
         venue_config = VENUE_CONFIGURATION.get(venue, {})
