@@ -15,6 +15,8 @@ class Wallet:
     """
 
     def __init__(self, public_key: str = None, private_key: str = None):
+        if not private_key and not public_key:
+            raise ValueError("Can't instanciate a Wallet without a public or private key")
         ...
 
     def verify_allowance(self, swap_config: ContractConfig, token_address: str) -> bool:
