@@ -2,8 +2,6 @@ import pytest
 
 from tests.base import PRIVATE_KEY, PUBLIC_KEY, VENUES, TestsBase
 
-# from unittest.mock import patch
-
 
 class TestWallet(TestsBase):
     @pytest.mark.parametrize("venue", VENUES)
