@@ -55,8 +55,9 @@ jobs:
           MARKDOWN_CONFIG_FILE: .markdownlint.yaml
 
           ####################################
-          # IMPORTANT: only runs on files changed since last execution
-          VALIDATE_ALL_CODEBASE: false
+          # Only runs on files changed since last execution
+          # VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ALL_CODEBASE: true
           # Also if conflicts are presents, github prevents execution
           ####################################
 
