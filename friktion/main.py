@@ -86,6 +86,7 @@ async def main_def():
                 offerAmount=1,
                 minPrice=0,
                 minBidSize=1,
+                seller=wallet.public_key,
             ),
             OPTIONS_CONTRACT_KEY,
             1,
