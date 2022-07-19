@@ -1,0 +1,71 @@
+name: Lint Code Base
+
+# run on pull requests and for main commits (thus also merges)
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'release/*'
+
+# group by branch and cancel existing jobs on new pushes for same group
+concurrency:
+  group: linters-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+
+      ##########################
+      # Checkout the code base #
+      ##########################
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          # Full git history is needed within `super-linter`
+          fetch-depth: 0
+
+      ################################
+      # Run Linter against code base #
+      ################################
+      - name: Lint Code Base
+        # Linter action from github market place
+        # (slim tag has less tools, but still all the ones for python)
+        uses: docker://ghcr.io/github/super-linter:slim-v4.9.2
+        # These determines the linters versions executed remotely,
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          # Path to where config files are
+          LINTER_RULES_PATH: ./
+
+          # Super linter not following correctly exclusions
+          # FILTER_REGEX_EXCLUDE: (.*/xxx/.*|yyy/.*|)
+
+          PYTHON_BLACK_CONFIG_FILE: pyproject.toml
+          # Flake8 does not support pyproject.toml ATM
+          # https://github.com/PyCQA/flake8/issues/234
+          PYTHON_FLAKE8_CONFIG_FILE: .flake8
+          PYTHON_ISORT_CONFIG_FILE: pyproject.toml
+
+          MARKDOWN_CONFIG_FILE: .markdownlint.yaml
+
+          ####################################
+          # Only runs on files changed since last execution
+          VALIDATE_ALL_CODEBASE: false
+          # Also if conflicts are presents, github prevents execution
+          ####################################
+
+          VALIDATE_PYTHON_BLACK: true
+          VALIDATE_PYTHON_FLAKE8: true
+          VALIDATE_PYTHON_ISORT: true
+          # VALIDATE_PYTHON_MYPY: true
+          # VALIDATE_PYTHON_PYLINT: true
+
+          VALIDATE_MARKDOWN: true
