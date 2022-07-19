@@ -11,7 +11,7 @@ class Domain:
     """
 
     name: str
-    version: str
+    version: int
     chainId: int
     verifyingContract: str
 
