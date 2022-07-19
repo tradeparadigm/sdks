@@ -30,6 +30,8 @@ VENUE_CONFIGURATION = {
 }
 # https://web3js.readthedocs.io/en/v1.2.11/web3-utils.html
 VALID_ADDRESS = "0xc1912fee45d61c87cc5ea59dae31190fffff232d"
+PUBLIC_KEY = "0x0000000000000000000000000000000000000000"
+PRIVATE_KEY = "0x0000000000000000000000000000000000000000000000000000000000000000"
 
 
 def concat_module(*args: str) -> str:
@@ -105,6 +107,13 @@ def test_can_import_contract_config_class(venue):
 
 
 @pytest.mark.parametrize("venue", VENUES)
+def test_can_import_domain_class(venue):
+    """equivalent to from venue.definitions import Domain"""
+    module = import_module(concat_module(venue, "definitions"))
+    assert hasattr(module, "Domain")
+
+
+@pytest.mark.parametrize("venue", VENUES)
 def test_can_import_bid_message_class(venue):
     """
     equivalent to from venue.definitions import MessageToSign for Opyn
@@ -154,6 +163,34 @@ def test_chains_class_is_enum(venue):
 
     assert Chains is not None
     assert issubclass(Chains, Enum)
+
+
+@pytest.mark.parametrize("venue", VENUES)
+def test_domain_is_dataclass(venue):
+    """verify venue.chains.Domain"""
+    module = import_module(concat_module(venue, "definitions"))
+    Domain = getattr(module, "Domain")
+
+    assert Domain is not None
+    dataclasses.is_dataclass(Domain)
+
+
+@pytest.mark.parametrize("venue", VENUES)
+def test_domain_attributes(venue):
+    """verify venue.chains.Domain"""
+    module = import_module(concat_module(venue, "definitions"))
+    Domain = getattr(module, "Domain")
+
+    class_fields = {f.name: f for f in dataclasses.fields(Domain)}
+    assert "name" in class_fields
+    assert "chainId" in class_fields
+    assert "verifyingContract" in class_fields
+    assert "version" in class_fields
+
+    assert issubclass(class_fields['name'].type, str)
+    assert issubclass(class_fields['chainId'].type, int)
+    assert issubclass(class_fields['verifyingContract'].type, str)
+    assert issubclass(class_fields['version'].type, int)
 
 
 @pytest.mark.parametrize("venue", VENUES)
@@ -280,15 +317,26 @@ def test_wallet_class(venue):
     # allow_more from Opyn not used by APIs
     assert hasattr(Wallet, "verify_allowance")
 
+    assert Wallet(public_key=PUBLIC_KEY, private_key=PRIVATE_KEY)
+    assert Wallet(public_key=PUBLIC_KEY, private_key=None)
+    assert Wallet(public_key=None, private_key=PRIVATE_KEY)
+    assert Wallet(public_key=PUBLIC_KEY)
+    assert Wallet(private_key=PRIVATE_KEY)
+    with pytest.raises(ValueError):
+        assert Wallet()
 
-# @pytest.mark.parametrize("venue", VENUES)
-# def test_otoken_get_otoken_details(venue, contract_config):
-#     """
-#       NOT IMPLEMENTED
-#       verify oTokenContract.get_otoken_details
-#     """
-#     module = import_module(concat_module(venue, "otoken"))
-#     oTokenContract = getattr(module, "oTokenContract")
+
+@pytest.mark.parametrize("venue", VENUES)
+def test_otoken_get_otoken_details(venue, contract_config):
+    """
+    NOT IMPLEMENTED
+    verify oTokenContract.get_otoken_details
+    """
+    module = import_module(concat_module(venue, "otoken"))
+    oTokenContract = getattr(module, "oTokenContract")
+
+    print(oTokenContract)
+
 
 #     class_instance = oTokenContract(contract_config)
 
@@ -301,72 +349,76 @@ def test_wallet_class(venue):
 #     assert details ...
 
 
-# @pytest.mark.parametrize("venue", VENUES)
-# def test_swap_contract_get_offer_details(venue, contract_config):
-#     """
-#       NOT IMPLEMENTED
-#       verify SwapContract.get_offer_details
-#     """
+@pytest.mark.parametrize("venue", VENUES)
+def test_swap_contract_get_offer_details(venue, contract_config):
+    """
+    NOT IMPLEMENTED
+    verify SwapContract.get_offer_details
+    """
 
-#     if venue == OPYN:
-#         module = import_module(concat_module(venue, "settlement"))
-#         SwapContract = getattr(module, "SettlementContract")
-#     else:
-#         module = import_module(concat_module(venue, "swap"))
-#         SwapContract = getattr(module, "SwapContract")
+    if venue == OPYN:
+        module = import_module(concat_module(venue, "settlement"))
+        SwapContract = getattr(module, "SettlementContract")
+    else:
+        module = import_module(concat_module(venue, "swap"))
+        SwapContract = getattr(module, "SwapContract")
 
-#     assert SwapContract is not None
+    assert SwapContract is not None
+
 
 #     SwapContract(contract_config).get_offer_details(1)
 
 
-# @pytest.mark.parametrize("venue", VENUES)
-# def test_swap_contract_validate_bid(venue, contract_config):
-#     """
-#       NOT IMPLEMENTED
-#       verify SwapContract.validate_bid
-#     """
+@pytest.mark.parametrize("venue", VENUES)
+def test_swap_contract_validate_bid(venue, contract_config):
+    """
+    NOT IMPLEMENTED
+    verify SwapContract.validate_bid
+    """
 
-#     if venue == OPYN:
-#         module = import_module(concat_module(venue, "settlement"))
-#         SwapContract = getattr(module, "SettlementContract")
-#     else:
-#         module = import_module(concat_module(venue, "swap"))
-#         SwapContract = getattr(module, "SwapContract")
+    if venue == OPYN:
+        module = import_module(concat_module(venue, "settlement"))
+        SwapContract = getattr(module, "SettlementContract")
+    else:
+        module = import_module(concat_module(venue, "swap"))
+        SwapContract = getattr(module, "SwapContract")
 
-#     assert SwapContract is not None
+    assert SwapContract is not None
+
 
 #     SwapContract(contract_config).validate_bid()
 
 
-# @pytest.mark.parametrize("venue", VENUES)
-# def test_swap_contract_create_offer(venue, contract_config):
-#     """
-#       NOT IMPLEMENTED
-#       verify SwapContract.create_offer
-#     """
+@pytest.mark.parametrize("venue", VENUES)
+def test_swap_contract_create_offer(venue, contract_config):
+    """
+    NOT IMPLEMENTED
+    verify SwapContract.create_offer
+    """
 
-#     if venue == OPYN:
-#         module = import_module(concat_module(venue, "settlement"))
-#         SwapContract = getattr(module, "SettlementContract")
-#     else:
-#         module = import_module(concat_module(venue, "swap"))
-#         SwapContract = getattr(module, "SwapContract")
+    if venue == OPYN:
+        module = import_module(concat_module(venue, "settlement"))
+        SwapContract = getattr(module, "SettlementContract")
+    else:
+        module = import_module(concat_module(venue, "swap"))
+        SwapContract = getattr(module, "SwapContract")
 
-#     assert SwapContract is not None
+    assert SwapContract is not None
+
 
 #     SwapContract(contract_config).create_offer()
 
 
-# @pytest.mark.parametrize("venue", VENUES)
-# def test_wallet_verify_allowance(venue, contract_config):
-#     """
-#       NOT IMPLEMENTED
-#       verify Wallet.verify_allowance
-#     """
-#     module = import_module(concat_module(venue, "wallet"))
-#     Wallet = getattr(module, "Wallet")
+@pytest.mark.parametrize("venue", VENUES)
+def test_wallet_verify_allowance(venue, contract_config):
+    """
+    NOT IMPLEMENTED
+    verify Wallet.verify_allowance
+    """
+    module = import_module(concat_module(venue, "wallet"))
+    Wallet = getattr(module, "Wallet")
 
-#     assert Wallet is not None
+    assert Wallet is not None
+
 
 #     Wallet("0x...", None).verify_allowance(contract_config, VALID_ADDRESS)
