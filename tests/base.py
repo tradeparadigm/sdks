@@ -9,8 +9,6 @@ RIBBON = 'ribbon'
 OPYN = 'opyn'
 FRIKTION = 'friktion'
 VENUES = [RIBBON, OPYN]
-# DO NOT COMMIT!
-VENUES = [RIBBON]
 
 # DOV_VRFQ_RPC_TOKEN = os.environ["DOV_VRFQ_RPC_TOKEN"]
 
@@ -38,6 +36,17 @@ class TestsBase:
     @staticmethod
     def import_module(*args: str) -> str:
         return import_module(".".join(args))
+
+    @staticmethod
+    def import_class(*args: str) -> str:
+        module = import_module(".".join(args[0:-1]))
+        cls_name = args[-1]
+        assert hasattr(module, cls_name)
+
+        c = getattr(module, cls_name)
+        assert c is not None
+
+        return c
 
     @pytest.fixture()
     def contract_config(self, venue):
