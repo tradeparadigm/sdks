@@ -27,13 +27,15 @@ RECEIVE_MINT = PublicKey("C6kYXcaRUMqeBF5fhg165RWU7AnpT9z92fvKNoMqjmz6")
 
 # make counterparty itself for purposes of testing
 COUNTERPARTY = wallet.public_key
-# dummy value for testing. not using whitelist tokens so shouldn't change much
+# dummy value for testing. not using whitelist tokens so shouldn't
+# change much
 WHITELIST_TOKEN_MINT = GIVE_MINT
 
 OPTIONS_CONTRACT_KEY = PublicKey("GriGJSF84XdPq6Td6u6Hu8oqKgwTXY94fvwJrJf1gQTW")
 # mainnet
 # GIVE_MINT = PublicKey("")
 # RECEIVE_MINT = PublicKey("")
+
 
 async def main_def():
 
@@ -85,6 +87,7 @@ async def main_def():
                 offerAmount=1,
                 minPrice=0,
                 minBidSize=1,
+                seller=wallet.public_key,
             ),
             OPTIONS_CONTRACT_KEY,
             1,
@@ -98,16 +101,16 @@ async def main_def():
     )
 
     assert swap_order_pre_fill.status == Created()
+    order_id = swap_order_pre_fill.order_id
 
-    offer_pre_fill: Offer = await c.get_offer_details_for_user(
-        wallet.public_key, swap_order_pre_fill.order_id
-    )
+    offer_pre_fill: Offer = await c.get_offer_details(wallet.public_key, order_id)
+    print(f'order post fill: {offer_pre_fill}')
 
     print('2. taker executes bid against offer...')
 
     bid_details = BidDetails(
         wallet.public_key,
-        swap_order_pre_fill.order_id,
+        order_id,
         creator_give_pool_key,
         creator_receive_pool_key,
         1,
@@ -117,21 +120,14 @@ async def main_def():
     await c.validate_bid(bid_details)
 
     bid_msg = bid_details.as_signed_msg(wallet, 1, 1)
-    await c.validate_and_exec_bid_msg(wallet, bid_details, bid_msg, offer_pre_fill)
+    await c.validate_and_exec_bid_msg(wallet, bid_details, bid_msg)
 
-    offer_post_fill: Offer = await c.get_offer_details_for_user(
-        wallet.public_key, swap_order_pre_fill.order_id
-    )
-
-    swap_order_post_fill: SwapOrder = await c.get_swap_order(
-        wallet.public_key, swap_order_pre_fill.order_id
-    )
-
+    swap_order_post_fill: SwapOrder = await c.get_swap_order(wallet.public_key, order_id)
     assert swap_order_post_fill.status == Filled()
+    print(f'order post fill: {swap_order_post_fill}')
 
-    print('otoken details =', await c.get_otoken_details_for_offer(offer_post_fill))
-
-    print('order post fill: {}'.format(swap_order_post_fill))
+    offered_token_details = await c.get_offered_token_details(wallet.public_key, order_id)
+    print(f'otoken details = {offered_token_details}')
 
     print('3. creator reclaims assets...')
 

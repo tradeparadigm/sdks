@@ -53,7 +53,13 @@ class SwapOrderTemplate:
         self.whitelist_token_mint = whitelist_token_mint
 
     def as_offer(self) -> Offer:
-        return Offer(self.give_mint, self.receive_mint, self.give_size, 0, self.give_size)
+        return Offer(
+            oToken=self.give_mint,
+            biddingToken=self.receive_mint,
+            offerAmount=self.give_size,
+            minPrice=0,
+            minBidSize=self.give_size,
+        )
 
     @staticmethod
     def from_offer(
