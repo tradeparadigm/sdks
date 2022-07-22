@@ -73,16 +73,6 @@ class TestsBase:
         method_signature = signature(method).parameters
         reference_signature = signature(reference).parameters
 
-        # All concrete implementes are expencted to accept *args
-        assert (
-            "args" in method_signature
-        ), f"{method.__module__}.{method.__name__} is not accepting args parameter"
-
-        # Verify that args is exactly *args
-        assert (
-            method_signature["args"].kind == Parameter.VAR_POSITIONAL
-        ), "wrong args argument, expected *args"
-
         # All concrete implementes are expencted to accept **kwargs
         assert (
             "kwargs" in method_signature
@@ -94,7 +84,7 @@ class TestsBase:
         ), "wrong kwargs argument, expected **kwargs"
 
         # Extract from the reference signature all arguments
-        # expect for self, args and kwargs
+        # except for self, args and kwargs
         expected_params = [p for p in reference_signature if p not in ['self', 'args', 'kwargs']]
 
         # Verify if the arguments of the method signature

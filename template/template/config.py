@@ -25,7 +25,6 @@ class TemplateSDKConfig(SDKConfig):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        *args,
         **kwargs,
     ) -> str:
         """Create an offer"""
@@ -44,13 +43,13 @@ class TemplateSDKConfig(SDKConfig):
         )
         return swap_contract.create_offer(new_offer, wallet)
 
-    def get_otoken_details(self, *args, **kwargs) -> dict:
+    def get_otoken_details(self, **kwargs) -> dict:
         """Return details about the offer token"""
         config = ContractConfig(address=self.address, chain_id=self.chain_id, rpc_uri=self.rpc_uri)
         otoken_contract = oTokenContract(config)
         return otoken_contract.get_otoken_details()
 
-    def get_offer_details(self, offer_id: int, *args, **kwargs) -> dict:
+    def get_offer_details(self, offer_id: int, **kwargs) -> dict:
         """Return details for a given offer"""
         swap_config = ContractConfig(
             address=self.address, chain_id=self.chain_id, rpc_uri=self.rpc_uri
@@ -69,7 +68,6 @@ class TemplateSDKConfig(SDKConfig):
         v: int,
         r: str,
         s: str,
-        *args,
         **kwargs,
     ) -> str:
         """Validate the signing bid"""
@@ -94,7 +92,6 @@ class TemplateSDKConfig(SDKConfig):
         self,
         public_key: str,
         token_address: str,
-        *args,
         **kwargs,
     ) -> bool:
         """

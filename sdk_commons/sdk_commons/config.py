@@ -7,13 +7,13 @@ class SDKConfig(abc.ABC):
     are expended to implement. Each method will be invoked by
     API providing all listed parameters but each venue is free
     to only include needed parameters in their own concrete
-    implementation. All other parameters will be consumed by
-    *args and **kwargs that are always expected to be included
+    implementation. All additional parameters will be consumed by
+    **kwargs that is always expected to be included.
     A template venue is also provided as example for a concrete
     implementation.
     """
 
-    def __init__(self, address: str, chain_id: int, rpc_uri: str, *args, **kwargs):
+    def __init__(self, address: str, chain_id: int, rpc_uri: str, **kwargs):
         self.address = address
         self.chain_id = chain_id
         self.rpc_uri = rpc_uri
@@ -47,7 +47,6 @@ class SDKConfig(abc.ABC):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        *args,
         **kwargs,
     ) -> str:
         """
@@ -56,13 +55,13 @@ class SDKConfig(abc.ABC):
 
     # TODO: rename into get_offered_token_details
     @abc.abstractmethod
-    def get_otoken_details(self, *args, **kwargs) -> dict:
+    def get_otoken_details(self, **kwargs) -> dict:
         """
         Return details about the offer token
         """
 
     @abc.abstractmethod
-    def get_offer_details(self, offer_id: int, *args, **kwargs) -> dict:
+    def get_offer_details(self, offer_id: int, **kwargs) -> dict:
         """Return details for a given offer"""
 
     @abc.abstractmethod
@@ -77,7 +76,6 @@ class SDKConfig(abc.ABC):
         v: int,
         r: str,
         s: str,
-        *args,
         **kwargs,
     ) -> str:
         """Validate the signing bid"""
@@ -87,7 +85,6 @@ class SDKConfig(abc.ABC):
         self,
         public_key: str,
         token_address: str,
-        *args,
         **kwargs,
     ) -> bool:
         """
