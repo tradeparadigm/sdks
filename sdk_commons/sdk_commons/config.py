@@ -16,7 +16,7 @@ class SDKConfig(abc.ABC):
     implementation.
     """
 
-    def __init__(self, address: str, chain_id: int, rpc_uri: str, *args, **kwargs):
+    def __init__(self, address: str, chain_id: int, rpc_uri: str, **kwargs):
         self.address = address
         self.chain_id = chain_id
         self.rpc_uri = rpc_uri
