@@ -54,3 +54,4 @@ will be created.
 Furthermore type hints will be checked via mypy to ensure type safety
 and to verify that the return values on the implemented methods match
 the expected interface.
+
