@@ -24,6 +24,7 @@ class RibbonSDKConfig(SDKConfig):
 
     @staticmethod
     def create_offer(
+        self,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
