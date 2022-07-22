@@ -20,9 +20,6 @@ class RibbonSDKConfig(SDKConfig):
 
     def create_offer(
         self,
-        address: str,
-        chain_id: int,
-        rpc_uri: str,
         oToken: str,
         bidding_token: str,
         min_price: int,
@@ -37,7 +34,7 @@ class RibbonSDKConfig(SDKConfig):
 
         wallet = Wallet(public_key=public_key, private_key=private_key)
 
-        config = ContractConfig(address=address, chain_id=chain_id, rpc_uri=rpc_uri)
+        config = ContractConfig(address=self.address, chain_id=self.chain_id, rpc_uri=self.rpc_uri)
         swap_contract = SwapContract(config)
 
         new_offer = Offer(
@@ -49,27 +46,22 @@ class RibbonSDKConfig(SDKConfig):
         )
         return swap_contract.create_offer(new_offer, wallet)
 
-    def get_otoken_details(
-        self, address: str, chain_id: int, rpc_uri: str, *args, **kwargs
-    ) -> dict:
+    def get_otoken_details(self, *args, **kwargs) -> dict:
         """Return details about the offer token"""
-        config = ContractConfig(address=address, chain_id=chain_id, rpc_uri=rpc_uri)
+        config = ContractConfig(address=self.address, chain_id=self.chain_id, rpc_uri=self.rpc_uri)
         otoken_contract = oTokenContract(config)
         return otoken_contract.get_otoken_details()
 
-    def get_offer_details(
-        self, address: str, chain_id: int, rpc_uri: str, offer_id: int, *args, **kwargs
-    ) -> dict:
+    def get_offer_details(self, offer_id: int, *args, **kwargs) -> dict:
         """Return details for a given offer"""
-        swap_config = ContractConfig(address=address, chain_id=chain_id, rpc_uri=rpc_uri)
+        swap_config = ContractConfig(
+            address=self.address, chain_id=self.chain_id, rpc_uri=self.rpc_uri
+        )
         swap_contract = SwapContract(swap_config)
         return swap_contract.get_offer_details(offer_id)
 
     def validate_bid(
         self,
-        address: str,
-        chain_id: int,
-        rpc_uri: str,
         swap_id: int,
         nonce: int,
         signer_wallet: str,
@@ -84,7 +76,7 @@ class RibbonSDKConfig(SDKConfig):
     ) -> str:
         """Validate the signing bid"""
 
-        config = ContractConfig(address=address, chain_id=chain_id, rpc_uri=rpc_uri)
+        config = ContractConfig(address=self.address, chain_id=self.chain_id, rpc_uri=self.rpc_uri)
         swap_contract = SwapContract(config)
 
         signed_bid = SignedBid(
@@ -102,9 +94,6 @@ class RibbonSDKConfig(SDKConfig):
 
     def verify_allowance(
         self,
-        address: str,
-        chain_id: int,
-        rpc_uri: str,
         public_key: str,
         token_address: str,
         *args,
@@ -115,6 +104,6 @@ class RibbonSDKConfig(SDKConfig):
         the given token on the wallet
         """
 
-        config = ContractConfig(address=address, chain_id=chain_id, rpc_uri=rpc_uri)
+        config = ContractConfig(address=self.address, chain_id=self.chain_id, rpc_uri=self.rpc_uri)
         wallet = Wallet(public_key=public_key)
         return wallet.verify_allowance(config, token_address=token_address)

@@ -5,6 +5,8 @@ import pytest
 from sdk_commons.config import SDKConfig
 from tests.base import VENUES, TestsBase
 
+ADDRESS_ZERO = "0x0000000000000000000000000000000000000000"
+
 
 class TestConfig(TestsBase):
     @pytest.mark.parametrize("venue", VENUES)
@@ -29,7 +31,7 @@ class TestConfig(TestsBase):
         """
 
         config_class = self.import_class(venue, "config", self.get_config_class(venue))
-        config_class()
+        config_class(address=ADDRESS_ZERO, chain_id=0, rpc_uri="...")
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_create_offer_signature(self, venue: str):
@@ -37,7 +39,7 @@ class TestConfig(TestsBase):
 
         config_class_name = self.get_config_class(venue)
         config_class = self.import_class(venue, "config", config_class_name)
-        c = config_class()
+        c = config_class(address=ADDRESS_ZERO, chain_id=0, rpc_uri="...")
 
         self.inspect_method_signature(
             c.create_offer,
@@ -50,7 +52,7 @@ class TestConfig(TestsBase):
 
         config_class_name = self.get_config_class(venue)
         config_class = self.import_class(venue, "config", config_class_name)
-        c = config_class()
+        c = config_class(address=ADDRESS_ZERO, chain_id=0, rpc_uri="...")
 
         self.inspect_method_signature(
             c.get_otoken_details,
@@ -63,7 +65,7 @@ class TestConfig(TestsBase):
 
         config_class_name = self.get_config_class(venue)
         config_class = self.import_class(venue, "config", config_class_name)
-        c = config_class()
+        c = config_class(address=ADDRESS_ZERO, chain_id=0, rpc_uri="...")
 
         self.inspect_method_signature(
             c.get_offer_details,
@@ -76,7 +78,7 @@ class TestConfig(TestsBase):
 
         config_class_name = self.get_config_class(venue)
         config_class = self.import_class(venue, "config", config_class_name)
-        c = config_class()
+        c = config_class(address=ADDRESS_ZERO, chain_id=0, rpc_uri="...")
 
         self.inspect_method_signature(
             c.validate_bid,
@@ -89,7 +91,7 @@ class TestConfig(TestsBase):
 
         config_class_name = self.get_config_class(venue)
         config_class = self.import_class(venue, "config", config_class_name)
-        c = config_class()
+        c = config_class(address=ADDRESS_ZERO, chain_id=0, rpc_uri="...")
 
         self.inspect_method_signature(
             c.verify_allowance,

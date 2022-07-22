@@ -14,6 +14,11 @@ class SDKConfig(abc.ABC):
     implementation.
     """
 
+    def __init__(self, address: str, chain_id: int, rpc_uri: str, *args, **kwargs):
+        self.address = address
+        self.chain_id = chain_id
+        self.rpc_uri = rpc_uri
+
     @property
     @abc.abstractmethod
     def authorization_pages(self):
@@ -33,9 +38,6 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def create_offer(
         self,
-        address: str,
-        chain_id: int,
-        rpc_uri: str,
         # TODO: rename into offer_token
         oToken: str,
         bidding_token: str,
@@ -53,25 +55,18 @@ class SDKConfig(abc.ABC):
 
     # TODO: rename into get_offered_token_details
     @abc.abstractmethod
-    def get_otoken_details(
-        self, address: str, chain_id: int, rpc_uri: str, *args, **kwargs
-    ) -> dict:
+    def get_otoken_details(self, *args, **kwargs) -> dict:
         """
         Return details about the offer token
         """
 
     @abc.abstractmethod
-    def get_offer_details(
-        self, address: str, chain_id: int, rpc_uri: str, offer_id: int, *args, **kwargs
-    ) -> dict:
+    def get_offer_details(self, offer_id: int, *args, **kwargs) -> dict:
         """Return details for a given offer"""
 
     @abc.abstractmethod
     def validate_bid(
         self,
-        address: str,
-        chain_id: int,
-        rpc_uri: str,
         swap_id: int,
         nonce: int,
         signer_wallet: str,
@@ -89,9 +84,6 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def verify_allowance(
         self,
-        address: str,
-        chain_id: int,
-        rpc_uri: str,
         public_key: str,
         token_address: str,
         *args,
