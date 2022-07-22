@@ -60,16 +60,7 @@ class SwapContract:
             raise TypeError("Invalid signed bid")
 
         ...
-        errors = 0
-        ...
-
-        if errors == 0:
-            return {"errors": 0}
-        else:
-            return {
-                "errors": errors,
-                "messages": ["..."],
-            }
+        return 'error'
 
     def create_offer(self, offer: Offer, wallet: Wallet) -> str:
         """
