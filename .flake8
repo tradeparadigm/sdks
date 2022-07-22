@@ -11,7 +11,7 @@ exclude =
 max-complexity = 20
 max-line-length = 99
 # based on https://www.python.org/dev/peps/pep-0008/#maximum-line-length
-max-doc-length = 72
+max-doc-length = 80
 
 ignore = E203,W503,W605
 # E203 needed for black, see https://github.com/psf/black/issues/315

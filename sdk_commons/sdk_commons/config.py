@@ -11,6 +11,7 @@ class SDKConfig(abc.ABC):
     to only include needed parameters in their own concrete
     implementation. All additional parameters will be consumed by
     **kwargs that is always expected to be included.
+
     A template venue is also provided as example for a concrete
     implementation.
     """
