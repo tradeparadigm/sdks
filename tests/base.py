@@ -1,35 +1,14 @@
 from importlib import import_module
+from inspect import Parameter, signature
 
-import pytest
-
-from opyn.chains import Chains as OpynChains
-from ribbon.chains import Chains as RibbonChains
+from sdk_commons.config import SDKConfig
 
 TEMPLATE = 'template'
 RIBBON = 'ribbon'
 OPYN = 'opyn'
 FRIKTION = 'friktion'
+# TODO: add FRIKTION
 VENUES = [TEMPLATE, RIBBON, OPYN]
-# REMOVE ME! Enable Opyn Tests!
-VENUES = [TEMPLATE, RIBBON]
-
-# DOV_VRFQ_RPC_TOKEN = os.environ["DOV_VRFQ_RPC_TOKEN"]
-
-VENUE_CONFIGURATION = {
-    RIBBON: {
-        "chain_id": RibbonChains.KOVAN,
-        # "rpc_uri": f"https://kovan.infura.io/v3/{DOV_VRFQ_RPC_TOKEN}",
-    },
-    OPYN: {
-        "chain_id": OpynChains.ROPSTEN,
-        # "rpc_uri": f"https://ropsten.infura.io/v3/{DOV_VRFQ_RPC_TOKEN}",
-    },
-    FRIKTION: {},
-}
-# https://web3js.readthedocs.io/en/v1.2.11/web3-utils.html
-VALID_ADDRESS = "0xc1912fee45d61c87cc5ea59dae31190fffff232d"
-PUBLIC_KEY = "0x0000000000000000000000000000000000000000"
-PRIVATE_KEY = "0x0000000000000000000000000000000000000000000000000000000000000000"
 
 
 class TestsBase:
@@ -44,20 +23,88 @@ class TestsBase:
     def import_class(*args: str) -> str:
         module = import_module(".".join(args[0:-1]))
         cls_name = args[-1]
-        assert hasattr(module, cls_name)
+        assert hasattr(module, cls_name), f"{'.'.join(args)} not found"
 
         c = getattr(module, cls_name)
         assert c is not None
 
         return c
 
-    @pytest.fixture()
-    def contract_config(self, venue):
-        venue_config = VENUE_CONFIGURATION.get(venue, {})
-        chain_id = venue_config.get("chain_id", 0)
-        rpc_uri = venue_config.get("rpc_uri")
+    def get_config_class(self, venue: str):
+        """
+        Scan the venue.config module to search
+        a class inheriting SDKConfig
+        """
+        module = self.import_module(venue, "config")
+        config_class = None
 
-        module = self.import_module(venue, "definitions")
-        ContractConfig = getattr(module, "ContractConfig")
+        # Iterate the symbol table
+        for name, cls in module.__dict__.items():
+            # exclude all elements that are not classes
+            if not isinstance(cls, type):
+                continue
+            # exclude all classes that are from a different module
+            # i.e. exclude imported items
+            if module.__name__ not in cls.__module__:
+                continue
 
-        yield ContractConfig(address=VALID_ADDRESS, rpc_uri=rpc_uri, chain_id=chain_id)
+            # exclude all classes not children of SDKConfig
+            if not issubclass(cls, SDKConfig):
+                continue
+
+            config_class = name
+            break
+
+        assert config_class is not None, f"Can't any class inheriting SDKConfig in {venue}.config"
+
+        return config_class
+
+    @staticmethod
+    def inspect_method_signature(method: callable, reference: callable):
+        """
+        These checks are needed because abc
+        does no checks on arguments of concrete implementations
+        This metodo verifies the method signature:
+          - all parameters should correspond to parameters on the reference
+          - exception: additional parameters with a default value are allowed
+          - all methods are expected to accept *args and **kwargs
+        """
+
+        method_signature = signature(method).parameters
+        reference_signature = signature(reference).parameters
+
+        # All concrete implementes are expencted to accept *args
+        assert (
+            "args" in method_signature
+        ), f"{method.__module__}.{method.__name__} is not accepting args parameter"
+
+        # Verify that args is exactly *args
+        assert (
+            method_signature["args"].kind == Parameter.VAR_POSITIONAL
+        ), "wrong args argument, expected *args"
+
+        # All concrete implementes are expencted to accept **kwargs
+        assert (
+            "kwargs" in method_signature
+        ), f"{method.__module__}.{method.__name__} is not accepting kwargs parameter"
+
+        # Verify that kwargs is exactly **kwargs
+        assert (
+            method_signature["kwargs"].kind == Parameter.VAR_KEYWORD
+        ), "wrong kwargs argument, expected **kwargs"
+
+        # Extract from the reference signature all arguments
+        # expect for self, args and kwargs
+        expected_params = [p for p in reference_signature if p not in ['self', 'args', 'kwargs']]
+
+        # Verify if the arguments of the method signature
+        # corresponds to the reference signature
+        for method_name, method_def in method_signature.items():
+            # args and kwargs are already explicitly checked, skipping
+            if method_name == "args" or method_name == "kwargs":
+                continue
+            # Unknown parameters (i.e. parameters not in the reference)
+            # are refused, except if they have a default value
+            assert (
+                method_name in expected_params or method_def.default is not Parameter.empty
+            ), f"{method} requires an unknown parameter {method_name}"

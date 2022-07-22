@@ -111,7 +111,7 @@ class SettlementContract(ContractConnection):
 
         Args:
             bid (dict): Bid dictionary containing offerId, bidId, signerAddress,
-            bidderAddress, bidToken, offerToken, bidAmount, sellAmount, v, r, and s
+            bidderAddress, bidToken, offerToken, bidAmount, sellAmount, v, r, s
 
         Raises:
             TypeError: Bid argument is not an instance of SignedBid

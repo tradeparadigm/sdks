@@ -4,8 +4,6 @@ import pytest
 
 from tests.base import VENUES, TestsBase
 
-# from unittest.mock import patch
-
 
 class TestSDK(TestsBase):
     @pytest.mark.parametrize("venue", VENUES)
