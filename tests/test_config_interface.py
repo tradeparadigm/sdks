@@ -107,9 +107,7 @@ class TestConfig(TestsBase):
 
         venue_chains = getattr(config_class, "venue_chains")
 
-        chains = venue_chains()
-
-        assert issubclass(chains, Enum), f"{venue_chains} does not return an Enum"
+        assert issubclass(venue_chains, Enum), "venue_chains is not an Enum"
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_config_class_has_authorization_pages(self, venue: str):

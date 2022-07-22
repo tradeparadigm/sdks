@@ -14,9 +14,7 @@ class AuthorizationPages:
 class RibbonSDKConfig(SDKConfig):
 
     authorization_pages = AuthorizationPages
-
-    def venue_chains():
-        return Chains
+    venue_chains = Chains
 
     def create_offer(
         self,

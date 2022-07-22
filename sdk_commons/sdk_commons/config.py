@@ -1,5 +1,4 @@
 import abc
-from enum import Enum
 
 
 class SDKConfig(abc.ABC):
@@ -28,10 +27,12 @@ class SDKConfig(abc.ABC):
         """
         pass
 
+    @property
     @abc.abstractmethod
-    def venue_chains(self) -> Enum:
+    def venue_chains(self):
         """
-        Return an Enum listing all supported chains
+        Set this property with an Enum
+        listing all supported chains
         """
         pass
 
