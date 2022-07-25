@@ -1,4 +1,5 @@
 import abc
+from typing import Any
 
 from sdk_commons.chains import Chains
 
@@ -48,7 +49,7 @@ class SDKConfig(abc.ABC):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> str:
         """
         Create an offer
@@ -57,7 +58,7 @@ class SDKConfig(abc.ABC):
     # TODO: rename into get_offered_token_details
     @abc.abstractmethod
     def get_otoken_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
+        self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs: Any
     ) -> dict:
         """
         Return details about the offer token
@@ -65,7 +66,7 @@ class SDKConfig(abc.ABC):
 
     @abc.abstractmethod
     def get_offer_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs
+        self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs: Any
     ) -> dict:
         """Return details for a given offer"""
 
@@ -82,7 +83,7 @@ class SDKConfig(abc.ABC):
         buy_amount: int,
         referrer: str,
         signature: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> str:
         """Validate the signing bid"""
 
@@ -94,7 +95,7 @@ class SDKConfig(abc.ABC):
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> bool:
         """
         Verify if the contract is allowed to access
