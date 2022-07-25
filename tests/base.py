@@ -84,8 +84,8 @@ class TestsBase:
         ), "wrong kwargs argument, expected **kwargs"
 
         # Extract from the reference signature all arguments
-        # except for self, args and kwargs
-        expected_params = [p for p in reference_signature if p not in ['self', 'args', 'kwargs']]
+        # except for args and kwargs
+        expected_params = [p for p in reference_signature if p not in ['args', 'kwargs']]
 
         # Verify if the arguments of the method signature
         # corresponds to the reference signature
