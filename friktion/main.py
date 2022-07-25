@@ -65,7 +65,8 @@ async def main_def():
     if not c.verify_allowance(RECEIVE_MINT, COUNTERPARTY):
         print("allowance needs to be delegated, doing...")
         c.give_allowance(wallet, RECEIVE_MINT, MIN_REQUIRED_ALLOWANCE)
-        time.sleep(10.0)
+        print("Sleeping waiting for allowance to be propagated")
+        time.sleep(15.0)
         assert c.verify_allowance(
             RECEIVE_MINT, COUNTERPARTY
         ), 'Give allowance transaction took look then expected. Please run the program again.'
