@@ -48,7 +48,6 @@ async def main_def():
     # create offer
     creator_give_pool_key = get_associated_token_address(wallet.public_key, GIVE_MINT)
     creator_receive_pool_key = get_associated_token_address(wallet.public_key, RECEIVE_MINT)
-    counterparty_receive_pool_key = get_associated_token_address(wallet.public_key, RECEIVE_MINT)
 
     # create associated token accounts
     try:
@@ -61,22 +60,17 @@ async def main_def():
     except RPCException as e:
         print(f'DEBUG: already created associated token account. Ignore this usually!\n{e=}')
 
-    try:
-        print(
-            'current allowance: ',
-            c.get_allowance_and_amount(RECEIVE_MINT, counterparty_receive_pool_key),
-        )
-        assert c.verify_allowance(RECEIVE_MINT, counterparty_receive_pool_key)
-    except AssertionError:
+    print('current allowance: ', c.get_allowance_and_amount(RECEIVE_MINT, COUNTERPARTY))
+
+    if not c.verify_allowance(RECEIVE_MINT, COUNTERPARTY):
         print("allowance needs to be delegated, doing...")
-        c.give_allowance(
-            wallet, counterparty_receive_pool_key, RECEIVE_MINT, MIN_REQUIRED_ALLOWANCE
-        )
-        time.sleep(5.0)
-        assert c.verify_allowance(RECEIVE_MINT, counterparty_receive_pool_key)
+        c.give_allowance(wallet, RECEIVE_MINT, MIN_REQUIRED_ALLOWANCE)
+        time.sleep(10.0)
+        assert c.verify_allowance(
+            RECEIVE_MINT, COUNTERPARTY
+        ), 'Give allowance transaction took look then expected. Please run the program again.'
 
     print('1. creator initializes swap offer...')
-
     # create a dummy offer for testing purposes
     (swap_order_pre_fill, swap_order_key) = await c.create_offer(
         wallet,
@@ -84,6 +78,7 @@ async def main_def():
             Offer(
                 oToken=GIVE_MINT,
                 biddingToken=RECEIVE_MINT,
+                expiry=int(time.time()) + 10000,
                 offerAmount=1,
                 minPrice=0,
                 minBidSize=1,
@@ -91,7 +86,6 @@ async def main_def():
             ),
             OPTIONS_CONTRACT_KEY,
             1,
-            int(time.time()) + 10000,
             creator_give_pool_key,
             COUNTERPARTY,
             True,
@@ -102,32 +96,31 @@ async def main_def():
 
     assert swap_order_pre_fill.status == Created()
     order_id = swap_order_pre_fill.order_id
+    swap_order_creator = swap_order_pre_fill.creator
 
-    offer_pre_fill: Offer = await c.get_offer_details(wallet.public_key, order_id)
+    offer_pre_fill: Offer = await c.get_offer_details(swap_order_creator, order_id)
     print(f'order post fill: {offer_pre_fill}')
 
-    print('2. taker executes bid against offer...')
+    offered_token_details = await c.get_offered_token_details(swap_order_creator, order_id)
+    print(f'otoken details = {offered_token_details}')
 
+    print('2. taker executes bid against offer...')
     bid_details = BidDetails(
-        wallet.public_key,
-        order_id,
-        creator_give_pool_key,
-        creator_receive_pool_key,
-        1,
-        1,
+        bid_price=1,
+        bid_size=1,
+        order_id=order_id,
+        signer_wallet=COUNTERPARTY,
     )
     # fill offer via bid
-    await c.validate_bid(bid_details)
+    if error := await c.validate_bid(swap_order_creator, bid_details):
+        raise ValueError(f'Invalid bid: {error}')
 
     bid_msg = bid_details.as_signed_msg(wallet, 1, 1)
-    await c.validate_and_exec_bid_msg(wallet, bid_details, bid_msg)
+    await c.validate_and_exec_bid_msg(wallet, swap_order_key, bid_details, bid_msg)
 
-    swap_order_post_fill: SwapOrder = await c.get_swap_order(wallet.public_key, order_id)
+    swap_order_post_fill: SwapOrder = await c.get_swap_order(swap_order_creator, order_id)
     assert swap_order_post_fill.status == Filled()
     print(f'order post fill: {swap_order_post_fill}')
-
-    offered_token_details = await c.get_offered_token_details(wallet.public_key, order_id)
-    print(f'otoken details = {offered_token_details}')
 
     print('3. creator reclaims assets...')
 
