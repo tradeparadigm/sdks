@@ -51,9 +51,7 @@ class TemplateSDKConfig(SDKConfig):
         self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
     ) -> dict:
         """Return details about the offer token"""
-        config = ContractConfig(
-            address=self.contract_address, chain_id=self.chain_id, rpc_uri=self.rpc_uri
-        )
+        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
         otoken_contract = oTokenContract(config)
         return otoken_contract.get_otoken_details()
 
