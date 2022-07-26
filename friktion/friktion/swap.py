@@ -201,6 +201,8 @@ class SwapContract:
         if acct_info.amount < transfer_amount:
             return "amount in token account is below required threshold"
 
+        return None
+        
     async def validate_bid(
         self, swap_order_creator: PublicKey, bid_details: BidDetails
     ) -> Optional[str]:
