@@ -13,13 +13,13 @@ class BidDetails:
     bid_price: int
 
     def as_signed_msg(self, wallet: Wallet) -> signing.SignedMessage:
-        give_amount = self.bid_size
-        receive_amount = self.bid_price * self.bid_size
+        buy_amount = self.bid_size
+        sell_amount = self.bid_price * self.bid_size
         byte_rep = b"".join(
             [
                 bytes([self.order_id]),
                 wallet.public_key.__bytes__(),
-                bytes([give_amount, receive_amount]),
+                bytes([buy_amount, sell_amount]),
             ]
         )
         return wallet.payer.sign(byte_rep)

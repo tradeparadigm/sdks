@@ -10,6 +10,7 @@ sys.path.insert(0, "/Users/alexwlezien/Friktion/paradigm-integration/friktion-an
 
 class SwapOrderTemplate:
 
+    creator: PublicKey
     options_contract_key: PublicKey
 
     give_size: int
@@ -27,6 +28,7 @@ class SwapOrderTemplate:
 
     def __init__(
         self,
+        creator: PublicKey,
         options_contract_key: PublicKey,
         give_size: int,
         receive_size: int,
@@ -60,6 +62,7 @@ class SwapOrderTemplate:
             offerAmount=self.give_size,
             minPrice=0,
             minBidSize=self.give_size,
+            seller=self.creator,
         )
 
     @staticmethod
@@ -75,6 +78,7 @@ class SwapOrderTemplate:
         whitelist_token_mint: PublicKey = WHITELIST_TOKEN_MINT,
     ):
         return SwapOrderTemplate(
+            offer.seller,
             options_contract,
             offer.offerAmount,
             receive_amount,
