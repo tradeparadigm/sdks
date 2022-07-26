@@ -1,4 +1,5 @@
 """ Module to call Swap contract """
+from sdk_commons.config import OfferDetails
 from template.definitions import ContractConfig, Offer, SignedBid
 from template.wallet import Wallet
 
@@ -14,7 +15,7 @@ class SwapContract:
     def __init__(self, config: ContractConfig):
         ...
 
-    def get_offer_details(self, offer_id: int) -> dict:
+    def get_offer_details(self, offer_id: int) -> OfferDetails:
         """
         Method to get bid details
 

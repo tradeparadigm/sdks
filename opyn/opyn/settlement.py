@@ -20,6 +20,7 @@ from opyn.contract import ContractConnection
 from opyn.definitions import BidData, Offer
 from opyn.utils import ADDRESS_ZERO, get_address
 from opyn.wallet import Wallet
+from sdk_commons.config import OfferDetails
 
 
 # ---------------------------------------------------------------------------
@@ -76,7 +77,7 @@ class SettlementContract(ContractConnection):
                 "offerId"
             ]
 
-    def get_offer_details(self, offer_id: int) -> dict:
+    def get_offer_details(self, offer_id: int) -> OfferDetails:
         """
         Method to get bid details
 

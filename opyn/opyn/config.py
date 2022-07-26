@@ -55,7 +55,7 @@ class OpynSDKConfig(SDKConfig):
 
     def get_otoken_details(
         self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
-    ) -> dict:
+    ) -> OfferTokenDetails:
         """Return details about the offer token"""
 
         config = ContractConfig(
@@ -66,7 +66,7 @@ class OpynSDKConfig(SDKConfig):
 
     def get_offer_details(
         self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs
-    ) -> dict:
+    ) -> OfferDetails:
         """Return details for a given offer"""
 
         swap_config = ContractConfig(
