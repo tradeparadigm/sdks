@@ -116,7 +116,7 @@ async def main_def():
     if error := await c.validate_bid(swap_order_creator, bid_details):
         raise ValueError(f'Invalid bid: {error}')
 
-    bid_msg = bid_details.as_signed_msg(wallet, 1, 1)
+    bid_msg = bid_details.as_signed_msg(wallet)
     await c.validate_and_exec_bid_msg(wallet, swap_order_key, bid_details, bid_msg)
 
     swap_order_post_fill: SwapOrder = await c.get_swap_order(swap_order_creator, order_id)
