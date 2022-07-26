@@ -1,4 +1,4 @@
-from sdk_commons.config import SDKConfig
+from sdk_commons.config import OfferDetails, OfferTokenDetails, SDKConfig
 from template.chains import Chains
 from template.definitions import ContractConfig, Offer, SignedBid
 from template.otoken import oTokenContract
@@ -34,11 +34,9 @@ class TemplateSDKConfig(SDKConfig):
 
         wallet = Wallet(public_key=public_key, private_key=private_key)
 
-
         config = ContractConfig(
             address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
         )
-
 
         swap_contract = SwapContract(config)
 
@@ -53,27 +51,24 @@ class TemplateSDKConfig(SDKConfig):
 
     def get_otoken_details(
         self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
-    ) -> dict:
+    ) -> OfferTokenDetails:
         """Return details about the offer token"""
-
 
         config = ContractConfig(
             address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
         )
-
 
         otoken_contract = oTokenContract(config)
         return otoken_contract.get_otoken_details()
 
     def get_offer_details(
         self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs
-    ) -> dict:
+    ) -> OfferDetails:
         """Return details for a given offer"""
 
         swap_config = ContractConfig(
             address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
         )
-
 
         swap_contract = SwapContract(swap_config)
         return swap_contract.get_offer_details(offer_id)
@@ -96,11 +91,9 @@ class TemplateSDKConfig(SDKConfig):
     ) -> str:
         """Validate the signing bid"""
 
-
         config = ContractConfig(
             address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
         )
-
 
         swap_contract = SwapContract(config)
 
@@ -131,11 +124,9 @@ class TemplateSDKConfig(SDKConfig):
         the given token on the wallet
         """
 
-
         config = ContractConfig(
             address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
         )
-
 
         wallet = Wallet(public_key=public_key)
         return wallet.verify_allowance(config, token_address=token_address)

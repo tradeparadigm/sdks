@@ -2,6 +2,7 @@
 """ Module to call oToken contract """
 # ---------------------------------------------------------------------------
 
+from sdk_commons.config import OfferTokenDetails
 from template.definitions import ContractConfig
 
 
@@ -16,7 +17,7 @@ class oTokenContract:
     def __init__(self, config: ContractConfig):
         ...
 
-    def get_otoken_details(self) -> dict:
+    def get_otoken_details(self) -> OfferTokenDetails:
         """
         Method to validate bid
 

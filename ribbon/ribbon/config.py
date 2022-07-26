@@ -3,7 +3,7 @@ from ribbon.definitions import ContractConfig, Offer, SignedBid
 from ribbon.otoken import oTokenContract
 from ribbon.swap import SwapContract
 from ribbon.wallet import Wallet
-from sdk_commons.config import SDKConfig
+from sdk_commons.config import OfferDetails, OfferTokenDetails, SDKConfig
 
 
 class AuthorizationPages:
@@ -34,7 +34,6 @@ class RibbonSDKConfig(SDKConfig):
 
         wallet = Wallet(public_key=public_key, private_key=private_key)
 
-
         config = ContractConfig(
             address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
         )
@@ -52,7 +51,7 @@ class RibbonSDKConfig(SDKConfig):
 
     def get_otoken_details(
         self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
-    ) -> dict:
+    ) -> OfferTokenDetails:
         """Return details about the offer token"""
 
         config = ContractConfig(
@@ -64,7 +63,7 @@ class RibbonSDKConfig(SDKConfig):
 
     def get_offer_details(
         self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs
-    ) -> dict:
+    ) -> OfferDetails:
         """Return details for a given offer"""
 
         swap_config = ContractConfig(
@@ -91,7 +90,6 @@ class RibbonSDKConfig(SDKConfig):
         **kwargs,
     ) -> str:
         """Validate the signing bid"""
-
 
         config = ContractConfig(
             address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
@@ -125,7 +123,6 @@ class RibbonSDKConfig(SDKConfig):
         Verify if the contract is allowed to access
         the given token on the wallet
         """
-
 
         config = ContractConfig(
             address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
