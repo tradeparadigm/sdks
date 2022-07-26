@@ -38,7 +38,10 @@ class OpynSDKConfig(SDKConfig):
 
         wallet = Wallet(public_key=public_key, private_key=private_key)
 
-        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
+        config = ContractConfig(
+            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        )
+
         swap_contract = SettlementContract(config)
 
         new_offer = Offer(
@@ -54,7 +57,10 @@ class OpynSDKConfig(SDKConfig):
         self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
     ) -> dict:
         """Return details about the offer token"""
-        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
+
+        config = ContractConfig(
+            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        )
         otoken_contract = oTokenContract(config)
         return otoken_contract.get_otoken_details()
 
@@ -62,7 +68,10 @@ class OpynSDKConfig(SDKConfig):
         self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs
     ) -> dict:
         """Return details for a given offer"""
-        swap_config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
+
+        swap_config = ContractConfig(
+            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        )
         swap_contract = SettlementContract(swap_config)
         return swap_contract.get_offer_details(offer_id)
 
@@ -118,6 +127,8 @@ class OpynSDKConfig(SDKConfig):
         the given token on the wallet
         """
 
-        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
+        config = ContractConfig(
+            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        )
         wallet = Wallet(public_key=public_key)
         return wallet.verify_allowance(config, token_address=token_address)
