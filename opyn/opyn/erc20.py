@@ -11,6 +11,8 @@
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
+from typing import cast
+
 from opyn.contract import ContractConnection
 from opyn.definitions import ContractConfig
 from opyn.utils import get_address
@@ -56,7 +58,7 @@ class ERC20Contract(ContractConnection):
 
         response = self.contract.functions.allowance(owner_address, spender_address).call()
 
-        return response
+        return cast(int, response)
 
     def get_balance(self, owner: str) -> int:
         """
@@ -76,7 +78,7 @@ class ERC20Contract(ContractConnection):
 
         response = self.contract.functions.balanceOf(owner_address).call()
 
-        return response
+        return cast(int, response)
 
     def approve(self, publicKey: str, privateKey: str, spender: str, amount: int):
         nonce = self.w3.eth.get_transaction_count(publicKey)

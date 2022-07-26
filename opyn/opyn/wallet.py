@@ -9,6 +9,7 @@
 # ---------------------------------------------------------------------------
 
 from dataclasses import asdict
+from typing import cast
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -147,8 +148,8 @@ class Wallet:
         )
         token = ERC20Contract(token_config)
 
-        allowance = (
-            token.get_allowance(self.public_key, settlement_config.address) / token.decimals
+        allowance = cast(
+            int, token.get_allowance(self.public_key, settlement_config.address) / token.decimals
         )
 
         return allowance > MIN_ALLOWANCE

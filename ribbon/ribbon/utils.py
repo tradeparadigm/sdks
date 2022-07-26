@@ -134,5 +134,5 @@ def encode_type(name: str, fields: list) -> str:
     Returns:
         data (object): Encoded type
     """
-    fields = ','.join([i['type'] + ' ' + i['name'] for i in fields])
-    return f'{name}({fields})'
+    joined_fields = ','.join([i['type'] + ' ' + i['name'] for i in fields])
+    return f'{name}({joined_fields})'

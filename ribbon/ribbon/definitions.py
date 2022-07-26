@@ -12,6 +12,7 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
+from typing import Optional
 
 from ribbon.encode import ADDRESS_ZERO
 from sdk_commons.chains import Chains
@@ -35,7 +36,7 @@ class Domain:
     chainId: int
     verifyingContract: str
     version: int
-    salt: str = None
+    salt: Optional[str] = None
 
 
 @dataclass
@@ -50,9 +51,9 @@ class Bid:
 
 @dataclass
 class SignedBid(Bid):
-    v: int = None
-    r: str = None
-    s: str = None
+    v: Optional[int] = None
+    r: Optional[str] = None
+    s: Optional[str] = None
 
 
 @dataclass
