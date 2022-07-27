@@ -9,7 +9,9 @@ class OfferDetails(TypedDict):
     oToken: str
     biddingToken: str
     minPrice: str
+    # TODO: expected to be Decimal
     minBidSize: str
+    # TODO: expected to be Decimal
     totalSize: str
     availableSize: str
 
@@ -19,6 +21,7 @@ class OfferTokenDetails(TypedDict):
     collateralAsset: str
     underlyingAsset: str
     strikeAsset: str
+    # TODO: expected to be Decimal
     strikePrice: str
     expiryTimestamp: str
     isPut: str
@@ -110,6 +113,8 @@ class SDKConfig(abc.ABC):
         referrer: str,
         signature: str,
         **kwargs: Any,
+        # TODO: we are currently expecting
+        # result['messages'] if result['errors'] > 0 else None
     ) -> str:
         """Validate the signing bid"""
 
