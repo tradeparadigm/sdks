@@ -10,6 +10,7 @@ from friktion.friktion_anchor.accounts.swap_order import SwapOrder
 class Offer:
     oToken: PublicKey
     biddingToken: PublicKey
+    expiry: int
     offerAmount: int
     minPrice: int
     minBidSize: int
@@ -21,6 +22,7 @@ class Offer:
         return Offer(
             oToken=swap_order.give_mint,
             biddingToken=swap_order.receive_mint,
+            expiry=swap_order.expiry,
             offerAmount=swap_order.give_size,
             minPrice=0,
             minBidSize=swap_order.give_size,

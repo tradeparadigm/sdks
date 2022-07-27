@@ -5,7 +5,7 @@
 import asyncio
 import time
 from enum import Enum
-from typing import Tuple
+from typing import Optional, Tuple
 
 import spl.token._layouts as layouts
 from anchorpy import Provider, Wallet
@@ -22,6 +22,8 @@ from solana.utils.helpers import decode_byte_string
 from spl.token.async_client import AsyncToken
 from spl.token.client import Token
 from spl.token.constants import TOKEN_PROGRAM_ID
+from spl.token.core import AccountInfo
+from spl.token.instructions import get_associated_token_address
 
 from friktion.friktion_anchor.instructions import cancel, claim
 from friktion.inertia_anchor.accounts import OptionsContract
@@ -31,7 +33,6 @@ from friktion.pda import DELEGATE_AUTHORITY_ADDRESS, SwapOrderAddresses, find_sw
 from .bid_details import BidDetails
 from .friktion_anchor.accounts import SwapOrder
 from .friktion_anchor.instructions import create, exec, exec_msg
-from .friktion_anchor.program_id import PROGRAM_ID
 from .swap_order_template import SwapOrderTemplate
 
 GLOBAL_FRIKTION_AUTHORITY = PublicKey("7wYqGsQmfVigMSratssoPddfLU1P5srZcM32nvKAgWkj")
@@ -78,10 +79,7 @@ class SwapContract:
         self.url = get_url_for_network(network)
 
     # delegate should be the PDA of the swap order
-    def give_allowance(
-        self, wallet: Wallet, token_acct_to_delegate: PublicKey, mint: PublicKey, allowance: int
-    ) -> bool:
-
+    def give_allowance(self, wallet: Wallet, mint: PublicKey, allowance: int):
         client = Client(self.url)
         token = Token(client, mint, TOKEN_PROGRAM_ID, wallet.payer)
 
@@ -89,28 +87,30 @@ class SwapContract:
         # use a global authority for all swaps
         # assert acct_info.owner == swap_order.counterparty
 
+        token_acct_to_delegate = get_associated_token_address(wallet.public_key, mint)
         token.approve(
             token_acct_to_delegate, DELEGATE_AUTHORITY_ADDRESS, wallet.public_key, allowance
         )
 
-        return True
-
-    # delegate should be the PDA of the swap order
-    def verify_allowance(self, mint: PublicKey, token_account: PublicKey) -> bool:
+    def get_account_info(self, mint: PublicKey, wallet_addr: PublicKey) -> AccountInfo:
         client = Client(self.url)
         token = Token(client, mint, TOKEN_PROGRAM_ID, Keypair.generate())
-        acct_info = token.get_account_info(token_account)
+        receive_pool = get_associated_token_address(wallet_addr, mint)
+        return token.get_account_info(receive_pool)
+
+    def _has_minimum_allowance(self, account_info: AccountInfo) -> bool:
         return (
-            acct_info.delegate == DELEGATE_AUTHORITY_ADDRESS
-            and acct_info.delegated_amount >= MIN_REQUIRED_ALLOWANCE
+            account_info.delegate == DELEGATE_AUTHORITY_ADDRESS
+            and account_info.delegated_amount >= MIN_REQUIRED_ALLOWANCE
         )
 
-    def get_allowance_and_amount(
-        self, mint: PublicKey, token_account: PublicKey
-    ) -> Tuple[int, int]:
-        client = Client(self.url)
-        token = Token(client, mint, TOKEN_PROGRAM_ID, Keypair.generate())
-        acct_info = token.get_account_info(token_account)
+    # delegate should be the PDA of the swap order
+    def verify_allowance(self, mint: PublicKey, wallet_addr: PublicKey) -> bool:
+        acct_info = self.get_account_info(mint, wallet_addr)
+        return self._has_minimum_allowance(acct_info)
+
+    def get_allowance_and_amount(self, mint: PublicKey, wallet: PublicKey) -> Tuple[int, int]:
+        acct_info = self.get_account_info(mint, wallet)
         return acct_info.delegated_amount, acct_info.amount
 
     async def get_offered_token_details(self, user: PublicKey, order_id: int):
@@ -186,40 +186,42 @@ class SwapContract:
         swap_order = await self.get_swap_order_for_key(addr)
         return Offer.from_swap_order(swap_order, addr)
 
-    async def validate_bid(self, bid_details: BidDetails) -> dict:
-        swap_order_creator: PublicKey = bid_details.swap_order_owner
-        order_id: int = bid_details.order_id
-        offer: Offer = await self.get_offer_details(swap_order_creator, order_id)
-        swap_order: SwapOrder = await self.get_swap_order(swap_order_creator, order_id)
-        if bid_details.bid_size < offer.minBidSize:
-            return {"error": "bid size is below min bid size"}
-        if bid_details.bid_size > offer.offerAmount:
-            return {"error": "bid size is greater than offer size"}
-        if bid_details.bid_price < offer.minPrice:
-            return {"error": "bid price is less than min price"}
+    async def _validate_bid_allowance(
+        self, bidding_token: PublicKey, bid_details: BidDetails
+    ) -> Optional[str]:
+        acct_info = self.get_account_info(bidding_token, bid_details.signer_wallet)
 
-        verified_allowance = self.verify_allowance(
-            offer.biddingToken, bid_details.counterparty_receive_pool
-        )
-        if not verified_allowance:
-            return {"error": "counterparty receive pool does not have sufficient allowance"}
-
-        (allowance, amount) = self.get_allowance_and_amount(
-            offer.biddingToken, bid_details.counterparty_receive_pool
-        )
+        if not self._has_minimum_allowance(acct_info):
+            return "counterparty receive pool does not have sufficient allowance"
 
         transfer_amount = bid_details.bid_size * bid_details.bid_price
-        if allowance < transfer_amount:
-            return {"error": "allowance is below required threshold"}
+        if acct_info.delegated_amount < transfer_amount:
+            return "allowance is below required threshold"
 
-        if amount < transfer_amount:
-            return {"error": "amount in token account is below required threshold"}
+        if acct_info.amount < transfer_amount:
+            return "amount in token account is below required threshold"
 
-        if swap_order.expiry < int(time.time()):
-            return {"error": "expiry was in the past"}
+    async def validate_bid(
+        self, swap_order_creator: PublicKey, bid_details: BidDetails
+    ) -> Optional[str]:
+        offer: Offer = await self.get_offer_details(swap_order_creator, bid_details.order_id)
+
+        if bid_details.bid_size < offer.minBidSize:
+            return "bid size is below min bid size"
+        if bid_details.bid_size > offer.offerAmount:
+            return "bid size is greater than offer size"
+        if bid_details.bid_price < offer.minPrice:
+            return "bid price is less than min price"
+
+        if error_msg := await self._validate_bid_allowance(offer.biddingToken, bid_details):
+            return error_msg
+
+        if offer.expiry < int(time.time()):
+            return "expiry was in the past"
+
         # TODO: check mint of give pools and receive pools match
-        # elif bid_details.counterparty_give_pool = swap_
-        return {"error": None}
+
+        return None
 
     async def create_offer(
         self, wallet: Wallet, template: SwapOrderTemplate
@@ -294,18 +296,24 @@ class SwapContract:
     async def validate_and_exec_bid_msg(
         self,
         wallet: Wallet,
+        swap_order_address: PublicKey,
         bid_details: BidDetails,
         signed_msg: signing.SignedMessage,
     ):
         """
         Method to execute bid via signed message
         """
-        pdas = SwapOrderAddresses(bid_details.swap_order_owner, bid_details.order_id)
-        swap_order = await self.get_swap_order_for_key(pdas.swap_order_address)
-        error_dict = await self.validate_bid(bid_details)
+        swap_order = await self.get_swap_order_for_key(swap_order_address)
 
-        if error_dict['error'] is not None:
-            return error_dict
+        if error := await self.validate_bid(swap_order.creator, bid_details):
+            raise ValueError(f'Invalid bid: {error}')
+
+        counterparty_give_pool = get_associated_token_address(
+            bid_details.signer_wallet, swap_order.give_mint
+        )
+        counterparty_receive_pool = get_associated_token_address(
+            bid_details.signer_wallet, swap_order.receive_mint
+        )
 
         ix = exec_msg(
             {
@@ -315,13 +323,13 @@ class SwapContract:
                 "raw_msg": str(signed_msg.message),
             },
             {
-                "authority": wallet.public_key,  # signer
-                "delegate_authority": pdas.delegate_authority_address,
-                "swap_order": pdas.swap_order_address,
+                "authority": bid_details.signer_wallet,
+                "delegate_authority": DELEGATE_AUTHORITY_ADDRESS,
+                "swap_order": swap_order_address,
                 "give_pool": swap_order.give_pool,
                 "receive_pool": swap_order.receive_pool,
-                "counterparty_give_pool": bid_details.counterparty_give_pool,
-                "counterparty_receive_pool": bid_details.counterparty_receive_pool,
+                "counterparty_give_pool": counterparty_give_pool,
+                "counterparty_receive_pool": counterparty_receive_pool,
                 # pass in a dummy value since not using whitelisting
                 # right now
                 "whitelist_token_account": SYS_PROGRAM_ID,
@@ -339,7 +347,6 @@ class SwapContract:
         provider = Provider(client, wallet)
 
         print('sending exec MSG tx...')
-
         tx_resp = await provider.send(tx, [])
 
         print(tx_resp)
@@ -347,7 +354,12 @@ class SwapContract:
         await client.confirm_transaction(tx_resp)
         await client.close()
 
-    async def validate_and_exec_bid(self, wallet: Wallet, bid_details: BidDetails, offer: Offer):
+    async def validate_and_exec_bid(
+        self,
+        wallet: Wallet,
+        swap_order_address: PublicKey,
+        bid_details: BidDetails,
+    ):
         """
         Method to validate bid
         Args:
@@ -355,39 +367,26 @@ class SwapContract:
             response (dict): Dictionary containing number of errors
                 (errors) and the corresponding error messages (messages)
         """
+        swap_order = await self.get_swap_order_for_key(swap_order_address)
 
-        client = AsyncClient(self.url)
-        await client.is_connected()
+        if error := await self.validate_bid(swap_order.creator, bid_details):
+            raise ValueError(f'Invalid bid: {error}')
 
-        swap_order_owner = bid_details.swap_order_owner
-        order_id = bid_details.order_id
-
-        seeds = [
-            str.encode("swapOrder"),
-            bytes(swap_order_owner),
-            order_id.to_bytes(8, byteorder="little"),
-        ]
-        [swap_order_addr, _] = PublicKey.find_program_address(seeds, PROGRAM_ID)
-
-        acc = await SwapOrder.fetch(client, swap_order_addr)
-        if acc is None:
-            raise ValueError(
-                "No swap found for user = ", swap_order_owner, ', order id = ', order_id
-            )
-
-        error_dict = await self.validate_bid(bid_details)
-        if error_dict['error'] is not None:
-            await client.close()
-            return error_dict
+        counterparty_give_pool = get_associated_token_address(
+            bid_details.signer_wallet, swap_order.give_mint
+        )
+        counterparty_receive_pool = get_associated_token_address(
+            bid_details.signer_wallet, swap_order.receive_mint
+        )
 
         ix = exec(
             {
-                "authority": wallet.public_key,  # signer
-                "swap_order": swap_order_addr,
-                "give_pool": acc.give_pool,
-                "receive_pool": acc.receive_pool,
-                "counterparty_give_pool": bid_details.counterparty_give_pool,
-                "counterparty_receive_pool": bid_details.counterparty_receive_pool,
+                "authority": bid_details.signer_wallet,
+                "swap_order": swap_order_address,
+                "give_pool": swap_order.give_pool,
+                "receive_pool": swap_order.receive_pool,
+                "counterparty_give_pool": counterparty_give_pool,
+                "counterparty_receive_pool": counterparty_receive_pool,
                 # pass in a dummy value since not using whitelisting
                 # right now
                 "whitelist_token_account": SYS_PROGRAM_ID,
@@ -398,6 +397,8 @@ class SwapContract:
 
         tx = Transaction().add(ix)
 
+        client = AsyncClient(self.url)
+        await client.is_connected()
         provider = Provider(client, wallet)
 
         print('sending exec tx...')

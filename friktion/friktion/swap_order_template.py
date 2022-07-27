@@ -56,6 +56,7 @@ class SwapOrderTemplate:
         return Offer(
             oToken=self.give_mint,
             biddingToken=self.receive_mint,
+            expiry=self.expiry,
             offerAmount=self.give_size,
             minPrice=0,
             minBidSize=self.give_size,
@@ -67,7 +68,6 @@ class SwapOrderTemplate:
         options_contract: PublicKey,
         # placeholder: can be any number, will be deprecated soon
         receive_amount: int,
-        expiry: int,
         creator_give_pool: PublicKey,
         counterparty: PublicKey,
         is_counterparty_provided: bool = True,
@@ -78,7 +78,7 @@ class SwapOrderTemplate:
             options_contract,
             offer.offerAmount,
             receive_amount,
-            expiry,
+            offer.expiry,
             offer.oToken,
             offer.biddingToken,
             creator_give_pool,
