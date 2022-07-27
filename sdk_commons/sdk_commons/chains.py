@@ -21,3 +21,5 @@ class Chains(Enum, metaclass=MembershipTestEnumMeta):
     KOVAN = 42
     AVALANCHE = 43114
     FUJI = 43113
+    SOLANA_DEV = 777777
+    SOLANA_MAIN = 888888
