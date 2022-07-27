@@ -1,0 +1,18 @@
+[build-system]
+requires = ['poetry-core~=1.0']
+build-backend = 'poetry.core.masonry.api'
+
+[tool.poetry]
+name = 'template'
+description = 'Template SDK to interact with a partner'
+license = 'MIT'
+version = '0.1.0'
+authors = [
+    "Mattia D'Antonio <mattia@paradigm.co>",
+]
+packages = [
+    { include = 'template' },
+]
+
+[tool.poetry.dependencies]
+python = '^3.6'

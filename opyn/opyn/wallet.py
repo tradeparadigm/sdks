@@ -84,7 +84,8 @@ class Wallet:
             message_to_sign (MessageToSign): Unsigned Order Data
 
         Raises:
-            TypeError: message_to_sign argument is not an instance of MessageToSign class
+            TypeError: message_to_sign argument is not an instance
+                       of MessageToSign class
 
         Returns:
             signedBid (dict): Bid combined with the generated signature
@@ -152,7 +153,8 @@ class Wallet:
         """Increase settlement contract allowance
 
         Args:
-            settlement_config (ContractConfig): Configuration to setup the Settlement contract
+            settlement_config (ContractConfig): Configuration to setup
+                                                the Settlement contract
             token_address (str): Address of token to increase allowance of
             amount (str): Amount to increase allowance to
         """
