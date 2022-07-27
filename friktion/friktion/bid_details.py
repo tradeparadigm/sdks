@@ -1,5 +1,5 @@
 from anchorpy import Wallet
-from nacl import signing  # type: ignore
+from nacl import signing
 from solana.publickey import PublicKey
 
 from friktion.pda import SwapOrderAddresses

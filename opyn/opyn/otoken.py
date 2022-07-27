@@ -12,6 +12,7 @@
 # Imports
 # ---------------------------------------------------------------------------
 from opyn.erc20 import ERC20Contract
+from sdk_commons.config import OfferTokenDetails
 
 
 # ---------------------------------------------------------------------------
@@ -27,7 +28,7 @@ class oTokenContract(ERC20Contract):
 
     abi_location = 'abis/oToken.json'
 
-    def get_otoken_details(self) -> dict:
+    def get_otoken_details(self) -> OfferTokenDetails:
         """
         Method to validate bid
 

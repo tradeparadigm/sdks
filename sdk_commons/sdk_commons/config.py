@@ -1,4 +1,27 @@
 import abc
+from enum import Enum
+from typing import Any, Type, TypedDict
+
+
+class OfferDetails(TypedDict):
+    # TODO: enforce specific types?
+    seller: str
+    oToken: str
+    biddingToken: str
+    minPrice: str
+    minBidSize: str
+    totalSize: str
+    availableSize: str
+
+
+class OfferTokenDetails(TypedDict):
+    # TODO: enforce specific types?
+    collateralAsset: str
+    underlyingAsset: str
+    strikeAsset: str
+    strikePrice: str
+    expiryTimestamp: str
+    isPut: str
 
 
 class SDKConfig(abc.ABC):
@@ -13,6 +36,10 @@ class SDKConfig(abc.ABC):
     implementation.
     """
 
+    # TODO: consider to replace this class with the properties
+    # - mainnet_authorization_page
+    # - testnet_authorization_page
+    # To have easier safe types
     @property
     @abc.abstractmethod
     def authorization_pages(self):
@@ -24,7 +51,7 @@ class SDKConfig(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def venue_chains(self):
+    def venue_chains(self) -> Type[Enum]:
         """
         Set this property with an Enum
         listing all supported chains
@@ -45,7 +72,7 @@ class SDKConfig(abc.ABC):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> str:
         """
         Create an offer
@@ -54,16 +81,16 @@ class SDKConfig(abc.ABC):
     # TODO: rename into get_offered_token_details
     @abc.abstractmethod
     def get_otoken_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
-    ) -> dict:
+        self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs: Any
+    ) -> OfferTokenDetails:
         """
         Return details about the offer token
         """
 
     @abc.abstractmethod
     def get_offer_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs
-    ) -> dict:
+        self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs: Any
+    ) -> OfferDetails:
         """Return details for a given offer"""
 
     @abc.abstractmethod
@@ -81,7 +108,7 @@ class SDKConfig(abc.ABC):
         v: int,
         r: str,
         s: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> str:
         """Validate the signing bid"""
 
@@ -93,7 +120,7 @@ class SDKConfig(abc.ABC):
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> bool:
         """
         Verify if the contract is allowed to access

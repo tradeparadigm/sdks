@@ -9,6 +9,7 @@
 # ---------------------------------------------------------------------------
 
 from dataclasses import asdict
+from typing import cast
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -161,9 +162,10 @@ class Wallet:
         )
         bidding_token = ERC20Contract(token_config)
 
-        allowance = (
+        allowance = cast(
+            int,
             bidding_token.get_allowance(self.public_key, swap_config.address)
-            / bidding_token.decimals
+            / bidding_token.decimals,
         )
 
         return allowance > MIN_ALLOWANCE

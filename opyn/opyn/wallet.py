@@ -9,12 +9,13 @@
 # ---------------------------------------------------------------------------
 
 from dataclasses import asdict
+from typing import cast
 
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
 import eth_keys
-from py_eth_sig_utils.signing import sign_typed_data
+from py_eth_sig_utils.signing import sign_typed_data  # type: ignore
 from web3 import Web3
 
 from opyn.definitions import BidData, ContractConfig, Domain, MessageToSign
@@ -143,8 +144,8 @@ class Wallet:
         )
         token = ERC20Contract(token_config)
 
-        allowance = (
-            token.get_allowance(self.public_key, settlement_config.address) / token.decimals
+        allowance = cast(
+            int, token.get_allowance(self.public_key, settlement_config.address) / token.decimals
         )
 
         return allowance > MIN_ALLOWANCE

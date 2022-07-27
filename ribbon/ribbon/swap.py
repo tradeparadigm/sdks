@@ -18,6 +18,7 @@ from ribbon.definitions import Offer, SignedBid
 from ribbon.encode import ADDRESS_ZERO
 from ribbon.utils import get_address
 from ribbon.wallet import Wallet
+from sdk_commons.config import OfferDetails
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -58,7 +59,7 @@ class SwapContract(ContractConnection):
         config (ContractConfig): Configuration to setup the Contract
     """
 
-    def get_offer_details(self, offer_id: int) -> dict:
+    def get_offer_details(self, offer_id: int) -> OfferDetails:
         """
         Method to get bid details
 
