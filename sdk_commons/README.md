@@ -19,8 +19,8 @@ Since SDKConfig is an abstract class you will have to define your
 implementation of the required methods (e.g. `create_offer`,
 `get_offer_details`, `verify_allowance`, ...) and properties like
 (e.g. `authorization_pages`, `supported_chains`, ...) You will find the
-full list of abstract methods and properties in [SDKConfig]
-(sdk_commons/sdk_commons/config.py)
+full list of abstract methods and properties in
+[SDKConfig](../sdk_commons/sdk_commons/config.py).
 
 Please note that every method is expected to receive a predefined list
 of parameters and it is expected to return a specific output value.
@@ -32,9 +32,8 @@ to ignore in your implementation. You should not include additional
 parameters, but if you strictly need to do that you can introduce
 additional parameters by assigning them a default value.
 
-You can refer to the [template venue]
-(template/template/config.py)
-implementation as a generic example of integration
+You can refer to the [template venue](../template/template/config.py)
+implementation as a generic example of integration.
 
 ### Define your underlying code
 
