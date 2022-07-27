@@ -1,5 +1,5 @@
+from sdk_commons.chains import Chains
 from sdk_commons.config import SDKConfig
-from template.chains import Chains
 from template.definitions import ContractConfig, Offer, SignedBid
 from template.otoken import oTokenContract
 from template.swap import SwapContract
@@ -14,7 +14,7 @@ class AuthorizationPages:
 class TemplateSDKConfig(SDKConfig):
 
     authorization_pages = AuthorizationPages
-    venue_chains = Chains
+    supported_chains = [Chains.ROPSTEN, Chains.KOVAN]
 
     def create_offer(
         self,

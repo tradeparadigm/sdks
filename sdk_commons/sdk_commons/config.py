@@ -1,5 +1,7 @@
 import abc
 
+from sdk_commons.chains import Chains
+
 
 class SDKConfig(abc.ABC):
     """
@@ -24,10 +26,10 @@ class SDKConfig(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def venue_chains(self):
+    def supported_chains(self) -> list(Chains):
         """
-        Set this property with an Enum
-        listing all supported chains
+        Set this property with a list
+        of all supported chains
         """
         pass
 

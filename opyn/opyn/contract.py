@@ -16,7 +16,6 @@ from pathlib import Path
 
 from web3 import Web3
 
-from opyn.chains import Chains
 from opyn.definitions import ContractConfig
 from opyn.utils import get_address
 
@@ -47,7 +46,11 @@ class ContractConnection:
         return Path(__file__).resolve().parent.parent / self.abi_location
 
     def __init__(self, config: ContractConfig):
-        if config.chain_id not in Chains:
+
+        # Can't be imported on top due to a circular dependency
+        from opyn.config import OpynSDKConfig
+
+        if config.chain_id not in OpynSDKConfig.supported_chains:
             raise ValueError("Invalid chain")
 
         self.config = config

@@ -1,7 +1,7 @@
 """ Module to store data classes """
 from dataclasses import dataclass
 
-from template.chains import Chains
+from sdk_commons.chains import Chains
 
 
 @dataclass

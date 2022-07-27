@@ -1,8 +1,8 @@
-from opyn.chains import Chains
 from opyn.definitions import BidData, ContractConfig, Offer
 from opyn.otoken import oTokenContract
 from opyn.settlement import SettlementContract
 from opyn.wallet import Wallet
+from sdk_commons.chains import Chains
 from sdk_commons.config import SDKConfig
 
 
@@ -14,7 +14,10 @@ class AuthorizationPages:
 class OpynSDKConfig(SDKConfig):
 
     authorization_pages = AuthorizationPages
-    venue_chains = Chains
+    supported_chains = [
+        Chains.ETHEREUM,
+        Chains.ROPSTEN,
+    ]
 
     def create_offer(
         self,

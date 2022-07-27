@@ -1,7 +1,6 @@
-from enum import Enum
-
 import pytest
 
+from sdk_commons.chains import Chains
 from sdk_commons.config import SDKConfig
 from tests.base import VENUES, TestsBase
 
@@ -99,15 +98,18 @@ class TestConfig(TestsBase):
         )
 
     @pytest.mark.parametrize("venue", VENUES)
-    def test_config_class_has_chains(self, venue: str):
-        """Verify config class has venue_chains method"""
+    def test_config_class_has_supported_chains(self, venue: str):
+        """Verify config class has supported_chains list"""
 
         config_class = self.import_class(venue, "config", self.get_config_class(venue))
-        assert hasattr(config_class, "venue_chains")
+        assert hasattr(config_class, "supported_chains")
 
-        venue_chains = getattr(config_class, "venue_chains")
+        supported_chains = getattr(config_class, "supported_chains")
 
-        assert issubclass(venue_chains, Enum), "venue_chains is not an Enum"
+        assert isinstance(supported_chains, list), "supported_chains is not a list"
+
+        for chain in supported_chains:
+            assert isinstance(chain, Chains)
 
     @pytest.mark.parametrize("venue", VENUES)
     def test_config_class_has_authorization_pages(self, venue: str):

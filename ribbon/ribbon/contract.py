@@ -17,9 +17,9 @@ from pathlib import Path
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
-from ribbon.chains import Chains
 from ribbon.definitions import ContractConfig
 from ribbon.utils import get_address
+from sdk_commons.chains import Chains
 
 
 # ---------------------------------------------------------------------------
@@ -48,7 +48,10 @@ class ContractConnection:
         return Path(__file__).resolve().parent.parent / self.abi_location
 
     def __init__(self, config: ContractConfig):
-        if config.chain_id not in Chains:
+        # Can't be imported on top due to a circular dependency
+        from ribbon.config import RibbonSDKConfig
+
+        if config.chain_id not in RibbonSDKConfig.supported_chains:
             raise ValueError("Invalid chain")
 
         self.config = config

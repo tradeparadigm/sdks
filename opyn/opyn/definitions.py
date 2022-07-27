@@ -13,7 +13,7 @@
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
 
-from opyn.chains import Chains
+from sdk_commons.chains import Chains
 
 
 # ---------------------------------------------------------------------------
