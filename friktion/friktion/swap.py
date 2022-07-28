@@ -25,6 +25,7 @@ from spl.token.constants import TOKEN_PROGRAM_ID
 from spl.token.core import AccountInfo
 from spl.token.instructions import get_associated_token_address
 from solders.signature import Signature
+from solders.pubkey import Pubkey
 
 from friktion.friktion_anchor.instructions import cancel, claim
 from friktion.inertia_anchor.accounts import OptionsContract
