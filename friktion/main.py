@@ -117,12 +117,15 @@ async def main_def():
         signer_wallet=COUNTERPARTY,
         referrer=REFERRER
     )
+
+    # happens outside of paradigm
+    (msg, signature) = bid_details.as_signed_msg(wallet)
+
     # fill offer via bid
-    if error := await c.validate_bid(swap_order_creator, bid_details):
+    if error := await c.validate_bid(swap_order_creator, bid_details, msg, str(signature)):
         raise ValueError(f'Invalid bid: {error}')
 
-    bid_msg = bid_details.as_signed_msg(wallet)
-    await c.validate_and_exec_bid_msg(wallet, swap_order_key, bid_details, bid_msg.message, bid_msg.hex())
+    await c.validate_and_exec_bid_msg(wallet, swap_order_key, bid_details, msg, str(signature))
 
     swap_order_post_fill: SwapOrder = await c.get_swap_order(swap_order_creator, order_id)
     assert swap_order_post_fill.status == Filled()

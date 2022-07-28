@@ -25,6 +25,7 @@ from spl.token.constants import TOKEN_PROGRAM_ID
 from spl.token.core import AccountInfo
 from spl.token.instructions import get_associated_token_address
 from solders.signature import Signature
+from solders.pubkey import Pubkey
 
 from friktion.friktion_anchor.instructions import cancel, claim
 from friktion.inertia_anchor.accounts import OptionsContract
@@ -202,6 +203,8 @@ class SwapContract:
         if acct_info.amount < transfer_amount:
             return "amount in token account is below required threshold"
 
+        return None
+
     async def validate_bid(
         self, swap_order_creator: PublicKey, bid_details: BidDetails,
         message: bytes,
@@ -227,7 +230,7 @@ class SwapContract:
         )
 
         verified = actual_signature.verify(
-            bid_details.signer_wallet, message
+            bid_details.signer_wallet.to_solders(), message
         )
 
         if not verified:
@@ -309,12 +312,11 @@ class SwapContract:
 
     async def validate_and_exec_bid_msg(
         self,
-        wallet: Wallet,
+        tx_sender_wallet: Wallet,
         swap_order_address: PublicKey,
         bid_details: BidDetails,
         message: bytes,
         signature: str,
-        # signed_msg: signing.SignedMessage,
     ):
         """
         Method to execute bid via signed message
@@ -334,7 +336,7 @@ class SwapContract:
         ix = exec_msg(
             {
                 # "signature": str(signature.to_json()),
-                "signature": message,
+                "signature": str(message),
                 "caller": bid_details.signer_wallet,
                 "raw_msg": signature,
             },
@@ -360,7 +362,7 @@ class SwapContract:
         client = AsyncClient(self.url)
         await client.is_connected()
 
-        provider = Provider(client, wallet)
+        provider = Provider(client, tx_sender_wallet)
 
         print('sending exec MSG tx...')
         tx_resp = await provider.send(tx, [])
