@@ -9,7 +9,6 @@ from typing import Optional, Tuple
 
 import spl.token._layouts as layouts
 from anchorpy import Provider, Wallet
-from nacl import signing
 from solana.keypair import Keypair
 from solana.publickey import PublicKey
 from solana.rpc.api import Client
@@ -207,7 +206,6 @@ class SwapContract:
 
     async def validate_bid(
         self, swap_order_creator: PublicKey, bid_details: BidDetails,
-        message: bytes,
         signature: str
     ) -> Optional[str]:
         offer: Offer = await self.get_offer_details(swap_order_creator, bid_details.order_id)
@@ -227,6 +225,9 @@ class SwapContract:
 
         actual_signature = Signature.from_string(
             signature
+        )
+
+        message = bid_details.as_msg(
         )
 
         verified = actual_signature.verify(
@@ -315,7 +316,6 @@ class SwapContract:
         tx_sender_wallet: Wallet,
         swap_order_address: PublicKey,
         bid_details: BidDetails,
-        message: bytes,
         signature: str,
     ):
         """
@@ -323,7 +323,7 @@ class SwapContract:
         """
         swap_order = await self.get_swap_order_for_key(swap_order_address)
 
-        if error := await self.validate_bid(swap_order.creator, bid_details, message, signature):
+        if error := await self.validate_bid(swap_order.creator, bid_details, signature):
            raise ValueError(f'Invalid bid: {error}')
             
         counterparty_give_pool = get_associated_token_address(
@@ -336,7 +336,7 @@ class SwapContract:
         ix = exec_msg(
             {
                 # "signature": str(signature.to_json()),
-                "signature": str(message),
+                "signature": str(bid_details.as_msg()),
                 "caller": bid_details.signer_wallet,
                 "raw_msg": signature,
             },
@@ -377,7 +377,6 @@ class SwapContract:
         wallet: Wallet,
         swap_order_address: PublicKey,
         bid_details: BidDetails,
-               message: bytes,
         signature: str,
     ):
         """
@@ -389,7 +388,7 @@ class SwapContract:
         """
         swap_order = await self.get_swap_order_for_key(swap_order_address)
 
-        if error := await self.validate_bid(swap_order.creator, bid_details,message, signature):
+        if error := await self.validate_bid(swap_order.creator, bid_details, signature):
             raise ValueError(f'Invalid bid: {error}')
 
         counterparty_give_pool = get_associated_token_address(
