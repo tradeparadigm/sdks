@@ -11,6 +11,7 @@ class BidDetails:
     order_id: int
     bid_size: int
     bid_price: int
+    referrer: PublicKey
 
     def as_signed_msg(self, wallet: Wallet) -> signing.SignedMessage:
         give_amount = self.bid_size
@@ -19,6 +20,7 @@ class BidDetails:
             [
                 bytes([self.order_id]),
                 wallet.public_key.__bytes__(),
+                self.referrer.__bytes__(),
                 bytes([give_amount, receive_amount]),
             ]
         )

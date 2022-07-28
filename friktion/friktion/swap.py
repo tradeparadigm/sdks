@@ -24,6 +24,7 @@ from spl.token.client import Token
 from spl.token.constants import TOKEN_PROGRAM_ID
 from spl.token.core import AccountInfo
 from spl.token.instructions import get_associated_token_address
+from solders.signature import Signature
 
 from friktion.friktion_anchor.instructions import cancel, claim
 from friktion.inertia_anchor.accounts import OptionsContract
@@ -202,7 +203,9 @@ class SwapContract:
             return "amount in token account is below required threshold"
 
     async def validate_bid(
-        self, swap_order_creator: PublicKey, bid_details: BidDetails
+        self, swap_order_creator: PublicKey, bid_details: BidDetails,
+        message: bytes,
+        signature: str
     ) -> Optional[str]:
         offer: Offer = await self.get_offer_details(swap_order_creator, bid_details.order_id)
 
@@ -218,6 +221,17 @@ class SwapContract:
 
         if offer.expiry < int(time.time()):
             return "expiry was in the past"
+
+        actual_signature = Signature.from_string(
+            signature
+        )
+
+        verified = actual_signature.verify(
+            bid_details.signer_wallet, message
+        )
+
+        if not verified:
+            return "signature is invalid"
 
         # TODO: check mint of give pools and receive pools match
 
@@ -298,16 +312,18 @@ class SwapContract:
         wallet: Wallet,
         swap_order_address: PublicKey,
         bid_details: BidDetails,
-        signed_msg: signing.SignedMessage,
+        message: bytes,
+        signature: str,
+        # signed_msg: signing.SignedMessage,
     ):
         """
         Method to execute bid via signed message
         """
         swap_order = await self.get_swap_order_for_key(swap_order_address)
 
-        if error := await self.validate_bid(swap_order.creator, bid_details):
-            raise ValueError(f'Invalid bid: {error}')
-
+        if error := await self.validate_bid(swap_order.creator, bid_details, message, signature):
+           raise ValueError(f'Invalid bid: {error}')
+            
         counterparty_give_pool = get_associated_token_address(
             bid_details.signer_wallet, swap_order.give_mint
         )
@@ -318,9 +334,9 @@ class SwapContract:
         ix = exec_msg(
             {
                 # "signature": str(signature.to_json()),
-                "signature": str(signed_msg.signature),
-                "caller": wallet.public_key,
-                "raw_msg": str(signed_msg.message),
+                "signature": message,
+                "caller": bid_details.signer_wallet,
+                "raw_msg": signature,
             },
             {
                 "authority": bid_details.signer_wallet,
@@ -359,6 +375,8 @@ class SwapContract:
         wallet: Wallet,
         swap_order_address: PublicKey,
         bid_details: BidDetails,
+               message: bytes,
+        signature: str,
     ):
         """
         Method to validate bid
@@ -369,7 +387,7 @@ class SwapContract:
         """
         swap_order = await self.get_swap_order_for_key(swap_order_address)
 
-        if error := await self.validate_bid(swap_order.creator, bid_details):
+        if error := await self.validate_bid(swap_order.creator, bid_details,message, signature):
             raise ValueError(f'Invalid bid: {error}')
 
         counterparty_give_pool = get_associated_token_address(
