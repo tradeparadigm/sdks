@@ -92,7 +92,14 @@ class SDKConfig(abc.ABC):
     # TODO: rename into get_offered_token_details
     @abc.abstractmethod
     def get_otoken_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, *args: Any, **kwargs: Any
+        self,
+        contract_address: str,
+        chain_id: int,
+        rpc_uri: str,
+        offer_id: int,
+        seller: str,
+        *args: Any,
+        **kwargs: Any,
     ) -> OfferTokenDetails:
         """
         Return details about the offer token
@@ -105,6 +112,7 @@ class SDKConfig(abc.ABC):
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
+        seller: str,
         *args: Any,
         **kwargs: Any,
     ) -> OfferDetails:
