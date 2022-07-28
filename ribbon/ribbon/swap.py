@@ -92,15 +92,16 @@ class SwapContract(ContractConnection):
         Method to validate bid
 
         Args:
-            bid (dict): Bid dictionary containing swapId, nonce, signerWallet,
-              sellAmount, buyAmount, referrer, v, r, and s
+            bid (dict): Bid dictionary containing swapId, nonce,
+                        signerWallet, sellAmount, buyAmount,
+                        referrer, v, r, and s
 
         Raises:
             TypeError: Bid argument is not an instance of SignedBid
 
         Returns:
-            response (dict): Dictionary containing number of errors (errors)
-              and the corresponding error messages (messages)
+            response (dict): Dictionary containing number of errors
+              and the corresponding error messages
         """
         if not isinstance(bid, SignedBid):
             raise TypeError("Invalid signed bid")
@@ -142,12 +143,12 @@ class SwapContract(ContractConnection):
         Method to create offer
 
         Args:
-            offer (dict): Offer dictionary containing necessary parameters
-                to create a new offer
+            offer (dict): Offer dictionary containing necessary
+                          parameters to create a new offer
             wallet (Wallet): Wallet class instance
 
         Raises:
-            TypeError: Offer argument is not a valid instance of Offer class
+            TypeError: Offer argument is not an Offer class instance
             ExecError: Transaction reverted
 
         Returns:

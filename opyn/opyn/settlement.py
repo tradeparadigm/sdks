@@ -38,12 +38,12 @@ class SettlementContract(ContractConnection):
         Method to create offer
 
         Args:
-            offer (dict): Offer dictionary containing necessary parameters
-                to create a new offer
+            offer (dict): Offer dictionary containing necessary
+                parameters to create a new offer
             wallet (Wallet): Wallet class instance
 
         Raises:
-            TypeError: Offer argument is not a valid instance of Offer class
+            TypeError: Offer argument is not an Offer class instance
             ExecError: Transaction reverted
 
         Returns:
@@ -110,15 +110,16 @@ class SettlementContract(ContractConnection):
         Method to validate bid
 
         Args:
-            bid (dict): Bid dictionary containing offerId, bidId, signerAddress,
-            bidderAddress, bidToken, offerToken, bidAmount, sellAmount, v, r, s
+            bid (dict): Bid dictionary containing offerId, bidId,
+            signerAddress, bidderAddress, bidToken, offerToken,
+            bidAmount, sellAmount, v, r, s
 
         Raises:
             TypeError: Bid argument is not an instance of SignedBid
 
         Returns:
-            response (dict): Dictionary containing number of errors (errors)
-            and the corresponding error messages (messages)
+            response (dict): Dictionary containing number of errors
+            and the corresponding error messages
         """
         if not isinstance(bid, BidData):
             raise TypeError("Invalid signed bid")

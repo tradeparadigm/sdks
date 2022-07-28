@@ -83,7 +83,7 @@ class OpynSDKConfig(SDKConfig):
         config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
         swap_contract = SettlementContract(config)
 
-        # This is expected to fail, BidData currently has a different signature
+        # Expected to fail: BidData currently has a different signature
         signed_bid = BidData(
             swapId=swap_id,
             nonce=nonce,
