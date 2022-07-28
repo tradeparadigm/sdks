@@ -54,8 +54,10 @@ class Wallet:
     Object to generate bid signature
 
     Args:
-        public_key (str): Public key of the user in hex format with 0x prefix
-        private_key (str): Private key of the user in hex format with 0x prefix
+        public_key (str): Public key of the user
+                          in hex format with 0x prefix
+        private_key (str): Private key of the user
+                           in hex format with 0x prefix
 
     Attributes:
         signer (object): Instance of signer to generate signature
@@ -79,8 +81,9 @@ class Wallet:
         """Sign a bid using py_eth_sig_utils
 
         Args:
-            domain (dict): Dictionary containing domain parameters including
-              name, version, chainId, verifyingContract
+            domain (dict): Dictionary containing domain parameters
+                           including name, version, chainId,
+                           verifyingContract
             message_to_sign (MessageToSign): Unsigned Order Data
 
         Raises:
@@ -130,7 +133,8 @@ class Wallet:
         """Verify wallet's allowance for a given token
 
         Args:
-            config (ContractConfig): Configuration to setup the Swap Contract
+            config (ContractConfig): Configuration to setup the
+                                     Swap Contract
             token_address (str): Address of token
 
         Returns:
@@ -155,7 +159,8 @@ class Wallet:
         Args:
             settlement_config (ContractConfig): Configuration to setup
                                                 the Settlement contract
-            token_address (str): Address of token to increase allowance of
+            token_address (str): Address of token to which increase
+                                 the allowance
             amount (str): Amount to increase allowance to
         """
         token_config = ContractConfig(

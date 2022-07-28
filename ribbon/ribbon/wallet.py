@@ -44,8 +44,10 @@ class Wallet:
     Object to generate bid signature
 
     Args:
-        public_key (str): Public key of the user in hex format with 0x prefix
-        private_key (str): Private key of the user in hex format with 0x prefix
+        public_key (str): Public key of the user
+                          in hex format with 0x prefix
+        private_key (str): Private key of the user
+                           in hex format with 0x prefix
 
     Attributes:
         signer (object): Instance of signer to generate signature
@@ -67,7 +69,8 @@ class Wallet:
         """Sign a hash message using the signer object
 
         Args:
-            messageHash (str): Message to signed in hex format with 0x prefix
+            messageHash (str): Message to be signed
+                               in hex format with 0x prefix
 
         Returns:
             signature (dict): Signature split into v, r, s components
@@ -85,13 +88,14 @@ class Wallet:
         https://eips.ethereum.org/EIPS/eip-712
 
         Args:
-            domain (dict): Dictionary containing domain parameters including
-              name, version, chainId, verifyingContract and salt (optional)
+            domain (dict): Dictionary containing domain parameters
+                           including name, version, chainId,
+                           verifyingContract and salt (optional)
             types (dict): Dictionary of types and their fields
             value (dict): Dictionary of values for each field in types
 
         Raises:
-            TypeError: Domain argument is not an instance of Domain class
+            TypeError: Domain argument is not a Domain class instance
 
         Returns:
             signature (dict): Signature split into v, r, s components
@@ -107,8 +111,9 @@ class Wallet:
         """Sign a bid using _sign_type_data_v4
 
         Args:
-            domain (dict): Dictionary containing domain parameters including
-              name, version, chainId, verifyingContract and salt (optional)
+            domain (dict): Dictionary containing domain parameters
+                           including name, version, chainId,
+                           verifyingContract and salt (optional)
             types (dict): Dictionary of types and their fields
             bid (dict): Dicionary of bid specification
 
@@ -148,7 +153,8 @@ class Wallet:
         """Verify wallet's allowance for a given token
 
         Args:
-            config (ContractConfig): Configuration to setup the Swap Contract
+            config (ContractConfig): Configuration to setup
+                                     the Swap Contract
             token_address (str): Address of token
 
         Returns:

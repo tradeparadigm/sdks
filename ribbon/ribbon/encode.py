@@ -121,11 +121,11 @@ class TypedDataEncoder:
 
     Attributes:
         types (dict): Instance of signer to generate signature
-        _encoderCache (dict): Dictionary container to cache encoder
-        _types (dict): Dictionary container to cache struct names
-        links (dict): Dictionary container to store links between structs
-        parents (dict): Dictionary container to store parent of structs
-        subtypes (dict): Dictionary container to check circular reference
+        _encoderCache (dict): Dictionary to cache encoder
+        _types (dict): Dictionary to cache struct names
+        links (dict): Dictionary to store links between structs
+        parents (dict): Dictionary to store parent of structs
+        subtypes (dict): Dictionary to check circular reference
         primaryType (dict): Primary type to encode
     """
 
@@ -292,7 +292,8 @@ class TypedDataEncoder:
 
     def hash(self, value: dict) -> str:
         """
-        Generate the hash of encoded data for the primary type given a value
+        Generate the hash of encoded data for the primary type
+        of the given a value
 
         Args:
             value (dict): Values corresponding to the primary type

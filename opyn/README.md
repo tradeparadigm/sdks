@@ -134,7 +134,7 @@ print(result)
 
 Example output
 
-```
+```python
 {
     'errors': 4,
     'messages': [
@@ -192,7 +192,7 @@ print(check)
 
 - Make sure to have the following environment variables in `.env` file:
 
-```
+```bash
 RPC_TOKEN=
 RPC_URL=
 MAKER_PubKEY=

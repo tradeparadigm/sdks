@@ -2,7 +2,7 @@
 
 Python SDK to interact with Ribbon Finance's systems.
 
-Website: https://www.ribbon.finance
+Website: <https://www.ribbon.finance>
 
 ## Install
 
@@ -25,6 +25,7 @@ There are different things you are able to do with this package.
 First let's setup the needed informations.
 
 This is an example of how we can define your domain of interaction:
+
 ```python
 from ribbon.definitions import Chains, ContractConfig, Domain
 from ribbon.swap import SwapContract, asdict
@@ -53,6 +54,7 @@ print(asdict(domain))
 ```
 
 This may output something similar to:
+
 ```python
 {'chainId': 42,
  'name': 'RIBBON SWAP',
@@ -88,6 +90,7 @@ pprint(asdict(bid))
 ```
 
 This may output something similar to:
+
 ```python
 {'buyAmount': 1000000000000000000,
  'nonce': 1,
@@ -135,6 +138,7 @@ print(check)
 ### Informations about the option (oToken)
 
 Get details related to the oToken of interest:
+
 ```python
 from ribbon.otoken import oTokenContract
 
@@ -147,6 +151,7 @@ print(details)
 ```
 
 This may output something similar to:
+
 ```python
 {'collateralAsset': '0xd0A1E359811322d97991E03f863a0C30C2cF029C',
  'expiryTimestamp': 1646380800,
@@ -157,6 +162,7 @@ This may output something similar to:
 ```
 
 To get details of an offer instead:
+
 ```python
 offer_id = 3
 
@@ -165,9 +171,11 @@ print(offer_details)
 ```
 
 ### Create an offer
+
 To create a new offer in the swap contract:
 (This method requires the wallet to have sufficient ETH to send the transaction)
-```
+
+```python
 new_offer = Offer(
     oToken='0x61FB6d86456Dc4821f0738fDFD478B281294932D',
     biddingToken='0xd0A1E359811322d97991E03f863a0C30C2cF029C',

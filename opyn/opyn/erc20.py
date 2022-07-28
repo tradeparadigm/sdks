@@ -40,8 +40,10 @@ class ERC20Contract(ContractConnection):
         Method to get allowance of owner
 
         Args:
-            owner (str): Address of owner's address e.g. user wallet address
-            spender (str): Address of spender's address e.g. the Swap contract
+            owner (str): Address of owner's address
+                         e.g. user wallet address
+            spender (str): Address of spender's address
+                           e.g. the Swap contract
 
         Raises:
             ValueError: Address of wallet is invalid
@@ -61,7 +63,8 @@ class ERC20Contract(ContractConnection):
         Method to get balance of owner
 
         Args:
-            owner (str): Address of owner's address e.g. user wallet address
+            owner (str): Address of owner's address
+                         e.g. user wallet address
 
         Raises:
             ValueError: Address of wallet is invalid

@@ -48,7 +48,9 @@ class MessageToSign:
 
 @dataclass
 class BidData:
-    """Bid data to send on-chain containing bid information and signature"""
+    """
+    Bid data to send on-chain containing bid information and signature
+    """
 
     offerId: int
     bidId: int

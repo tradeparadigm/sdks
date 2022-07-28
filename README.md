@@ -6,6 +6,7 @@ currently integrating with "Paradigm Co.".
 ## Development
 
 To contribute to this package you may set up a dedicated container:
+
 ```bash
 $ git clone git@github.com:tradeparadigm/sdks.git
 $ cd ribbon
@@ -37,5 +38,5 @@ To improve quality and readibility of code,
 please make sure to use `pre-commit` hooks.
 
 Either execute `pre-commit run` before pushing the final version of your
-pull request, or `pre-commit install` to have automatic checks before 
+pull request, or `pre-commit install` to have automatic checks before
 each commit.

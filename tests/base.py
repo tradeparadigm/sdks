@@ -64,10 +64,10 @@ class TestsBase:
         """
         These checks are needed because abc
         does no checks on arguments of concrete implementations
-        This metodo verifies the method signature:
-          - all parameters should correspond to parameters on the reference
-          - exception: additional parameters with a default value are allowed
-          - all methods are expected to accept *args and **kwargs
+        This utility verifies the method signature:
+          - all params should correspond to params on the reference
+          - additional params with a default value are allowed
+          - all methods are expected to accept **kwargs
         """
 
         method_signature = signature(method).parameters
