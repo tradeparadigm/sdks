@@ -111,18 +111,14 @@ async def main_def():
 
     print('2. taker executes bid against offer...')
     bid_details = BidDetails(
-        bid_price=1,
-        bid_size=1,
-        order_id=order_id,
-        signer_wallet=COUNTERPARTY,
-        referrer=REFERRER
+        bid_price=1, bid_size=1, order_id=order_id, signer_wallet=COUNTERPARTY, referrer=REFERRER
     )
 
     # happens outside of paradigm
     (msg, signature) = bid_details.as_signed_msg(wallet)
 
-    print('signature = ', signature,', type =', type(signature))
-    
+    print('signature = ', signature, ', type =', type(signature))
+
     # fill offer via bid
     if error := await c.validate_bid(swap_order_creator, bid_details, str(signature)):
         raise ValueError(f'Invalid bid: {error}')

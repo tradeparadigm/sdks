@@ -18,13 +18,12 @@ from solana.system_program import SYS_PROGRAM_ID
 from solana.sysvar import SYSVAR_INSTRUCTIONS_PUBKEY, SYSVAR_RENT_PUBKEY
 from solana.transaction import Transaction
 from solana.utils.helpers import decode_byte_string
+from solders.signature import Signature
 from spl.token.async_client import AsyncToken
 from spl.token.client import Token
 from spl.token.constants import TOKEN_PROGRAM_ID
 from spl.token.core import AccountInfo
 from spl.token.instructions import get_associated_token_address
-from solders.signature import Signature
-from solders.pubkey import Pubkey
 
 from friktion.friktion_anchor.instructions import cancel, claim
 from friktion.inertia_anchor.accounts import OptionsContract
@@ -205,8 +204,7 @@ class SwapContract:
         return None
 
     async def validate_bid(
-        self, swap_order_creator: PublicKey, bid_details: BidDetails,
-        signature: str
+        self, swap_order_creator: PublicKey, bid_details: BidDetails, signature: str
     ) -> Optional[str]:
         offer: Offer = await self.get_offer_details(swap_order_creator, bid_details.order_id)
 
@@ -223,16 +221,11 @@ class SwapContract:
         if offer.expiry < int(time.time()):
             return "expiry was in the past"
 
-        actual_signature = Signature.from_string(
-            signature
-        )
+        actual_signature = Signature.from_string(signature)
 
-        message = bid_details.as_msg(
-        )
+        message = bid_details.as_msg()
 
-        verified = actual_signature.verify(
-            bid_details.signer_wallet.to_solders(), message
-        )
+        verified = actual_signature.verify(bid_details.signer_wallet.to_solders(), message)
 
         if not verified:
             return "signature is invalid"
@@ -324,8 +317,8 @@ class SwapContract:
         swap_order = await self.get_swap_order_for_key(swap_order_address)
 
         if error := await self.validate_bid(swap_order.creator, bid_details, signature):
-           raise ValueError(f'Invalid bid: {error}')
-            
+            raise ValueError(f'Invalid bid: {error}')
+
         counterparty_give_pool = get_associated_token_address(
             bid_details.signer_wallet, swap_order.give_mint
         )

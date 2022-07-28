@@ -29,7 +29,7 @@ class SwapOrderTemplate:
 
     def __init__(
         self,
-         creator: PublicKey,
+        creator: PublicKey,
         options_contract_key: PublicKey,
         give_size: int,
         receive_size: int,
