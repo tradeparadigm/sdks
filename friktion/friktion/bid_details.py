@@ -5,6 +5,7 @@ from anchorpy import Wallet
 from solana.publickey import PublicKey
 from solders.signature import Signature
 
+
 @dataclass
 class BidDetails:
     signer_wallet: PublicKey
