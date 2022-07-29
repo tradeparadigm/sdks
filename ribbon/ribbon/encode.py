@@ -37,25 +37,25 @@ ADDRESS_ZERO = hex_zero_pad(Web3.toHex(0), 20)
 # ---------------------------------------------------------------------------
 # Helper Functions
 # ---------------------------------------------------------------------------
-def uint_encoder(type: str) -> object:
+def uint_encoder(data_type: str) -> object:
     """
     Encoder for uint types
 
     Args:
-        type (str): Data type in string
+        data_type (str): Data type in string
 
     Returns:
         encoder (object): Uint encoder
     """
-    match = re.findall('^(u?)int(\d*)$', type).pop()
+    match = re.findall('^(u?)int(\d*)$', data_type).pop()
     signed = match[1] == ''
     width = int(match[2]) if len(match) == 3 else 256
 
     if width % 8 != 0 or width > 256 or (len(match) == 3 and match[2] != str(width)):
-        raise ValueError(f'Invalid numeric width: {type}')
+        raise ValueError(f'Invalid numeric width: {data_type}')
 
     boundsUpper = 2 ** (width - 1) - 1 if signed else 2 ** (width) - 1
-    boundsLower = (boundsUpper + 1) * (-1)
+    boundsLower = -boundsUpper - 1
     return (
         lambda value: hex_zero_pad(Web3.toHex(int(value)), 32)
         if int(value) < boundsUpper and int(value) > boundsLower
@@ -63,21 +63,21 @@ def uint_encoder(type: str) -> object:
     )
 
 
-def bytes_encoder(type: str) -> object:
+def bytes_encoder(data_type: str) -> object:
     """
     Encoder for bytes types
 
     Args:
-        type (str): Data type in string
+        data_type (str): Data type in string
 
     Returns:
         encoder (object): Bytes encoder
     """
-    match = re.findall('^bytes(\d+)$', type).pop()
+    match = re.findall('^bytes(\d+)$', data_type).pop()
     width = int(match[1])
 
     if width == 0 or width > 32 or match[1] != str(width):
-        raise ValueError(f'Invalid bytes width: {type}')
+        raise ValueError(f'Invalid bytes width: {data_type}')
 
     return (
         lambda value: hex_pad_right(value)
@@ -86,27 +86,27 @@ def bytes_encoder(type: str) -> object:
     )
 
 
-def get_base_encoder(type: str) -> object:
+def get_base_encoder(data_type: str) -> object:
     """
     Get the encoder for base types
 
     Args:
-        type (str): Data type in string
+        data_type (str): Data type in string
 
     Returns:
         encoder (object): Encoder
     """
-    if re.match('^(u?)int(\d*)$', type):
+    if re.match('^(u?)int(\d*)$', data_type):
         return uint_encoder(type)
-    elif re.match('^bytes(\d+)$', type):
-        return bytes_encoder(type)
-    elif type == 'address':
+    elif re.match('^bytes(\d+)$', data_type):
+        return bytes_encoder(data_type)
+    elif data_type == 'address':
         return lambda value: hex_zero_pad(get_address(value), 32)
-    elif type == 'bool':
+    elif data_type == 'bool':
         return lambda value: HEX_TRUE if value else HEX_FALSE
-    elif type == 'bytes':
+    elif data_type == 'bytes':
         return lambda value: Web3.keccak(text=value)
-    elif type == 'string':
+    elif data_type == 'string':
         return lambda value: id(value)
     else:
         return None
@@ -137,18 +137,18 @@ class TypedDataEncoder:
         self.parents = {}
         self.subtypes = {}
 
-        for type in types.keys():
-            self.links[type] = {}
-            self.parents[type] = []
-            self.subtypes[type] = {}
+        for name in types:
 
-        for name in types.keys():
+            self.links.setdefault(name, {})
+            self.parents.setdefault(name, [])
+            self.subtypes.setdefault(name, {})
+
             uniqueNames = {}
 
             for field in types[name]:
                 fieldName = field['name']
 
-                if fieldName in uniqueNames.keys():
+                if fieldName in uniqueNames:
                     raise ValueError(f'Duplicate variable name {fieldName} in {name}')
 
                 uniqueNames[fieldName] = True
@@ -166,7 +166,7 @@ class TypedDataEncoder:
                 self.parents[baseType].push(name)
                 self.links[name][baseType] = True
 
-        primaryTypes = [type for type in self.parents.keys() if len(self.parents[type]) == 0]
+        primaryTypes = [t for t in self.parents if len(self.parents[t]) == 0]
 
         if len(primaryTypes) == 0:
             raise ValueError('Missing primary type')
@@ -175,56 +175,54 @@ class TypedDataEncoder:
 
         self.primaryType = primaryTypes[0]
 
-        def checkCircular(type: str, found: dict):
-            if type in found.keys():
-                raise ValueError(f'Circular type reference to {type}')
+        def checkCircular(data_type: str, found: dict):
+            if data_type in found:
+                raise ValueError(f'Circular type reference to {data_type}')
 
-            found[type] = True
+            found[data_type] = True
 
-            for child in self.links[type].keys():
-                if child not in self.parents.keys():
+            for child in self.links[data_type]:
+                if child not in self.parents:
                     checkCircular(child, found)
 
-                    for subtype in found.keys():
+                    for subtype in found:
                         self.subtypes[subtype][child] = True
 
-            del found[type]
+            del found[data_type]
 
         checkCircular(self.primaryType, {})
 
-        for name in self.subtypes.keys():
-            st = list(self.subtypes[name].keys())
-            st.sort()
+        for name in self.subtypes:
+            st = sorted(self.subtypes[name].keys())
             self._types[name] = encode_type(name, types[name]) + ''.join(
                 [encode_type(t, types[t]) for t in st]
             )
 
-    def _get_encoder(self, type: str) -> object:
+    def _get_encoder(self, data_type: str) -> object:
         """
         Get the encoder for a given type
 
         Args:
-            type (str): Data type in string
+            data_type (str): Data type in string
 
         Returns:
             encoder (object): Encoder
         """
-        encoder = get_base_encoder(type)
-        if encoder is not None:
+        if encoder := get_base_encoder(data_type):
             return encoder
 
-        match = re.findall('\[[^()]*\]', type)
+        match = re.findall('\[[^()]*\]', data_type)
         if len(match) > 0:
-            match = type[:-1].split('[')
+            match = data_type[:-1].split('[')
             subtype = match[0]
             subEncoder = self.get_encoder(subtype)
             length = 0 if len(match) == 1 else int(match[1])
-            print(length)
+            # print(length)
             return (
                 lambda values: Web3.keccak(
                     text=hex_concat(
                         [Web3.keccak(text=subEncoder(value)) for value in values]
-                        if subtype in self._types.keys()
+                        if subtype in self._types
                         else [subEncoder(value) for value in values]
                     )
                 ).hex()
@@ -232,14 +230,14 @@ class TypedDataEncoder:
                 else ValueError('Array length mismatched')
             )
 
-        fields = self.types[type]
+        fields = self.types[data_type]
         if fields is not None:
-            encodedType = id(self._types[type])
+            encodedType = id(self._types[data_type])
             return lambda value: hex_concat(
                 [encodedType]
                 + [
                     self.get_encoder(field['type'])(value[field['name']])
-                    if field['type'] not in self._types.keys()
+                    if field['type'] not in self._types
                     else Web3.keccak(
                         text=self.get_encoder(field['type'])(value[field['name']])
                     ).hex()
@@ -247,35 +245,33 @@ class TypedDataEncoder:
                 ]
             )
 
-    def get_encoder(self, type: str) -> object:
+    def get_encoder(self, data_type: str) -> object:
         """
         Get the base encoder for a given type and store it in cache
 
         Args:
-            type (str): Data type in string
+            data_type (str): Data type in string
 
         Returns:
             encoder (object): Encoder
         """
-        if type in self._encoderCache.keys():
-            return self._encoderCache[type]
+        if data_type in self._encoderCache:
+            return self._encoderCache[data_type]
         else:
-            encoder = self._get_encoder(type)
+            return self._get_encoder(data_type)
 
-        return encoder
-
-    def encode_data(self, type: str, value: dict) -> str:
+    def encode_data(self, data_type: str, value: dict) -> str:
         """
         Encode the value of a given type
 
         Args:
-            type (str): Data type in string
+            data_type (str): Data type in string
             value (dict): Values corresponding to the type
 
         Returns:
             data (str): Encoded data
         """
-        return self.get_encoder(type)(value)
+        return self.get_encoder(data_type)(value)
 
     def hash_struct(self, name: str, value: dict) -> str:
         """
@@ -343,7 +339,7 @@ class TypedDataEncoder:
             hash (str): Hash of encoded domain data
         """
         domainFields = []
-        for name in domain.keys():
+        for name in domain:
             if name not in DOMAIN_FIELD_NAMES:
                 raise ValueError('Invalid domain key')
 
