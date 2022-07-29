@@ -1,7 +1,7 @@
 # sdks
 
 Repository with public SDKs of Blockchain venues
-currently integrating with "Paradigm Co.".
+currently integrating with Paradigm Co.
 
 ## Development
 
@@ -9,9 +9,9 @@ To contribute to this package you may set up a dedicated container:
 
 ```bash
 $ git clone git@github.com:tradeparadigm/sdks.git
-$ cd ribbon
+$ cd your-venue
 $ pwd
-[...]/sdks/ribbon
+[...]/sdks/your-venue
 
 # open a container with python
 $ docker run -it --rm \
@@ -21,9 +21,9 @@ $ docker run -it --rm \
     bash
 
 # install the library in development mode
-pip3 install -e /tmp/code
+pip3 install --editable /tmp/code
 
-# run code that accesses the ribbon sdk, e.g.
+# run code that accesses the SDK, e.g.
 python3 test.py
 
 # optional: add and use ipython/jypiter

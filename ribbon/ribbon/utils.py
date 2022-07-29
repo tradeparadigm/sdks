@@ -63,10 +63,7 @@ def hex_concat(items: list) -> str:
     Returns:
         hex (str): Concatenated hex
     """
-    result = '0x'
-    for i in items:
-        result += i[2:]
-    return result
+    return '0x' + ''.join([i[2:] for i in items])
 
 
 def is_hex_string(value: str, length: int = None) -> bool:
