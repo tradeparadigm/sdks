@@ -32,6 +32,10 @@ COUNTERPARTY = wallet.public_key
 WHITELIST_TOKEN_MINT = GIVE_MINT
 
 OPTIONS_CONTRACT_KEY = PublicKey("GriGJSF84XdPq6Td6u6Hu8oqKgwTXY94fvwJrJf1gQTW")
+
+# NOTE: replace this with paradigm mainnet referrer public key!
+REFERRER = wallet.public_key
+
 # mainnet
 # GIVE_MINT = PublicKey("")
 # RECEIVE_MINT = PublicKey("")
@@ -107,17 +111,19 @@ async def main_def():
 
     print('2. taker executes bid against offer...')
     bid_details = BidDetails(
-        bid_price=1,
-        bid_size=1,
-        order_id=order_id,
-        signer_wallet=COUNTERPARTY,
+        bid_price=1, bid_size=1, order_id=order_id, signer_wallet=COUNTERPARTY, referrer=REFERRER
     )
+
+    # happens outside of paradigm
+    (msg, signature) = bid_details.as_signed_msg(wallet)
+
+    print('signature = ', signature, ', type =', type(signature))
+
     # fill offer via bid
-    if error := await c.validate_bid(swap_order_creator, bid_details):
+    if error := await c.validate_bid(swap_order_creator, bid_details, str(signature)):
         raise ValueError(f'Invalid bid: {error}')
 
-    bid_msg = bid_details.as_signed_msg(wallet)
-    await c.validate_and_exec_bid_msg(wallet, swap_order_key, bid_details, bid_msg)
+    await c.validate_and_exec_bid_msg(wallet, swap_order_key, bid_details, str(signature))
 
     swap_order_post_fill: SwapOrder = await c.get_swap_order(swap_order_creator, order_id)
     assert swap_order_post_fill.status == Filled()

@@ -9,7 +9,6 @@ from typing import Optional, Tuple
 
 import spl.token._layouts as layouts
 from anchorpy import Provider, Wallet
-from nacl import signing
 from solana.keypair import Keypair
 from solana.publickey import PublicKey
 from solana.rpc.api import Client
@@ -19,6 +18,7 @@ from solana.system_program import SYS_PROGRAM_ID
 from solana.sysvar import SYSVAR_INSTRUCTIONS_PUBKEY, SYSVAR_RENT_PUBKEY
 from solana.transaction import Transaction
 from solana.utils.helpers import decode_byte_string
+from solders.signature import Signature
 from spl.token.async_client import AsyncToken
 from spl.token.client import Token
 from spl.token.constants import TOKEN_PROGRAM_ID
@@ -201,8 +201,10 @@ class SwapContract:
         if acct_info.amount < transfer_amount:
             return "amount in token account is below required threshold"
 
+        return None
+
     async def validate_bid(
-        self, swap_order_creator: PublicKey, bid_details: BidDetails
+        self, swap_order_creator: PublicKey, bid_details: BidDetails, signature: str
     ) -> Optional[str]:
         offer: Offer = await self.get_offer_details(swap_order_creator, bid_details.order_id)
 
@@ -218,6 +220,15 @@ class SwapContract:
 
         if offer.expiry < int(time.time()):
             return "expiry was in the past"
+
+        actual_signature = Signature.from_string(signature)
+
+        message = bid_details.as_msg()
+
+        verified = actual_signature.verify(bid_details.signer_wallet.to_solders(), message)
+
+        if not verified:
+            return "signature is invalid"
 
         # TODO: check mint of give pools and receive pools match
 
@@ -295,17 +306,17 @@ class SwapContract:
 
     async def validate_and_exec_bid_msg(
         self,
-        wallet: Wallet,
+        tx_sender_wallet: Wallet,
         swap_order_address: PublicKey,
         bid_details: BidDetails,
-        signed_msg: signing.SignedMessage,
+        signature: str,
     ):
         """
         Method to execute bid via signed message
         """
         swap_order = await self.get_swap_order_for_key(swap_order_address)
 
-        if error := await self.validate_bid(swap_order.creator, bid_details):
+        if error := await self.validate_bid(swap_order.creator, bid_details, signature):
             raise ValueError(f'Invalid bid: {error}')
 
         counterparty_give_pool = get_associated_token_address(
@@ -318,9 +329,9 @@ class SwapContract:
         ix = exec_msg(
             {
                 # "signature": str(signature.to_json()),
-                "signature": str(signed_msg.signature),
-                "caller": wallet.public_key,
-                "raw_msg": str(signed_msg.message),
+                "signature": str(bid_details.as_msg()),
+                "caller": bid_details.signer_wallet,
+                "raw_msg": signature,
             },
             {
                 "authority": bid_details.signer_wallet,
@@ -344,7 +355,7 @@ class SwapContract:
         client = AsyncClient(self.url)
         await client.is_connected()
 
-        provider = Provider(client, wallet)
+        provider = Provider(client, tx_sender_wallet)
 
         print('sending exec MSG tx...')
         tx_resp = await provider.send(tx, [])
@@ -359,6 +370,7 @@ class SwapContract:
         wallet: Wallet,
         swap_order_address: PublicKey,
         bid_details: BidDetails,
+        signature: str,
     ):
         """
         Method to validate bid
@@ -369,7 +381,7 @@ class SwapContract:
         """
         swap_order = await self.get_swap_order_for_key(swap_order_address)
 
-        if error := await self.validate_bid(swap_order.creator, bid_details):
+        if error := await self.validate_bid(swap_order.creator, bid_details, signature):
             raise ValueError(f'Invalid bid: {error}')
 
         counterparty_give_pool = get_associated_token_address(

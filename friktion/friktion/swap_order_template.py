@@ -12,6 +12,8 @@ class SwapOrderTemplate:
 
     options_contract_key: PublicKey
 
+    creator: PublicKey
+
     give_size: int
     receive_size: int
     expiry: int
@@ -27,6 +29,7 @@ class SwapOrderTemplate:
 
     def __init__(
         self,
+        creator: PublicKey,
         options_contract_key: PublicKey,
         give_size: int,
         receive_size: int,
@@ -39,6 +42,7 @@ class SwapOrderTemplate:
         is_whitelisted: bool = False,
         whitelist_token_mint: PublicKey = WHITELIST_TOKEN_MINT,
     ):
+        self.creator = creator
         self.options_contract_key = options_contract_key
         self.give_size = give_size
         self.receive_size = receive_size
@@ -60,6 +64,7 @@ class SwapOrderTemplate:
             offerAmount=self.give_size,
             minPrice=0,
             minBidSize=self.give_size,
+            seller=self.creator,
         )
 
     @staticmethod
@@ -75,6 +80,7 @@ class SwapOrderTemplate:
         whitelist_token_mint: PublicKey = WHITELIST_TOKEN_MINT,
     ):
         return SwapOrderTemplate(
+            offer.seller,
             options_contract,
             offer.offerAmount,
             receive_amount,
