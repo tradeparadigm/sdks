@@ -11,9 +11,9 @@ class Offer:
     oToken: PublicKey
     biddingToken: PublicKey
     expiry: int
-    offerAmount: int  # 1e9
-    minPrice: int  # 1e9
-    minBidSize: int  # 1e9
+    offerAmount: int  # 1, the smart contract always initializes option token with 0 decimals
+    minPrice: int  # 1
+    minBidSize: int  # 1, should match factor for offerAmount
     seller: PublicKey
     swapOrderAddress: Optional[PublicKey] = None
 

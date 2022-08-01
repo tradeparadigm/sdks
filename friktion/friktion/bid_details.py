@@ -10,8 +10,8 @@ from solders.signature import Signature
 class BidDetails:
     signer_wallet: PublicKey
     order_id: int
-    bid_size: int  # 1e9
-    bid_price: int  # 1e9
+    bid_size: int  # 1, the smart contract always initializes option token with 0 decimals
+    bid_price: int  # number of bid tokens per offer token. normalization factor of 1.
     referrer: PublicKey
 
     def as_msg(self):
