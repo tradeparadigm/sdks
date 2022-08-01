@@ -20,8 +20,8 @@ class BidDetails:
         byte_rep = b"".join(
             [
                 bytes([self.order_id]),
-                self.signer_wallet.__bytes__(),
-                self.referrer.__bytes__(),
+                bytes(str(self.signer_wallet), 'utf-8'),
+                bytes(str(self.referrer), 'utf-8'),
                 bytes([give_amount, receive_amount]),
             ]
         )
