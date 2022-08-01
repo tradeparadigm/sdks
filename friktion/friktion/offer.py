@@ -11,9 +11,9 @@ class Offer:
     oToken: PublicKey
     biddingToken: PublicKey
     expiry: int
-    offerAmount: int
-    minPrice: int
-    minBidSize: int
+    offerAmount: int # 1e9
+    minPrice: int # 1e9
+    minBidSize: int # 1e9
     seller: PublicKey
     swapOrderAddress: Optional[PublicKey] = None
 

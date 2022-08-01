@@ -10,8 +10,8 @@ from solders.signature import Signature
 class BidDetails:
     signer_wallet: PublicKey
     order_id: int
-    bid_size: int
-    bid_price: int
+    bid_size: int # 1e9
+    bid_price: int # 1e9
     referrer: PublicKey
 
     def as_msg(self):
