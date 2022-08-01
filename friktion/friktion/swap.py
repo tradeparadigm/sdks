@@ -132,6 +132,7 @@ class SwapContract:
         )
         return {
             'underlyingAsset': options_contract.underlying_mint,
+            # options expiration is in seconds since epoch
             'expiryTimestamp': options_contract.expiry_ts,
             'isPut': not options_contract.is_call,
             'strikeAsset': options_contract.quote_mint,
