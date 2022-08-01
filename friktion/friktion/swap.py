@@ -65,6 +65,9 @@ def get_url_for_network(network: Network) -> str:
 
 MIN_REQUIRED_ALLOWANCE = 100
 
+# mainnet auction bid token
+MAINNET_USDC_MINT = PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
+
 
 # ----------------------------------------------------------------------
 # Swap Program
@@ -129,6 +132,7 @@ class SwapContract:
         )
         return {
             'underlyingAsset': options_contract.underlying_mint,
+            # options expiration is in seconds since epoch
             'expiryTimestamp': options_contract.expiry_ts,
             'isPut': not options_contract.is_call,
             'strikeAsset': options_contract.quote_mint,
