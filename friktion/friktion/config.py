@@ -1,5 +1,3 @@
-from enum import Enum
-
 from asgiref.sync import async_to_sync
 from solana.publickey import PublicKey
 from spl.token.instructions import get_associated_token_address
@@ -7,6 +5,7 @@ from spl.token.instructions import get_associated_token_address
 from friktion.friktion_anchor.accounts.swap_order import SwapOrder
 from friktion.offer import Offer
 from friktion.swap import Network, SwapContract
+from sdk_commons.chains import Chains
 from sdk_commons.config import SDKConfig
 
 
@@ -16,18 +15,10 @@ class AuthorizationPages:
     testnet = "https://notdefined.yet/auctions/"
 
 
-# TODO: remove me
-class Chains(Enum):
-    SOLANA_DEV = 777777
-    SOLANA_MAIN = 888888
-
-
 class FriktionSDKConfig(SDKConfig):
 
     authorization_pages = AuthorizationPages
-    # TODO: replace with:
-    # supported_chains = [Chains.SOLANA_DEV]
-    venue_chains = Chains
+    supported_chains = [Chains.SOLANA_DEV]
 
     CHAIN_NETWORK_MAP = {
         Chains.SOLANA_DEV: Network.DEVNET,
