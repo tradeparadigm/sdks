@@ -13,8 +13,8 @@
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
 
-from ribbon.chains import Chains
 from ribbon.encode import ADDRESS_ZERO
+from sdk_commons.chains import Chains
 
 
 # ---------------------------------------------------------------------------

@@ -1,8 +1,8 @@
-from ribbon.chains import Chains
 from ribbon.definitions import ContractConfig, Offer, SignedBid
 from ribbon.otoken import oTokenContract
 from ribbon.swap import SwapContract
 from ribbon.wallet import Wallet
+from sdk_commons.chains import Chains
 from sdk_commons.config import SDKConfig
 
 
@@ -14,7 +14,12 @@ class AuthorizationPages:
 class RibbonSDKConfig(SDKConfig):
 
     authorization_pages = AuthorizationPages
-    venue_chains = Chains
+    supported_chains = [
+        Chains.AVALANCHE,
+        Chains.ETHEREUM,
+        Chains.FUJI,
+        Chains.KOVAN,
+    ]
 
     @staticmethod
     def create_offer(
