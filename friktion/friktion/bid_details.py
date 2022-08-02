@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 from typing import Tuple
 
@@ -17,15 +18,17 @@ class BidDetails:
     def as_msg(self):
         give_amount = self.bid_size
         receive_amount = self.bid_price * self.bid_size
-        byte_rep = b"".join(
-            [
-                bytes([self.order_id]),
-                bytes(str(self.signer_wallet), 'utf-8'),
-                bytes(str(self.referrer), 'utf-8'),
-                bytes([give_amount, receive_amount]),
-            ]
-        )
-        return byte_rep
+        payload = [
+            [self.order_id],
+            str(self.signer_wallet),
+            str(self.referrer),
+            [give_amount, receive_amount],
+        ]
+
+        # set separators to remove whitespaces
+        dumped_payload = json.dumps(payload, separators=(',', ':'))
+
+        return bytes(dumped_payload, 'utf-8')
 
     def as_signed_msg(self, wallet: Wallet) -> Tuple[bytes, Signature]:
         msg_bytes = self.as_msg()
