@@ -97,7 +97,7 @@ def get_base_encoder(data_type: str) -> object:
         encoder (object): Encoder
     """
     if re.match('^(u?)int(\d*)$', data_type):
-        return uint_encoder(type)
+        return uint_encoder(data_type)
     elif re.match('^bytes(\d+)$', data_type):
         return bytes_encoder(data_type)
     elif data_type == 'address':
