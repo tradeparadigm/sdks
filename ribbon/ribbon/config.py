@@ -1,10 +1,12 @@
+from typing import Any
+
 from ribbon.definitions import ContractConfig, Offer, SignedBid
 from ribbon.otoken import oTokenContract
 from ribbon.swap import SwapContract
 from ribbon.wallet import Wallet
 from sdk_commons.chains import Chains
-from sdk_commons.config import SDKConfig
 from sdk_commons.helpers import get_evm_signature_components
+from sdk_commons.config import OfferDetails, OfferTokenDetails, SDKConfig
 
 
 class AuthorizationPages:
@@ -22,7 +24,6 @@ class RibbonSDKConfig(SDKConfig):
         Chains.KOVAN,
     ]
 
-    @staticmethod
     def create_offer(
         self,
         contract_address: str,
@@ -35,7 +36,7 @@ class RibbonSDKConfig(SDKConfig):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> str:
         """Create an offer"""
 

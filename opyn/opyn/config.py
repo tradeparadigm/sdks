@@ -3,8 +3,8 @@ from opyn.otoken import oTokenContract
 from opyn.settlement import SettlementContract
 from opyn.wallet import Wallet
 from sdk_commons.chains import Chains
-from sdk_commons.config import SDKConfig
 from sdk_commons.helpers import get_evm_signature_components
+from sdk_commons.config import OfferDetails, OfferTokenDetails, SDKConfig
 
 
 class AuthorizationPages:
@@ -45,11 +45,11 @@ class OpynSDKConfig(SDKConfig):
         swap_contract = SettlementContract(config)
 
         new_offer = Offer(
-            oToken=oToken,
-            biddingToken=bidding_token,
+            offerToken=oToken,
+            bidToken=bidding_token,
             minBidSize=min_bid_size,
             minPrice=min_price,
-            offerAmount=offer_amount,
+            totalSize=offer_amount,
         )
         return swap_contract.create_offer(new_offer, wallet)
 
@@ -101,12 +101,12 @@ class OpynSDKConfig(SDKConfig):
 
         # Expected to fail: BidData currently has a different signature
         signed_bid = BidData(
-            swapId=swap_id,
-            nonce=nonce,
-            signerWallet=signer_wallet,
+            offerId=swap_id,
+            # nonce=nonce,
+            signerAddress=signer_wallet,
             sellAmount=sell_amount,
-            buyAmount=buy_amount,
-            referrer=referrer,
+            bidAmount=buy_amount,
+            # referrer=referrer,
             r=r,
             s=s,
             v=v,

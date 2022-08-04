@@ -1,6 +1,6 @@
 from sdk_commons.chains import Chains
-from sdk_commons.config import SDKConfig
 from sdk_commons.helpers import get_evm_signature_components
+from sdk_commons.config import OfferDetails, OfferTokenDetails, SDKConfig
 from template.definitions import ContractConfig, Offer, SignedBid
 from template.otoken import oTokenContract
 from template.swap import SwapContract

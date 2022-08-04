@@ -1,6 +1,7 @@
 import abc
-from enum import Enum
-from typing import Any, Type, TypedDict
+from typing import Any, TypedDict
+
+from sdk_commons.chains import Chains
 
 
 class OfferDetails(TypedDict):
@@ -25,8 +26,6 @@ class OfferTokenDetails(TypedDict):
     strikePrice: str
     expiryTimestamp: str
     isPut: str
-
-from sdk_commons.chains import Chains
 
 
 class SDKConfig(abc.ABC):
@@ -57,7 +56,7 @@ class SDKConfig(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def supported_chains(self) -> list(Chains):
+    def supported_chains(self) -> list[Chains]:
         """
         Set this property with a list
         of all supported chains
