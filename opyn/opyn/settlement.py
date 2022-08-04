@@ -148,9 +148,7 @@ class SettlementContract(ContractConnection):
         if not isinstance(bid, BidData):
             raise TypeError("Invalid signed bid")
 
-        signer_address = self.contract.functions.getBidSigner(asdict(bid)).call()
-
-        return signer_address
+        return cast(str, self.contract.functions.getBidSigner(asdict(bid)).call())
 
     def nonce(self, owner: str) -> int:
         """
@@ -165,14 +163,10 @@ class SettlementContract(ContractConnection):
         Returns:
             nonce (int): Nonce
         """
-        nonces = self.contract.functions.nonces(owner).call()
-
-        return nonces
+        return cast(int, self.contract.functions.nonces(owner).call())
 
     def domainSeparator(self) -> str:
-        domain = self.contract.functions.DOMAIN_SEPARATOR().call()
-
-        return domain
+        return cast(str, self.contract.functions.DOMAIN_SEPARATOR().call())
 
     def get_offer_counter(self) -> int:
         """
@@ -181,6 +175,4 @@ class SettlementContract(ContractConnection):
         Returns:
             counter (int): Number of created offers
         """
-        counter = self.contract.functions.offersCounter().call()
-
-        return counter
+        return cast(int, self.contract.functions.offersCounter().call())

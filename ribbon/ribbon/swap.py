@@ -10,6 +10,7 @@
 
 from dataclasses import asdict
 from shutil import ExecError
+from typing import cast
 
 from web3 import Web3
 
@@ -107,6 +108,9 @@ class SwapContract(ContractConnection):
         if not isinstance(bid, SignedBid):
             raise TypeError("Invalid signed bid")
 
+        if bid.v is None:
+            raise TypeError("Invalid signed bid, missing v")
+
         bid.signerWallet = get_address(bid.signerWallet)
         bid.referrer = get_address(bid.referrer)
         bid.v = bid.v + (bid.v < 27) * 27
@@ -136,7 +140,7 @@ class SwapContract(ContractConnection):
         Returns:
             verified (bool): True if the authority is set for the wallet
         """
-        authorized = self.contract.functions.authorized(wallet.public_key).call()
+        authorized = cast(str, self.contract.functions.authorized(wallet.public_key).call())
         return authorized == authority_address
 
     def create_offer(self, offer: Offer, wallet: Wallet) -> str:
@@ -177,5 +181,7 @@ class SwapContract(ContractConnection):
 
         if tx_receipt.status == 0:
             raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
-        else:
-            return self.contract.events.NewOffer().processReceipt(tx_receipt)[0]["args"]["swapId"]
+
+        return cast(
+            str, self.contract.events.NewOffer().processReceipt(tx_receipt)[0]["args"]["swapId"]
+        )

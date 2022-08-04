@@ -146,7 +146,7 @@ class SwapContract:
 
         give_token = AsyncToken(client, mint, TOKEN_PROGRAM_ID, Keypair.generate())
 
-        return 10 ** (await give_token.get_mint_info()).decimals
+        return 10 ** (await give_token.get_mint_info()).decimals  # type: ignore
 
     async def get_options_contract_for_key(self, key: PublicKey) -> OptionsContract:
         client = AsyncClient(self.url)

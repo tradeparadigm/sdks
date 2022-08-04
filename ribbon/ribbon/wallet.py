@@ -9,7 +9,7 @@
 # ---------------------------------------------------------------------------
 
 from dataclasses import asdict
-from typing import cast
+from typing import Any, cast
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -66,7 +66,7 @@ class Wallet:
             if not self.public_key:
                 self.public_key = get_address(self.signer.public_key.to_address())
 
-    def sign_msg(self, messageHash: str) -> dict:
+    def sign_msg(self, messageHash: str) -> dict[str, Any]:
         """Sign a hash message using the signer object
 
         Args:
@@ -84,7 +84,7 @@ class Wallet:
             "s": hex_zero_pad(hex(signature.s), 32),
         }
 
-    def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> SignedBid:
+    def _sign_type_data_v4(self, domain: Domain, value: dict, types: dict) -> dict[str, Any]:
         """Sign a hash of typed data V4 which follows EIP712 convention:
         https://eips.ethereum.org/EIPS/eip-712
 
