@@ -35,7 +35,8 @@ class ERC20Contract(ContractConnection):
         super().__init__(config)
         self.name = self.contract.functions.name().call()
         self.symbol = self.contract.functions.symbol().call()
-        self.decimals = self.contract.functions.decimals().call()
+        # TODO: Which is the correct type here? int? Decimal? float?
+        self.decimals = cast(float, self.contract.functions.decimals().call())
 
     def get_allowance(self, owner: Optional[str], spender: str) -> int:
         """
