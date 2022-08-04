@@ -102,10 +102,16 @@ class OpynSDKConfig(SDKConfig):
         # Expected to fail: BidData currently has a different signature
         signed_bid = BidData(
             offerId=swap_id,
+            # This field is missing
+            bidId=0,
             # nonce=nonce,
             signerAddress=signer_wallet,
-            sellAmount=sell_amount,
+            # These three fields are missing
+            bidderAddress="...",
+            bidToken="...",
+            offerToken="...",
             bidAmount=buy_amount,
+            sellAmount=sell_amount,
             # referrer=referrer,
             r=r,
             s=s,
