@@ -21,7 +21,7 @@ from opyn.contract import ContractConnection
 from opyn.definitions import BidData, Offer
 from opyn.utils import ADDRESS_ZERO, get_address
 from opyn.wallet import Wallet
-from sdk_commons.config import OfferDetails
+from sdk_commons.config import BidValidation, OfferDetails
 
 
 # ---------------------------------------------------------------------------
@@ -108,7 +108,7 @@ class SettlementContract(ContractConnection):
             'availableSize': details[5],
         }
 
-    def validate_bid(self, bid: BidData) -> str:
+    def validate_bid(self, bid: BidData) -> BidValidation:
         """
         Method to validate bid
 

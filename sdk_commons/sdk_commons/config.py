@@ -28,6 +28,11 @@ class OfferTokenDetails(TypedDict):
     isPut: str
 
 
+class BidValidation(TypedDict, total=False):
+    errors: int
+    messages: list[str]
+
+
 class SDKConfig(abc.ABC):
     """
     This is the abstract common interface that every venues
@@ -114,7 +119,7 @@ class SDKConfig(abc.ABC):
         **kwargs: Any,
         # TODO: we are currently expecting
         # result['messages'] if result['errors'] > 0 else None
-    ) -> str:
+    ) -> BidValidation:
         """Validate the signing bid"""
 
     @abc.abstractmethod

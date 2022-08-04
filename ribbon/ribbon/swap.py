@@ -18,7 +18,7 @@ from ribbon.definitions import Offer, SignedBid
 from ribbon.encode import ADDRESS_ZERO
 from ribbon.utils import get_address
 from ribbon.wallet import Wallet
-from sdk_commons.config import OfferDetails
+from sdk_commons.config import BidValidation, OfferDetails
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -88,7 +88,7 @@ class SwapContract(ContractConnection):
             'availableSize': details[6],
         }
 
-    def validate_bid(self, bid: SignedBid) -> str:
+    def validate_bid(self, bid: SignedBid) -> BidValidation:
         """
         Method to validate bid
 

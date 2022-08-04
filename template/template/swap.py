@@ -1,5 +1,5 @@
 """ Module to call Swap contract """
-from sdk_commons.config import OfferDetails
+from sdk_commons.config import BidValidation, OfferDetails
 from template.definitions import ContractConfig, Offer, SignedBid
 from template.wallet import Wallet
 
@@ -42,7 +42,7 @@ class SwapContract:
             'availableSize': "...",
         }
 
-    def validate_bid(self, bid: SignedBid) -> str:
+    def validate_bid(self, bid: SignedBid) -> BidValidation:
         """
         Method to validate bid
 
@@ -62,7 +62,7 @@ class SwapContract:
             raise TypeError("Invalid signed bid")
 
         ...
-        return 'error'
+        return {'errors': 0}
 
     def create_offer(self, offer: Offer, wallet: Wallet) -> str:
         """
