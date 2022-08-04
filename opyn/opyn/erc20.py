@@ -11,7 +11,7 @@
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
-from typing import cast
+from typing import Optional, cast
 
 from opyn.contract import ContractConnection
 from opyn.definitions import ContractConfig
@@ -37,7 +37,7 @@ class ERC20Contract(ContractConnection):
         self.symbol = self.contract.functions.symbol().call()
         self.decimals = self.contract.functions.decimals().call()
 
-    def get_allowance(self, owner: str, spender: str) -> int:
+    def get_allowance(self, owner: Optional[str], spender: str) -> int:
         """
         Method to get allowance of owner
 
@@ -80,7 +80,9 @@ class ERC20Contract(ContractConnection):
 
         return cast(int, response)
 
-    def approve(self, publicKey: str, privateKey: str, spender: str, amount: int):
+    def approve(
+        self, publicKey: Optional[str], privateKey: Optional[str], spender: str, amount: int
+    ):
         nonce = self.w3.eth.get_transaction_count(publicKey)
         tx = self.contract.functions.approve(get_address(spender), amount).buildTransaction(
             {

@@ -10,6 +10,7 @@
 
 from dataclasses import asdict
 from shutil import ExecError
+from typing import cast
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -72,10 +73,11 @@ class SettlementContract(ContractConnection):
 
         if tx_receipt.status == 0:
             raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
-        else:
-            return self.contract.events.CreateOffer().processReceipt(tx_receipt)[0]["args"][
-                "offerId"
-            ]
+
+        return cast(
+            str,
+            self.contract.events.CreateOffer().processReceipt(tx_receipt)[0]["args"]["offerId"],
+        )
 
     def get_offer_details(self, offer_id: int) -> OfferDetails:
         """

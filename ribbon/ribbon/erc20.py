@@ -8,7 +8,7 @@
 """ Module to interact with ERC20 contracts """
 # ---------------------------------------------------------------------------
 
-from typing import cast
+from typing import Optional, cast
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -37,7 +37,7 @@ class ERC20Contract(ContractConnection):
         self.symbol = self.contract.functions.symbol().call()
         self.decimals = self.contract.functions.decimals().call()
 
-    def get_allowance(self, owner: str, spender: str) -> int:
+    def get_allowance(self, owner: Optional[str], spender: str) -> int:
         """
         Method to get allowance of owner
 
