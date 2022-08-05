@@ -281,7 +281,8 @@ class TypedDataEncoder:
         """
         if data_type in self._encoderCache:
             return self._encoderCache[data_type]
-        encoder = self._get_encoder(data_type)
+
+        encoder = self._encoderCache[data_type] = self._get_encoder(data_type)
 
         if not encoder:
             raise ValueError(f"Can't find an encoder function for {data_type} type")
