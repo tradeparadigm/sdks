@@ -117,8 +117,6 @@ class SDKConfig(abc.ABC):
         referrer: str,
         signature: str,
         **kwargs: Any,
-        # TODO: we are currently expecting
-        # result['messages'] if result['errors'] > 0 else None
     ) -> BidValidation:
         """Validate the signing bid"""
 
