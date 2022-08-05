@@ -85,7 +85,7 @@ class ERC20Contract(ContractConnection):
         self, publicKey: Optional[str], privateKey: Optional[str], spender: str, amount: int
     ):
         nonce = self.w3.eth.get_transaction_count(publicKey)
-        tx = self.contract.functions.approve(get_address(spender), amount).buildTransaction(
+        tx = self.contract.functions.approve(get_address(spender), amount).build_transaction(
             {
                 "nonce": nonce,
                 "gas": 3000000,

@@ -58,7 +58,7 @@ class SettlementContract(ContractConnection):
         offer.bidToken = get_address(offer.bidToken)
 
         nonce = self.w3.eth.get_transaction_count(wallet.public_key)
-        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).buildTransaction(
+        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).build_transaction(
             {
                 "nonce": nonce,
                 "gas": 3000000,
