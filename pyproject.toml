@@ -17,12 +17,6 @@ skip-string-normalization = true # don't force double quotes
 profile = "hug"
 line_length = 99
 
-[tool.flake8]
-ignore = "E203, W503, W605"
-exclude = ".git, .mypy_cache, .pytest_cache, build, dist"
-max-line-length = 99
-max-complexity = 20
-
 [tool.mypy]
 # Type-checks the interior of functions without type annotations
 check_untyped_defs = true
