@@ -9,6 +9,7 @@
 # ---------------------------------------------------------------------------
 
 import re
+from typing import Any, Callable, Optional, cast
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -33,11 +34,14 @@ HEX_TRUE = hex_zero_pad(Web3.toHex(1), 32)
 HEX_FALSE = hex_zero_pad(Web3.toHex(0), 32)
 ADDRESS_ZERO = hex_zero_pad(Web3.toHex(0), 20)
 
+# TODO: to be improved by replacing Any with specific types
+EncoderType = Callable[[Any], str]
+
 
 # ---------------------------------------------------------------------------
 # Helper Functions
 # ---------------------------------------------------------------------------
-def uint_encoder(data_type: str) -> object:
+def uint_encoder(data_type: str) -> EncoderType:
     """
     Encoder for uint types
 
@@ -45,7 +49,7 @@ def uint_encoder(data_type: str) -> object:
         data_type (str): Data type in string
 
     Returns:
-        encoder (object): Uint encoder
+        encoder (EncoderType): Uint encoder
     """
     match = re.findall('^(u?)int(\d*)$', data_type).pop()
     signed = match[1] == ''
@@ -56,14 +60,20 @@ def uint_encoder(data_type: str) -> object:
 
     boundsUpper = 2 ** (width - 1) - 1 if signed else 2 ** (width) - 1
     boundsLower = -boundsUpper - 1
-    return (
-        lambda value: hex_zero_pad(Web3.toHex(int(value)), 32)
-        if int(value) < boundsUpper and int(value) > boundsLower
-        else ValueError('Value out of bounds')
+    return cast(
+        EncoderType,
+        (
+            lambda value: hex_zero_pad(Web3.toHex(int(value)), 32)
+            if int(value) < boundsUpper and int(value) > boundsLower
+            # TODO this is a return ValueError and not a raise,
+            # it is expected? (Please note that exception can't
+            # be directly raised from lambdas)
+            else ValueError('Value out of bounds')
+        ),
     )
 
 
-def bytes_encoder(data_type: str) -> object:
+def bytes_encoder(data_type: str) -> EncoderType:
     """
     Encoder for bytes types
 
@@ -71,7 +81,7 @@ def bytes_encoder(data_type: str) -> object:
         data_type (str): Data type in string
 
     Returns:
-        encoder (object): Bytes encoder
+        encoder (EncoderType): Bytes encoder
     """
     match = re.findall('^bytes(\d+)$', data_type).pop()
     width = int(match[1])
@@ -79,14 +89,20 @@ def bytes_encoder(data_type: str) -> object:
     if width == 0 or width > 32 or match[1] != str(width):
         raise ValueError(f'Invalid bytes width: {data_type}')
 
-    return (
-        lambda value: hex_pad_right(value)
-        if len(value) == width
-        else ValueError('Invalid bytes length')
+    return cast(
+        EncoderType,
+        (
+            lambda value: hex_pad_right(value)
+            if len(value) == width
+            # TODO this is a return ValueError and not a raise,
+            # it is expected? (Please note that exception can't
+            # be directly raised from lambdas)
+            else ValueError('Invalid bytes length')
+        ),
     )
 
 
-def get_base_encoder(data_type: str) -> object:
+def get_base_encoder(data_type: str) -> Optional[EncoderType]:
     """
     Get the encoder for base types
 
@@ -94,7 +110,7 @@ def get_base_encoder(data_type: str) -> object:
         data_type (str): Data type in string
 
     Returns:
-        encoder (object): Encoder
+        encoder (EncoderType): Encoder
     """
     if re.match('^(u?)int(\d*)$', data_type):
         return uint_encoder(data_type)
@@ -105,7 +121,7 @@ def get_base_encoder(data_type: str) -> object:
     elif data_type == 'bool':
         return lambda value: HEX_TRUE if value else HEX_FALSE
     elif data_type == 'bytes':
-        return lambda value: Web3.keccak(text=value)
+        return lambda value: Web3.keccak(text=value).hex()
     elif data_type == 'string':
         return lambda value: id(value)
     else:
@@ -131,11 +147,11 @@ class TypedDataEncoder:
 
     def __init__(self, types: dict) -> None:
         self.types = types
-        self._encoderCache = {}
+        self._encoderCache: dict[str, EncoderType] = {}
         self._types = {}
-        self.links = {}
-        self.parents = {}
-        self.subtypes = {}
+        self.links: dict[str, dict[str, bool]] = {}
+        self.parents: dict[str, list[str]] = {}
+        self.subtypes: dict[str, dict[str, bool]] = {}
 
         for name in types:
 
@@ -163,7 +179,7 @@ class TypedDataEncoder:
                 if encoder:
                     continue
 
-                self.parents[baseType].push(name)
+                self.parents[baseType].append(name)
                 self.links[name][baseType] = True
 
         primaryTypes = [t for t in self.parents if len(self.parents[t]) == 0]
@@ -198,7 +214,7 @@ class TypedDataEncoder:
                 [encode_type(t, types[t]) for t in st]
             )
 
-    def _get_encoder(self, data_type: str) -> object:
+    def _get_encoder(self, data_type: str) -> Optional[EncoderType]:
         """
         Get the encoder for a given type
 
@@ -206,7 +222,7 @@ class TypedDataEncoder:
             data_type (str): Data type in string
 
         Returns:
-            encoder (object): Encoder
+            encoder (EncoderType): Encoder
         """
         if encoder := get_base_encoder(data_type):
             return encoder
@@ -218,16 +234,22 @@ class TypedDataEncoder:
             subEncoder = self.get_encoder(subtype)
             length = 0 if len(match) == 1 else int(match[1])
             # print(length)
-            return (
-                lambda values: Web3.keccak(
-                    text=hex_concat(
-                        [Web3.keccak(text=subEncoder(value)) for value in values]
-                        if subtype in self._types
-                        else [subEncoder(value) for value in values]
-                    )
-                ).hex()
-                if length >= 0 and len(values) == length
-                else ValueError('Array length mismatched')
+            return cast(
+                EncoderType,
+                (
+                    lambda values: Web3.keccak(
+                        text=hex_concat(
+                            [Web3.keccak(text=subEncoder(value)) for value in values]
+                            if subtype in self._types
+                            else [subEncoder(value) for value in values]
+                        )
+                    ).hex()
+                    if length >= 0 and len(values) == length
+                    # TODO this is a return ValueError and not a raise,
+                    # it is expected? (Please note that exception can't
+                    # be directly raised from lambdas)
+                    else ValueError('Array length mismatched')
+                ),
             )
 
         fields = self.types[data_type]
@@ -245,7 +267,9 @@ class TypedDataEncoder:
                 ]
             )
 
-    def get_encoder(self, data_type: str) -> object:
+        return None
+
+    def get_encoder(self, data_type: str) -> EncoderType:
         """
         Get the base encoder for a given type and store it in cache
 
@@ -253,12 +277,16 @@ class TypedDataEncoder:
             data_type (str): Data type in string
 
         Returns:
-            encoder (object): Encoder
+            encoder (EncoderType): Encoder
         """
         if data_type in self._encoderCache:
             return self._encoderCache[data_type]
-        else:
-            return self._get_encoder(data_type)
+        encoder = self._get_encoder(data_type)
+
+        if not encoder:
+            raise ValueError(f"Can't find an encoder function for {data_type} type")
+
+        return encoder
 
     def encode_data(self, data_type: str, value: dict) -> str:
         """
@@ -300,7 +328,7 @@ class TypedDataEncoder:
         return self.hash_struct(self.primaryType, value)
 
     @staticmethod
-    def _from(types: dict) -> object:
+    def _from(types: dict) -> 'TypedDataEncoder':
         """
         Create a new instance of TypedDataEncoder for a given types
 
