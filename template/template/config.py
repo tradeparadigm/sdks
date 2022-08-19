@@ -80,7 +80,11 @@ class TemplateSDKConfig(SDKConfig):
         """Validate the signing bid"""
         r, s, v = break_evm_signature_into_components(signature)
 
-        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
+        config = ContractConfig(
+            address=contract_address,
+            chain_id=Chains(chain_id),
+            rpc_uri=rpc_uri,
+        )
         swap_contract = SwapContract(config)
 
         signed_bid = SignedBid(
