@@ -4,6 +4,7 @@ from ribbon.swap import SwapContract
 from ribbon.wallet import Wallet
 from sdk_commons.chains import Chains
 from sdk_commons.config import SDKConfig
+from sdk_commons.helpers import break_evm_signature_into_components
 
 
 class AuthorizationPages:
@@ -78,12 +79,11 @@ class RibbonSDKConfig(SDKConfig):
         sell_amount: int,
         buy_amount: int,
         referrer: str,
-        v: int,
-        r: str,
-        s: str,
+        signature: str,
         **kwargs,
     ) -> str:
         """Validate the signing bid"""
+        r, s, v = break_evm_signature_into_components(signature)
 
         config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
         swap_contract = SwapContract(config)
