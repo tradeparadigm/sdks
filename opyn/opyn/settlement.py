@@ -71,7 +71,7 @@ class SettlementContract(ContractConnection):
 
         tx_receipt = self.w3.eth.wait_for_transaction_receipt(signed_tx.hash, timeout=600)
 
-        if tx_receipt.status == 0:
+        if tx_receipt["status"] == 0:
             raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
 
         return cast(
