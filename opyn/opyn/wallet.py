@@ -115,7 +115,7 @@ class Wallet:
             "primaryType": "RFQ",
             "message": asdict(message_to_sign),
         }
-        signature = sign_typed_data(data, Web3.toBytes(hexstr=self.private_key))
+        signature = sign_typed_data(data, Web3.toBytes(text=self.private_key))
 
         return BidData(
             offerId=message_to_sign.offerId,
