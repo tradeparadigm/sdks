@@ -1,6 +1,6 @@
 from sdk_commons.chains import Chains
 from sdk_commons.config import SDKConfig
-from sdk_commons.helpers import break_evm_signature_into_components
+from sdk_commons.helpers import get_evm_signature_components
 from template.definitions import ContractConfig, Offer, SignedBid
 from template.otoken import oTokenContract
 from template.swap import SwapContract
@@ -78,7 +78,7 @@ class TemplateSDKConfig(SDKConfig):
         **kwargs,
     ) -> str:
         """Validate the signing bid"""
-        r, s, v = break_evm_signature_into_components(signature)
+        r, s, v = get_evm_signature_components(signature)
 
         config = ContractConfig(
             address=contract_address,
