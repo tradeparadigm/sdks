@@ -8,7 +8,7 @@ on:
       - 'release/*'
   workflow_dispatch:
 
-# Cancel previous running jobs on the same branch in case of new pushs
+# Cancel previous running jobs on the same branch in case of new pushes
 concurrency:
   group: mypy-${{ github.ref }}
   cancel-in-progress: true
