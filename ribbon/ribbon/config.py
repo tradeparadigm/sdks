@@ -5,8 +5,8 @@ from ribbon.otoken import oTokenContract
 from ribbon.swap import SwapContract
 from ribbon.wallet import Wallet
 from sdk_commons.chains import Chains
-from sdk_commons.helpers import get_evm_signature_components
 from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
+from sdk_commons.helpers import get_evm_signature_components
 
 
 class AuthorizationPages:
