@@ -1,5 +1,6 @@
 from sdk_commons.chains import Chains
 from sdk_commons.config import SDKConfig
+from sdk_commons.helpers import get_evm_signature_components
 from template.definitions import ContractConfig, Offer, SignedBid
 from template.otoken import oTokenContract
 from template.swap import SwapContract
@@ -73,14 +74,17 @@ class TemplateSDKConfig(SDKConfig):
         sell_amount: int,
         buy_amount: int,
         referrer: str,
-        v: int,
-        r: str,
-        s: str,
+        signature: str,
         **kwargs,
     ) -> str:
         """Validate the signing bid"""
+        r, s, v = get_evm_signature_components(signature)
 
-        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
+        config = ContractConfig(
+            address=contract_address,
+            chain_id=Chains(chain_id),
+            rpc_uri=rpc_uri,
+        )
         swap_contract = SwapContract(config)
 
         signed_bid = SignedBid(
