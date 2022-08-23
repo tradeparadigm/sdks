@@ -101,9 +101,7 @@ class FriktionSDKConfig(SDKConfig):
         sell_amount: int,
         buy_amount: int,
         referrer: str,
-        v: int,
-        r: str,
-        s: str,
+        signature: str,
         **kwargs,
     ) -> str:
         """Validate the signing bid"""
