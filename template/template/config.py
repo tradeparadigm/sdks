@@ -42,7 +42,7 @@ class TemplateSDKConfig(SDKConfig):
         swap_contract = SwapContract(config)
 
         new_offer = Offer(
-            oToken=1,
+            oToken=oToken,
             biddingToken=bidding_token,
             minBidSize=min_bid_size,
             minPrice=min_price,
