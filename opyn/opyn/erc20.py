@@ -11,6 +11,8 @@
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
+from typing import Optional, cast
+
 from opyn.contract import ContractConnection
 from opyn.definitions import ContractConfig
 from opyn.utils import get_address
@@ -33,9 +35,10 @@ class ERC20Contract(ContractConnection):
         super().__init__(config)
         self.name = self.contract.functions.name().call()
         self.symbol = self.contract.functions.symbol().call()
-        self.decimals = self.contract.functions.decimals().call()
+        # TODO: Which is the correct type here? int? Decimal? float?
+        self.decimals = cast(float, self.contract.functions.decimals().call())
 
-    def get_allowance(self, owner: str, spender: str) -> int:
+    def get_allowance(self, owner: Optional[str], spender: str) -> int:
         """
         Method to get allowance of owner
 
@@ -56,7 +59,7 @@ class ERC20Contract(ContractConnection):
 
         response = self.contract.functions.allowance(owner_address, spender_address).call()
 
-        return response
+        return cast(int, response)
 
     def get_balance(self, owner: str) -> int:
         """
@@ -76,11 +79,13 @@ class ERC20Contract(ContractConnection):
 
         response = self.contract.functions.balanceOf(owner_address).call()
 
-        return response
+        return cast(int, response)
 
-    def approve(self, publicKey: str, privateKey: str, spender: str, amount: int):
+    def approve(
+        self, publicKey: Optional[str], privateKey: Optional[str], spender: str, amount: int
+    ):
         nonce = self.w3.eth.get_transaction_count(publicKey)
-        tx = self.contract.functions.approve(get_address(spender), amount).buildTransaction(
+        tx = self.contract.functions.approve(get_address(spender), amount).build_transaction(
             {
                 "nonce": nonce,
                 "gas": 3000000,

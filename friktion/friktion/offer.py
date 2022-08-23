@@ -18,7 +18,7 @@ class Offer:
     swapOrderAddress: Optional[PublicKey] = None
 
     @staticmethod
-    def from_swap_order(swap_order: SwapOrder, address: PublicKey):
+    def from_swap_order(swap_order: SwapOrder, address: PublicKey) -> 'Offer':
         return Offer(
             oToken=swap_order.give_mint,
             biddingToken=swap_order.receive_mint,

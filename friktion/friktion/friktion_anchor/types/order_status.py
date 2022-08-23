@@ -122,7 +122,10 @@ def from_json(obj: OrderStatusJSON) -> OrderStatusKind:
         return Filled()
     if obj["kind"] == "Disabled":
         return Disabled()
-    kind = obj["kind"]
+
+    # This statement is unreachable, all cases of
+    # OrderStatusJSON are already verified
+    kind = obj["kind"]  # type: ignore
     raise ValueError(f"Unrecognized enum kind: {kind}")
 
 

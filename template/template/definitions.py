@@ -1,5 +1,6 @@
 """ Module to store data classes """
 from dataclasses import dataclass
+from typing import Optional
 
 from sdk_commons.chains import Chains
 
@@ -42,6 +43,6 @@ class SignedBid:
     sellAmount: int
     buyAmount: int
     referrer: str
-    v: int = None
-    r: str = None
-    s: str = None
+    v: Optional[int] = None
+    r: Optional[str] = None
+    s: Optional[str] = None

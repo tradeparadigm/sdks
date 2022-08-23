@@ -10,6 +10,7 @@
 
 from dataclasses import asdict
 from shutil import ExecError
+from typing import cast
 
 from web3 import Web3
 
@@ -18,6 +19,7 @@ from ribbon.definitions import Offer, SignedBid
 from ribbon.encode import ADDRESS_ZERO
 from ribbon.utils import get_address
 from ribbon.wallet import Wallet
+from sdk_commons.config import BidValidation, OfferDetails
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -58,7 +60,7 @@ class SwapContract(ContractConnection):
         config (ContractConfig): Configuration to setup the Contract
     """
 
-    def get_offer_details(self, offer_id: int) -> dict:
+    def get_offer_details(self, offer_id: int) -> OfferDetails:
         """
         Method to get bid details
 
@@ -87,7 +89,7 @@ class SwapContract(ContractConnection):
             'availableSize': details[6],
         }
 
-    def validate_bid(self, bid: SignedBid) -> str:
+    def validate_bid(self, bid: SignedBid) -> BidValidation:
         """
         Method to validate bid
 
@@ -105,6 +107,9 @@ class SwapContract(ContractConnection):
         """
         if not isinstance(bid, SignedBid):
             raise TypeError("Invalid signed bid")
+
+        if bid.v is None:
+            raise TypeError("Invalid signed bid, missing v")
 
         bid.signerWallet = get_address(bid.signerWallet)
         bid.referrer = get_address(bid.referrer)
@@ -135,7 +140,7 @@ class SwapContract(ContractConnection):
         Returns:
             verified (bool): True if the authority is set for the wallet
         """
-        authorized = self.contract.functions.authorized(wallet.public_key).call()
+        authorized = cast(str, self.contract.functions.authorized(wallet.public_key).call())
         return authorized == authority_address
 
     def create_offer(self, offer: Offer, wallet: Wallet) -> str:
@@ -161,7 +166,7 @@ class SwapContract(ContractConnection):
         offer.biddingToken = get_address(offer.biddingToken)
 
         nonce = self.w3.eth.get_transaction_count(wallet.public_key)
-        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).buildTransaction(
+        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).build_transaction(
             {
                 "nonce": nonce,
                 "gas": GAS_LIMIT,
@@ -174,7 +179,9 @@ class SwapContract(ContractConnection):
 
         tx_receipt = self.w3.eth.wait_for_transaction_receipt(signed_tx.hash, timeout=600)
 
-        if tx_receipt.status == 0:
+        if tx_receipt["status"] == 0:
             raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
-        else:
-            return self.contract.events.NewOffer().processReceipt(tx_receipt)[0]["args"]["swapId"]
+
+        return cast(
+            str, self.contract.events.NewOffer().processReceipt(tx_receipt)[0]["args"]["swapId"]
+        )

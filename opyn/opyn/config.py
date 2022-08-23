@@ -3,7 +3,7 @@ from opyn.otoken import oTokenContract
 from opyn.settlement import SettlementContract
 from opyn.wallet import Wallet
 from sdk_commons.chains import Chains
-from sdk_commons.config import SDKConfig
+from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
 from sdk_commons.helpers import get_evm_signature_components
 
 
@@ -38,31 +38,40 @@ class OpynSDKConfig(SDKConfig):
 
         wallet = Wallet(public_key=public_key, private_key=private_key)
 
-        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
+        config = ContractConfig(
+            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        )
+
         swap_contract = SettlementContract(config)
 
         new_offer = Offer(
-            oToken=oToken,
-            biddingToken=bidding_token,
+            offerToken=oToken,
+            bidToken=bidding_token,
             minBidSize=min_bid_size,
             minPrice=min_price,
-            offerAmount=offer_amount,
+            totalSize=offer_amount,
         )
         return swap_contract.create_offer(new_offer, wallet)
 
     def get_otoken_details(
         self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
-    ) -> dict:
+    ) -> OfferTokenDetails:
         """Return details about the offer token"""
-        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
+
+        config = ContractConfig(
+            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        )
         otoken_contract = oTokenContract(config)
         return otoken_contract.get_otoken_details()
 
     def get_offer_details(
         self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs
-    ) -> dict:
+    ) -> OfferDetails:
         """Return details for a given offer"""
-        swap_config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
+
+        swap_config = ContractConfig(
+            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        )
         swap_contract = SettlementContract(swap_config)
         return swap_contract.get_offer_details(offer_id)
 
@@ -79,7 +88,7 @@ class OpynSDKConfig(SDKConfig):
         referrer: str,
         signature: str,
         **kwargs,
-    ) -> str:
+    ) -> BidValidation:
         """Validate the signing bid"""
         r, s, v = get_evm_signature_components(signature)
 
@@ -92,12 +101,18 @@ class OpynSDKConfig(SDKConfig):
 
         # Expected to fail: BidData currently has a different signature
         signed_bid = BidData(
-            swapId=swap_id,
-            nonce=nonce,
-            signerWallet=signer_wallet,
+            offerId=swap_id,
+            # This field is missing
+            bidId=0,
+            # nonce=nonce,
+            signerAddress=signer_wallet,
+            # These three fields are missing
+            bidderAddress="...",
+            bidToken="...",
+            offerToken="...",
+            bidAmount=buy_amount,
             sellAmount=sell_amount,
-            buyAmount=buy_amount,
-            referrer=referrer,
+            # referrer=referrer,
             r=r,
             s=s,
             v=v,
@@ -118,6 +133,8 @@ class OpynSDKConfig(SDKConfig):
         the given token on the wallet
         """
 
-        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
+        config = ContractConfig(
+            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        )
         wallet = Wallet(public_key=public_key)
         return wallet.verify_allowance(config, token_address=token_address)

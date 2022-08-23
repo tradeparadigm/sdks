@@ -16,10 +16,23 @@ from opyn.wallet import Wallet
 
 load_dotenv()
 
-rpc_token = os.getenv('RPC_TOKEN')
 current_chain = Chains.ROPSTEN
-rpc = {Chains.ROPSTEN: os.getenv('RPC_URL')}
-rpc_uri = rpc[current_chain] + rpc_token
+
+
+def get_env(variable: str) -> str:
+    value = os.getenv(variable)
+    assert value is not None, f"Missing env variable {variable}"
+    return value
+
+
+rpc_token = get_env('RPC_TOKEN')
+rpc_url = get_env('RPC_URL')
+maker_public = get_env('MAKER_PubKEY')
+maker_private = get_env('MAKER_PrivKEY')
+taker_public = get_env('TAKER_PubKEY')
+taker_private = get_env('TAKER_PrivKEY')
+
+rpc_uri = rpc_url + rpc_token
 
 osqth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
 opyn_usdc_token_address = "0x27415c30d8c87437becbd4f98474f26e712047f4"
@@ -30,14 +43,10 @@ settlement_contract = SettlementContract(settlement_config)
 
 domain = Domain("OPYN BRIDGE", "1", 3, settlement_contract_address)
 
-maker_public = os.getenv('MAKER_PubKEY')
-maker_private = os.getenv('MAKER_PrivKEY')
 maker_wallet = Wallet(maker_public, maker_private)
-
-taker_public = os.getenv('TAKER_PubKEY')
-taker_private = os.getenv('TAKER_PrivKEY')
 taker_wallet = Wallet(taker_public, taker_private)
 
+assert maker_wallet.public_key, "Maker Public Key is None"
 total_size = 10**18
 min_bid_amount = total_size
 min_price = 1

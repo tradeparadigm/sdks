@@ -8,6 +8,8 @@
 """ Module to interact with ERC20 contracts """
 # ---------------------------------------------------------------------------
 
+from typing import Optional, cast
+
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
@@ -33,9 +35,10 @@ class ERC20Contract(ContractConnection):
         super().__init__(config)
         self.name = self.contract.functions.name().call()
         self.symbol = self.contract.functions.symbol().call()
-        self.decimals = self.contract.functions.decimals().call()
+        # TODO: Which is the correct type here? int? Decimal? float?
+        self.decimals = cast(float, self.contract.functions.decimals().call())
 
-    def get_allowance(self, owner: str, spender: str) -> int:
+    def get_allowance(self, owner: Optional[str], spender: str) -> int:
         """
         Method to get allowance of owner
 
@@ -56,7 +59,7 @@ class ERC20Contract(ContractConnection):
 
         response = self.contract.functions.allowance(owner_address, spender_address).call()
 
-        return response
+        return cast(int, response)
 
     def get_balance(self, owner: str) -> int:
         """
@@ -76,4 +79,4 @@ class ERC20Contract(ContractConnection):
 
         response = self.contract.functions.balanceOf(owner_address).call()
 
-        return response
+        return cast(int, response)

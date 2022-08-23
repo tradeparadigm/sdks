@@ -8,7 +8,9 @@
 """ Utility functions for encode.py """
 # ---------------------------------------------------------------------------
 
+from typing import Optional
 
+from eth_typing import ChecksumAddress
 from web3 import Web3
 
 # ---------------------------------------------------------------------------
@@ -34,7 +36,7 @@ def id(text: str) -> str:
     return Web3.keccak(text=text).hex()
 
 
-def get_address(address: str) -> str:
+def get_address(address: Optional[str]) -> ChecksumAddress:
     """
     Validate address validity and return the checksum address
 
@@ -42,8 +44,12 @@ def get_address(address: str) -> str:
         address (str): Address with 0x prefix
 
     Returns:
-        address (str): Returns address if valid
+        address (ChecksumAddress): Returns address if valid
     """
+
+    if not address:
+        raise ValueError(f'Invalid address: {address}')
+
     try:
         return Web3.toChecksumAddress(address)
     except ValueError:

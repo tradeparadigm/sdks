@@ -13,8 +13,10 @@ from dataclasses import asdict
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
-import eth_keys
-from py_eth_sig_utils.signing import sign_typed_data
+# TODO: waiting new version to fix type hints
+# https://github.com/ethereum/eth-keys/pull/90
+import eth_keys  # type: ignore
+from py_eth_sig_utils.signing import sign_typed_data  # type: ignore
 from web3 import Web3
 
 from opyn.definitions import BidData, ContractConfig, Domain, MessageToSign
@@ -113,7 +115,7 @@ class Wallet:
             "primaryType": "RFQ",
             "message": asdict(message_to_sign),
         }
-        signature = sign_typed_data(data, Web3.toBytes(hexstr=self.private_key))
+        signature = sign_typed_data(data, Web3.toBytes(text=self.private_key))
 
         return BidData(
             offerId=message_to_sign.offerId,

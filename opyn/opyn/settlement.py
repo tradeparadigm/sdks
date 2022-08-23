@@ -10,6 +10,7 @@
 
 from dataclasses import asdict
 from shutil import ExecError
+from typing import cast
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -20,6 +21,7 @@ from opyn.contract import ContractConnection
 from opyn.definitions import BidData, Offer
 from opyn.utils import ADDRESS_ZERO, get_address
 from opyn.wallet import Wallet
+from sdk_commons.config import BidValidation, OfferDetails
 
 
 # ---------------------------------------------------------------------------
@@ -56,7 +58,7 @@ class SettlementContract(ContractConnection):
         offer.bidToken = get_address(offer.bidToken)
 
         nonce = self.w3.eth.get_transaction_count(wallet.public_key)
-        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).buildTransaction(
+        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).build_transaction(
             {
                 "nonce": nonce,
                 "gas": 3000000,
@@ -69,14 +71,15 @@ class SettlementContract(ContractConnection):
 
         tx_receipt = self.w3.eth.wait_for_transaction_receipt(signed_tx.hash, timeout=600)
 
-        if tx_receipt.status == 0:
+        if tx_receipt["status"] == 0:
             raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
-        else:
-            return self.contract.events.CreateOffer().processReceipt(tx_receipt)[0]["args"][
-                "offerId"
-            ]
 
-    def get_offer_details(self, offer_id: int) -> dict:
+        return cast(
+            str,
+            self.contract.events.CreateOffer().processReceipt(tx_receipt)[0]["args"]["offerId"],
+        )
+
+    def get_offer_details(self, offer_id: int) -> OfferDetails:
         """
         Method to get bid details
 
@@ -105,7 +108,7 @@ class SettlementContract(ContractConnection):
             'availableSize': details[5],
         }
 
-    def validate_bid(self, bid: BidData) -> str:
+    def validate_bid(self, bid: BidData) -> BidValidation:
         """
         Method to validate bid
 
@@ -145,9 +148,7 @@ class SettlementContract(ContractConnection):
         if not isinstance(bid, BidData):
             raise TypeError("Invalid signed bid")
 
-        signer_address = self.contract.functions.getBidSigner(asdict(bid)).call()
-
-        return signer_address
+        return cast(str, self.contract.functions.getBidSigner(asdict(bid)).call())
 
     def nonce(self, owner: str) -> int:
         """
@@ -162,14 +163,10 @@ class SettlementContract(ContractConnection):
         Returns:
             nonce (int): Nonce
         """
-        nonces = self.contract.functions.nonces(owner).call()
-
-        return nonces
+        return cast(int, self.contract.functions.nonces(owner).call())
 
     def domainSeparator(self) -> str:
-        domain = self.contract.functions.DOMAIN_SEPARATOR().call()
-
-        return domain
+        return cast(str, self.contract.functions.DOMAIN_SEPARATOR().call())
 
     def get_offer_counter(self) -> int:
         """
@@ -178,6 +175,4 @@ class SettlementContract(ContractConnection):
         Returns:
             counter (int): Number of created offers
         """
-        counter = self.contract.functions.offersCounter().call()
-
-        return counter
+        return cast(int, self.contract.functions.offersCounter().call())

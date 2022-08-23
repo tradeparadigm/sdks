@@ -1,0 +1,44 @@
+name: MyPy
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 'release/*'
+  workflow_dispatch:
+
+# Cancel previous running jobs on the same branch in case of new pushes
+concurrency:
+  group: mypy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mypy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      matrix:
+        venue:
+          [
+            template,
+            ribbon,
+            opyn,
+            friktion
+          ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install MyPy
+        run: |
+          pip install mypy
+          pip install ./sdk_commons ./template ./opyn ./friktion ./ribbon
+
+      - name: Run MyPy
+        if: always()
+        run: mypy ${{ matrix.venue }} --exclude abis --exclude tests

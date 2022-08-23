@@ -1,6 +1,36 @@
 import abc
+from typing import Any, TypedDict
 
 from sdk_commons.chains import Chains
+
+
+class OfferDetails(TypedDict):
+    # TODO: enforce specific types?
+    seller: str
+    oToken: str
+    biddingToken: str
+    minPrice: str
+    # TODO: expected to be Decimal
+    minBidSize: str
+    # TODO: expected to be Decimal
+    totalSize: str
+    availableSize: str
+
+
+class OfferTokenDetails(TypedDict):
+    # TODO: enforce specific types?
+    collateralAsset: str
+    underlyingAsset: str
+    strikeAsset: str
+    # TODO: expected to be Decimal
+    strikePrice: str
+    expiryTimestamp: str
+    isPut: str
+
+
+class BidValidation(TypedDict, total=False):
+    errors: int
+    messages: list[str]
 
 
 class SDKConfig(abc.ABC):
@@ -11,10 +41,15 @@ class SDKConfig(abc.ABC):
     to only include needed parameters in their own concrete
     implementation. All additional parameters will be consumed by
     **kwargs that is always expected to be included.
+
     A template venue is also provided as example for a concrete
     implementation.
     """
 
+    # TODO: consider to replace this class with the properties
+    # - mainnet_authorization_page
+    # - testnet_authorization_page
+    # To have easier safe types
     @property
     @abc.abstractmethod
     def authorization_pages(self):
@@ -26,7 +61,7 @@ class SDKConfig(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def supported_chains(self) -> list(Chains):
+    def supported_chains(self) -> list[Chains]:
         """
         Set this property with a list
         of all supported chains
@@ -47,7 +82,7 @@ class SDKConfig(abc.ABC):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> str:
         """
         Create an offer
@@ -56,16 +91,16 @@ class SDKConfig(abc.ABC):
     # TODO: rename into get_offered_token_details
     @abc.abstractmethod
     def get_otoken_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
-    ) -> dict:
+        self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs: Any
+    ) -> OfferTokenDetails:
         """
         Return details about the offer token
         """
 
     @abc.abstractmethod
     def get_offer_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs
-    ) -> dict:
+        self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs: Any
+    ) -> OfferDetails:
         """Return details for a given offer"""
 
     @abc.abstractmethod
@@ -81,8 +116,8 @@ class SDKConfig(abc.ABC):
         buy_amount: int,
         referrer: str,
         signature: str,
-        **kwargs,
-    ) -> str:
+        **kwargs: Any,
+    ) -> BidValidation:
         """Validate the signing bid"""
 
     @abc.abstractmethod
@@ -93,7 +128,7 @@ class SDKConfig(abc.ABC):
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> bool:
         """
         Verify if the contract is allowed to access
