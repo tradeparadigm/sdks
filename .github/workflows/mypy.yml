@@ -18,6 +18,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    strategy:
+      matrix:
+        venue:
+          [
+            template,
+            ribbon,
+            opyn,
+            friktion
+          ]
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -29,18 +39,6 @@ jobs:
           pip install mypy
           pip install ./sdk_commons ./template ./opyn ./friktion ./ribbon
 
-      - name: Run MyPy on Template
+      - name: Run MyPy
         if: always()
-        run: mypy template --exclude abis --exclude tests
-
-      - name: Run MyPy on Ribbon
-        if: always()
-        run: mypy ribbon --exclude abis --exclude tests
-
-      - name: Run MyPy on Opyn
-        if: always()
-        run: mypy opyn --exclude abis --exclude tests
-
-      - name: Run MyPy on Friktion
-        if: always()
-        run: mypy friktion --exclude abis --exclude tests
+        run: mypy ${{ matrix.venue }} --exclude abis --exclude tests
