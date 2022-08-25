@@ -1,3 +1,5 @@
+from typing import Any
+
 from sdk_commons.chains import Chains
 from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
 from sdk_commons.helpers import get_evm_signature_components
@@ -29,7 +31,8 @@ class TemplateSDKConfig(SDKConfig):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> str:
         """Create an offer"""
 
@@ -51,7 +54,12 @@ class TemplateSDKConfig(SDKConfig):
         return swap_contract.create_offer(new_offer, wallet)
 
     def get_otoken_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
+        self,
+        contract_address: str,
+        chain_id: int,
+        rpc_uri: str,
+        *args: Any,
+        **kwargs: Any,
     ) -> OfferTokenDetails:
         """Return details about the offer token"""
 
@@ -63,7 +71,13 @@ class TemplateSDKConfig(SDKConfig):
         return otoken_contract.get_otoken_details()
 
     def get_offer_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs
+        self,
+        contract_address: str,
+        chain_id: int,
+        rpc_uri: str,
+        offer_id: int,
+        *args: Any,
+        **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
 
@@ -86,7 +100,8 @@ class TemplateSDKConfig(SDKConfig):
         buy_amount: int,
         referrer: str,
         signature: str,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
         r, s, v = get_evm_signature_components(signature)
@@ -119,7 +134,8 @@ class TemplateSDKConfig(SDKConfig):
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> bool:
         """
         Verify if the contract is allowed to access

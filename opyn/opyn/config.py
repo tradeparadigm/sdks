@@ -1,3 +1,5 @@
+from typing import Any
+
 from opyn.definitions import BidData, ContractConfig, Offer
 from opyn.otoken import oTokenContract
 from opyn.settlement import SettlementContract
@@ -32,7 +34,8 @@ class OpynSDKConfig(SDKConfig):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> str:
         """Create an offer"""
 
@@ -54,7 +57,12 @@ class OpynSDKConfig(SDKConfig):
         return swap_contract.create_offer(new_offer, wallet)
 
     def get_otoken_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs
+        self,
+        contract_address: str,
+        chain_id: int,
+        rpc_uri: str,
+        *args: Any,
+        **kwargs: Any,
     ) -> OfferTokenDetails:
         """Return details about the offer token"""
 
@@ -65,7 +73,13 @@ class OpynSDKConfig(SDKConfig):
         return otoken_contract.get_otoken_details()
 
     def get_offer_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs
+        self,
+        contract_address: str,
+        chain_id: int,
+        rpc_uri: str,
+        offer_id: int,
+        *args: Any,
+        **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
 
@@ -87,7 +101,8 @@ class OpynSDKConfig(SDKConfig):
         buy_amount: int,
         referrer: str,
         signature: str,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
         r, s, v = get_evm_signature_components(signature)
@@ -126,7 +141,8 @@ class OpynSDKConfig(SDKConfig):
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> bool:
         """
         Verify if the contract is allowed to access
