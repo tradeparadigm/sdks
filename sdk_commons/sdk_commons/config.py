@@ -82,6 +82,7 @@ class SDKConfig(abc.ABC):
         offer_amount: int,
         public_key: str,
         private_key: str,
+        *args: Any,
         **kwargs: Any,
     ) -> str:
         """
@@ -91,7 +92,7 @@ class SDKConfig(abc.ABC):
     # TODO: rename into get_offered_token_details
     @abc.abstractmethod
     def get_otoken_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, **kwargs: Any
+        self, contract_address: str, chain_id: int, rpc_uri: str, *args: Any, **kwargs: Any
     ) -> OfferTokenDetails:
         """
         Return details about the offer token
@@ -99,7 +100,13 @@ class SDKConfig(abc.ABC):
 
     @abc.abstractmethod
     def get_offer_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, offer_id: int, **kwargs: Any
+        self,
+        contract_address: str,
+        chain_id: int,
+        rpc_uri: str,
+        offer_id: int,
+        *args: Any,
+        **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
 
@@ -116,6 +123,7 @@ class SDKConfig(abc.ABC):
         buy_amount: int,
         referrer: str,
         signature: str,
+        *args: Any,
         **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
@@ -128,6 +136,7 @@ class SDKConfig(abc.ABC):
         rpc_uri: str,
         public_key: str,
         token_address: str,
+        *args: Any,
         **kwargs: Any,
     ) -> bool:
         """
