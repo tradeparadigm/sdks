@@ -25,7 +25,7 @@ class OfferTokenDetails(TypedDict):
     # TODO: expected to be Decimal
     strikePrice: str
     expiryTimestamp: str
-    isPut: str
+    isPut: bool
 
 
 class BidValidation(TypedDict, total=False):

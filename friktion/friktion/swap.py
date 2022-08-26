@@ -29,6 +29,7 @@ from friktion.friktion_anchor.instructions import cancel, claim
 from friktion.inertia_anchor.accounts import OptionsContract
 from friktion.offer import Offer
 from friktion.pda import DELEGATE_AUTHORITY_ADDRESS, SwapOrderAddresses, find_swap_order_address
+from sdk_commons.config import OfferTokenDetails
 
 from .bid_details import BidDetails
 from .friktion_anchor.accounts import SwapOrder
@@ -116,7 +117,7 @@ class SwapContract:
         acct_info = self.get_account_info(mint, wallet)
         return acct_info.delegated_amount, acct_info.amount
 
-    async def get_offered_token_details(self, user: PublicKey, order_id: int):
+    async def get_offered_token_details(self, user: PublicKey, order_id: int) -> OfferTokenDetails:
         swap_order = await self.get_swap_order(user, order_id)
         options_contract = await self.get_options_contract_for_key(swap_order.options_contract)
         ul_factor = await self._get_token_norm_factor(options_contract.underlying_mint)
@@ -130,14 +131,16 @@ class SwapContract:
             * options_contract.underlying_amount
             / options_contract.quote_amount
         )
+
+        # TODO: enforce specific types on OfferTokenDetails
         return {
-            'underlyingAsset': options_contract.underlying_mint,
+            'underlyingAsset': str(options_contract.underlying_mint),
             # options expiration is in seconds since epoch
-            'expiryTimestamp': options_contract.expiry_ts,
+            'expiryTimestamp': str(options_contract.expiry_ts),
             'isPut': not options_contract.is_call,
-            'strikeAsset': options_contract.quote_mint,
-            'strikePrice': strike_price,
-            'collateralAsset': options_contract.underlying_mint,
+            'strikeAsset': str(options_contract.quote_mint),
+            'strikePrice': str(strike_price),
+            'collateralAsset': str(options_contract.underlying_mint),
         }
 
     async def _get_token_norm_factor(self, mint: PublicKey) -> int:

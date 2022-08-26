@@ -1,12 +1,14 @@
+from typing import Any
+
 from asgiref.sync import async_to_sync
 from solana.publickey import PublicKey
 from spl.token.instructions import get_associated_token_address
 
-from friktion.friktion_anchor.accounts.swap_order import SwapOrder
+# from friktion.friktion_anchor.accounts.swap_order import SwapOrder
 from friktion.offer import Offer
 from friktion.swap import Network, SwapContract
 from sdk_commons.chains import Chains
-from sdk_commons.config import SDKConfig
+from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
 
 
 class AuthorizationPages:
@@ -37,13 +39,18 @@ class FriktionSDKConfig(SDKConfig):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> str:
         """Create an offer"""
 
-        swap_order = SwapOrder(...)
-        Offer.from_swap_order(swap_order=swap_order, address=PublicKey(public_key))
-        ...
+        # swap_order = SwapOrder(...)
+        # Offer.from_swap_order(
+        #     swap_order=swap_order,
+        #     address=PublicKey(public_key)
+        # )
+
+        return "not-implemented-yet"
 
     def get_otoken_details(
         self,
@@ -52,13 +59,14 @@ class FriktionSDKConfig(SDKConfig):
         rpc_uri: str,
         offer_id: int,
         seller: str,
-        **kwargs,
-    ) -> dict:
+        *args: Any,
+        **kwargs: Any,
+    ) -> OfferTokenDetails:
         """Return details about the offer token"""
 
-        network = self.CHAIN_NETWORK_MAP[chain_id]
+        network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
         swap_contract = SwapContract(network)
-        details = async_to_sync(swap_contract.get_offered_token_details)(
+        details: OfferTokenDetails = async_to_sync(swap_contract.get_offered_token_details)(
             PublicKey(seller), offer_id
         )
 
@@ -71,23 +79,26 @@ class FriktionSDKConfig(SDKConfig):
         rpc_uri: str,
         offer_id: int,
         seller: str,
-        **kwargs,
-    ) -> dict:
+        *args: Any,
+        **kwargs: Any,
+    ) -> OfferDetails:
         """Return details for a given offer"""
 
-        network = self.CHAIN_NETWORK_MAP[chain_id]
+        network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
         swap_contract = SwapContract(network)
 
         details: Offer = async_to_sync(swap_contract.get_offer_details)(
             PublicKey(seller), offer_id
         )
+        # TODO: enforce specific types on OfferDetails
         return {
             'seller': str(details.seller),
-            'bidding_token': str(details.biddingToken),
-            'min_price': details.minPrice,
-            'min_bid_size': details.minBidSize,
-            'total_size': details.offerAmount,
-            'offered_token': str(details.oToken),
+            'biddingToken': str(details.biddingToken),
+            'minPrice': str(details.minPrice),
+            'minBidSize': str(details.minBidSize),
+            'totalSize': str(details.offerAmount),
+            'oToken': str(details.oToken),
+            'availableSize': "???",
         }
 
     def validate_bid(
@@ -102,11 +113,12 @@ class FriktionSDKConfig(SDKConfig):
         buy_amount: int,
         referrer: str,
         signature: str,
-        **kwargs,
-    ) -> str:
+        *args: Any,
+        **kwargs: Any,
+    ) -> BidValidation:
         """Validate the signing bid"""
 
-        return None
+        return {'errors': 0}
 
     def verify_allowance(
         self,
@@ -115,14 +127,15 @@ class FriktionSDKConfig(SDKConfig):
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> bool:
         """
         Verify if the contract is allowed to access
         the given token on the wallet
         """
 
-        network = self.CHAIN_NETWORK_MAP[chain_id]
+        network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
         swap_contract = SwapContract(network)
 
         token_account = get_associated_token_address(
