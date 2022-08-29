@@ -1,4 +1,5 @@
 import abc
+from decimal import Decimal
 from typing import Any, TypedDict
 
 from sdk_commons.chains import Chains
@@ -10,10 +11,8 @@ class OfferDetails(TypedDict):
     oToken: str
     biddingToken: str
     minPrice: str
-    # TODO: expected to be Decimal
-    minBidSize: str
-    # TODO: expected to be Decimal
-    totalSize: str
+    minBidSize: Decimal
+    totalSize: Decimal
     availableSize: str
 
 
@@ -22,8 +21,7 @@ class OfferTokenDetails(TypedDict):
     collateralAsset: str
     underlyingAsset: str
     strikeAsset: str
-    # TODO: expected to be Decimal
-    strikePrice: str
+    strikePrice: Decimal
     # expiration in seconds since epoch
     expiryTimestamp: int
     isPut: bool

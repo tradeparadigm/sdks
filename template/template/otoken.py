@@ -1,6 +1,7 @@
 # ---------------------------------------------------------------------------
 """ Module to call oToken contract """
 # ---------------------------------------------------------------------------
+from decimal import Decimal
 
 from sdk_commons.config import OfferTokenDetails
 from template.definitions import ContractConfig
@@ -31,7 +32,7 @@ class oTokenContract:
             "collateralAsset": "...",
             "underlyingAsset": "...",
             "strikeAsset": "...",
-            "strikePrice": "...",
+            "strikePrice": Decimal(0.0),
             "expiryTimestamp": 0,
             "isPut": True,
         }

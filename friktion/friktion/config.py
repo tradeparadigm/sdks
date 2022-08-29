@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Any
 
 from asgiref.sync import async_to_sync
@@ -94,8 +95,8 @@ class FriktionSDKConfig(SDKConfig):
             'seller': str(details.seller),
             'biddingToken': str(details.biddingToken),
             'minPrice': str(details.minPrice),
-            'minBidSize': str(details.minBidSize),
-            'totalSize': str(details.offerAmount),
+            'minBidSize': Decimal(details.minBidSize),
+            'totalSize': Decimal(details.offerAmount),
             'oToken': str(details.oToken),
             'availableSize': "???",
         }

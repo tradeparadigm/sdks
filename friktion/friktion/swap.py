@@ -4,6 +4,7 @@
 """ Module to call Swap contract """
 import asyncio
 import time
+from decimal import Decimal
 from enum import Enum
 from typing import Optional, Tuple
 
@@ -132,14 +133,13 @@ class SwapContract:
             / options_contract.quote_amount
         )
 
-        # TODO: enforce specific types on OfferTokenDetails
         return {
             'underlyingAsset': str(options_contract.underlying_mint),
             # options expiration is in seconds since epoch
             'expiryTimestamp': options_contract.expiry_ts,
             'isPut': not options_contract.is_call,
             'strikeAsset': str(options_contract.quote_mint),
-            'strikePrice': str(strike_price),
+            'strikePrice': Decimal(strike_price),
             'collateralAsset': str(options_contract.underlying_mint),
         }
 
