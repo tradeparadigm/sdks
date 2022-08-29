@@ -3,7 +3,6 @@ from typing import Any
 
 from asgiref.sync import async_to_sync
 from solana.publickey import PublicKey
-from spl.token.instructions import get_associated_token_address
 
 from friktion.bid_details import BidDetails
 from friktion.offer import Offer
@@ -164,8 +163,7 @@ class FriktionSDKConfig(SDKConfig):
         network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
         swap_contract = SwapContract(network)
 
-        token_account = get_associated_token_address(
-            PublicKey(public_key), PublicKey(token_address)
+        return swap_contract.verify_allowance(
+            PublicKey(token_address),
+            PublicKey(public_key),
         )
-
-        return swap_contract.verify_allowance(PublicKey(token_address), token_account)
