@@ -129,6 +129,7 @@ class SDKConfig(abc.ABC):
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
+        seller: str,
         swap_id: int,
         nonce: int,
         signer_wallet: str,

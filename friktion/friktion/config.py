@@ -5,16 +5,21 @@ from asgiref.sync import async_to_sync
 from solana.publickey import PublicKey
 from spl.token.instructions import get_associated_token_address
 
-# from friktion.friktion_anchor.accounts.swap_order import SwapOrder
+from friktion.bid_details import BidDetails
 from friktion.offer import Offer
 from friktion.swap import Network, SwapContract
 from sdk_commons.chains import Chains
 from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
 
+# from friktion.friktion_anchor.accounts.swap_order import SwapOrder
+
 
 class AuthorizationPages:
     mainnet = "https://app.friktion.fi/approve"
     testnet = "https://devnet.friktion.fi/approve"
+
+
+# TODO: remove unused parameters (for example rpc_uri and nonce)
 
 
 class FriktionSDKConfig(SDKConfig):
@@ -106,6 +111,7 @@ class FriktionSDKConfig(SDKConfig):
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
+        seller: str,
         swap_id: int,
         nonce: int,
         signer_wallet: str,
@@ -117,6 +123,26 @@ class FriktionSDKConfig(SDKConfig):
         **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
+
+        # TODO: consider changing sdk BidDetails to receive sell amount
+        # instead of bid_price to avoid the reverse computation
+        bid_price = int(sell_amount / buy_amount)
+        bid_details = BidDetails(
+            bid_price=bid_price,
+            bid_size=buy_amount,
+            order_id=swap_id,
+            referrer=PublicKey(referrer),
+            signer_wallet=PublicKey(signer_wallet),
+        )
+
+        network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
+        swap_contract = SwapContract(network)
+        error: str = async_to_sync(swap_contract.validate_bid)(
+            PublicKey(seller), bid_details, signature
+        )
+
+        if error:
+            return {'errors': 1, 'messages': [error]}
 
         return {'errors': 0}
 
