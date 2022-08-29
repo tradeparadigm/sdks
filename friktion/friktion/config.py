@@ -12,9 +12,8 @@ from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, S
 
 
 class AuthorizationPages:
-    # TODO: add when we get the UI for both
-    mainnet = "https://notdefined.yet/auctions/"
-    testnet = "https://notdefined.yet/auctions/"
+    mainnet = "https://app.friktion.fi/approve"
+    testnet = "https://devnet.friktion.fi/approve"
 
 
 class FriktionSDKConfig(SDKConfig):
