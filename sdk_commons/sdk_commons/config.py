@@ -75,6 +75,7 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def create_offer(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -86,7 +87,6 @@ class SDKConfig(abc.ABC):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        *args: Any,
         **kwargs: Any,
     ) -> str:
         """
@@ -97,12 +97,12 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def get_otoken_details(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
         seller: str,
-        *args: Any,
         **kwargs: Any,
     ) -> OfferTokenDetails:
         """
@@ -112,12 +112,12 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def get_offer_details(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
         seller: str,
-        *args: Any,
         **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
@@ -125,6 +125,7 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def validate_bid(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -135,7 +136,6 @@ class SDKConfig(abc.ABC):
         buy_amount: int,
         referrer: str,
         signature: str,
-        *args: Any,
         **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
@@ -143,12 +143,12 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def verify_allowance(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        *args: Any,
         **kwargs: Any,
     ) -> bool:
         """
