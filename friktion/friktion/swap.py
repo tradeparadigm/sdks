@@ -123,10 +123,10 @@ class SwapContract:
         ul_factor = await self._get_token_norm_factor(options_contract.underlying_mint)
         quote_factor = await self._get_token_norm_factor(options_contract.quote_mint)
 
-        # TODO: introduce a round to prevent to long values?
+        # TODO: introduce rounding to prevent to long values?
         # for example when we get 333333333.3333333 and we
         # convert to decimal we obtain:
-        # 333333333.333333313465118408203125 that is
+        # 333333333.333333313465118408203125 that is too long!
         strike_price = (
             (ul_factor / quote_factor)
             * options_contract.quote_amount

@@ -94,7 +94,6 @@ class FriktionSDKConfig(SDKConfig):
         details: Offer = async_to_sync(swap_contract.get_offer_details)(
             PublicKey(seller), offer_id
         )
-        # TODO: enforce specific types on OfferDetails
         return {
             'seller': str(details.seller),
             'biddingToken': str(details.biddingToken),
