@@ -24,7 +24,8 @@ class OfferTokenDetails(TypedDict):
     strikeAsset: str
     # TODO: expected to be Decimal
     strikePrice: str
-    expiryTimestamp: str
+    # expiration in seconds since epoch
+    expiryTimestamp: int
     isPut: bool
 
 

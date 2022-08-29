@@ -32,6 +32,6 @@ class oTokenContract:
             "underlyingAsset": "...",
             "strikeAsset": "...",
             "strikePrice": "...",
-            "expiryTimestamp": "...",
+            "expiryTimestamp": 0,
             "isPut": True,
         }
