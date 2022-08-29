@@ -4,7 +4,6 @@
 """ Module to call Swap contract """
 import asyncio
 import time
-from decimal import Decimal
 from enum import Enum
 from typing import Optional, Tuple
 
@@ -123,6 +122,11 @@ class SwapContract:
         options_contract = await self.get_options_contract_for_key(swap_order.options_contract)
         ul_factor = await self._get_token_norm_factor(options_contract.underlying_mint)
         quote_factor = await self._get_token_norm_factor(options_contract.quote_mint)
+
+        # TODO: introduce a round to prevent to long values?
+        # for example when we get 333333333.3333333 and we
+        # convert to decimal we obtain:
+        # 333333333.333333313465118408203125 that is
         strike_price = (
             (ul_factor / quote_factor)
             * options_contract.quote_amount
@@ -139,7 +143,7 @@ class SwapContract:
             'expiryTimestamp': options_contract.expiry_ts,
             'isPut': not options_contract.is_call,
             'strikeAsset': str(options_contract.quote_mint),
-            'strikePrice': Decimal(strike_price),
+            'strikePrice': strike_price,
             'collateralAsset': str(options_contract.underlying_mint),
         }
 

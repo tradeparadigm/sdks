@@ -21,7 +21,12 @@ class OfferTokenDetails(TypedDict):
     collateralAsset: str
     underlyingAsset: str
     strikeAsset: str
-    strikePrice: Decimal
+    # TODO: should be a Decimal?
+    # strike_price in friktion.swap.get_offered_token_details
+    # is computed as 333333333.3333333, if converted to decimal we get
+    # 333333333.333333313465118408203125 that is unexpectedly long
+    # Introduce a rounding?
+    strikePrice: float
     # expiration in seconds since epoch
     expiryTimestamp: int
     isPut: bool
