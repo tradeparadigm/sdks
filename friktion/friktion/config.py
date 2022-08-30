@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal
 from typing import Any
 
@@ -11,6 +12,8 @@ from sdk_commons.chains import Chains
 from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
 
 # from friktion.friktion_anchor.accounts.swap_order import SwapOrder
+
+logger = logging.getLogger(__name__)
 
 
 class AuthorizationPages:
@@ -160,11 +163,13 @@ class FriktionSDKConfig(SDKConfig):
         Verify if the contract is allowed to access
         the given token on the wallet
         """
-
         network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
         swap_contract = SwapContract(network)
 
-        return swap_contract.verify_allowance(
-            PublicKey(token_address),
-            PublicKey(public_key),
-        )
+        try:
+            return swap_contract.verify_allowance(PublicKey(token_address), PublicKey(public_key))
+        except BaseException:
+            logger.exception(
+                f"Failed to verify wallet allowance: token={token_address} wallet={public_key}"
+            )
+            return False
