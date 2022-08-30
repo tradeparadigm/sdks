@@ -24,7 +24,7 @@ class AuthorizationPages:
 class FriktionSDKConfig(SDKConfig):
 
     authorization_pages = AuthorizationPages
-    supported_chains = [Chains.SOLANA_DEV]
+    supported_chains = [Chains.SOLANA_DEV, Chains.SOLANA_MAIN]
 
     CHAIN_NETWORK_MAP = {
         Chains.SOLANA_DEV: Network.DEVNET,
