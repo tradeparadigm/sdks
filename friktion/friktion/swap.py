@@ -4,6 +4,7 @@
 """ Module to call Swap contract """
 import asyncio
 import time
+from decimal import Decimal
 from enum import Enum
 from typing import Optional, Tuple
 
@@ -123,7 +124,7 @@ class SwapContract:
         ul_factor = await self._get_token_norm_factor(options_contract.underlying_mint)
         quote_factor = await self._get_token_norm_factor(options_contract.quote_mint)
 
-        # TODO: introduce rounding to prevent to long values?
+        # TODO: introduce rounding to prevent too long values?
         # for example when we get 333333333.3333333 and we
         # convert to decimal we obtain:
         # 333333333.333333313465118408203125 that is too long!
@@ -143,7 +144,9 @@ class SwapContract:
             'expiryTimestamp': options_contract.expiry_ts,
             'isPut': not options_contract.is_call,
             'strikeAsset': str(options_contract.quote_mint),
-            'strikePrice': strike_price,
+            # float -> str -> Decimal to prevent changing
+            # the precision due to floating point arithmetic
+            'strikePrice': Decimal(str(strike_price)),
             'collateralAsset': str(options_contract.underlying_mint),
         }
 

@@ -97,6 +97,8 @@ class FriktionSDKConfig(SDKConfig):
         return {
             'seller': str(details.seller),
             'biddingToken': str(details.biddingToken),
+            # NOTE: it is not a Decimal at this point
+            # as we still have to apply the resolution.
             'minPrice': str(details.minPrice),
             'minBidSize': Decimal(details.minBidSize),
             'totalSize': Decimal(details.offerAmount),
