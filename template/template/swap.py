@@ -1,4 +1,6 @@
 """ Module to call Swap contract """
+from decimal import Decimal
+
 from sdk_commons.config import BidValidation, OfferDetails
 from template.definitions import ContractConfig, Offer, SignedBid
 from template.wallet import Wallet
@@ -37,8 +39,8 @@ class SwapContract:
             'oToken': "...",
             'biddingToken': "...",
             'minPrice': "...",
-            'minBidSize': "...",
-            'totalSize': "...",
+            'minBidSize': Decimal(0.0),
+            'totalSize': Decimal(0.0),
             'availableSize': "...",
         }
 

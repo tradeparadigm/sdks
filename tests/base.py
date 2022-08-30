@@ -1,14 +1,23 @@
+from enum import Enum
 from importlib import import_module
 from inspect import Parameter, signature
 
 from sdk_commons.config import SDKConfig
 
-TEMPLATE = 'template'
-RIBBON = 'ribbon'
-OPYN = 'opyn'
-FRIKTION = 'friktion'
-# TODO: add FRIKTION
-VENUES = [TEMPLATE, RIBBON, OPYN]
+
+class VenuePackages(Enum):
+    TEMPLATE = 'template'
+    RIBBON = 'ribbon'
+    FRIKTION = 'friktion'
+    OPYN = 'opyn'
+
+
+VENUES = [
+    VenuePackages.TEMPLATE.value,
+    VenuePackages.RIBBON.value,
+    VenuePackages.FRIKTION.value,
+    VenuePackages.OPYN.value,
+]
 
 
 class TestsBase:
@@ -99,12 +108,13 @@ class TestsBase:
 
         # Verify if the arguments of the method signature
         # corresponds to the reference signature
-        for method_name, method_def in method_signature.items():
+        for param_name, method_def in method_signature.items():
             # args and kwargs are already explicitly checked, skipping
-            if method_name == "args" or method_name == "kwargs":
+            if param_name == "args" or param_name == "kwargs":
                 continue
             # Unknown parameters (i.e. parameters not in the reference)
             # are refused, except if they have a default value
+            method_path = f"{method.__module__}.{method.__name__}"
             assert (
-                method_name in expected_params or method_def.default is not Parameter.empty
-            ), f"{method} requires an unknown parameter {method_name}"
+                param_name in expected_params or method_def.default is not Parameter.empty
+            ), f"{method_path} is asking for an unknown parameter {param_name}"

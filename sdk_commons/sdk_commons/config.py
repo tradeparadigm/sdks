@@ -1,4 +1,5 @@
 import abc
+from decimal import Decimal
 from typing import Any, TypedDict
 
 from sdk_commons.chains import Chains
@@ -10,10 +11,8 @@ class OfferDetails(TypedDict):
     oToken: str
     biddingToken: str
     minPrice: str
-    # TODO: expected to be Decimal
-    minBidSize: str
-    # TODO: expected to be Decimal
-    totalSize: str
+    minBidSize: Decimal
+    totalSize: Decimal
     availableSize: str
 
 
@@ -22,10 +21,10 @@ class OfferTokenDetails(TypedDict):
     collateralAsset: str
     underlyingAsset: str
     strikeAsset: str
-    # TODO: expected to be Decimal
-    strikePrice: str
-    expiryTimestamp: str
-    isPut: str
+    strikePrice: Decimal
+    # expiration in seconds since epoch
+    expiryTimestamp: int
+    isPut: bool
 
 
 class BidValidation(TypedDict, total=False):
@@ -71,6 +70,7 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def create_offer(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -82,7 +82,6 @@ class SDKConfig(abc.ABC):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        *args: Any,
         **kwargs: Any,
     ) -> str:
         """
@@ -92,7 +91,14 @@ class SDKConfig(abc.ABC):
     # TODO: rename into get_offered_token_details
     @abc.abstractmethod
     def get_otoken_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, *args: Any, **kwargs: Any
+        self,
+        *,
+        contract_address: str,
+        chain_id: int,
+        rpc_uri: str,
+        offer_id: int,
+        seller: str,
+        **kwargs: Any,
     ) -> OfferTokenDetails:
         """
         Return details about the offer token
@@ -101,11 +107,12 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def get_offer_details(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
-        *args: Any,
+        seller: str,
         **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
@@ -113,9 +120,11 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def validate_bid(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
+        seller: str,
         swap_id: int,
         nonce: int,
         signer_wallet: str,
@@ -123,7 +132,6 @@ class SDKConfig(abc.ABC):
         buy_amount: int,
         referrer: str,
         signature: str,
-        *args: Any,
         **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
@@ -131,12 +139,12 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def verify_allowance(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        *args: Any,
         **kwargs: Any,
     ) -> bool:
         """

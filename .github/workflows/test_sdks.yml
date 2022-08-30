@@ -28,8 +28,7 @@ jobs:
         run: |
           # TODO: move me in a requirements file
           pip install pytest
-          # TODO: add ./friktion
-          pip install ./sdk_commons ./template ./opyn ./ribbon
+          pip install ./sdk_commons ./template ./opyn ./friktion ./ribbon
 
       - name: Run pytest
         run: |
