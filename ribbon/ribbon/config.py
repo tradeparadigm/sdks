@@ -1,6 +1,6 @@
 from typing import Any
 
-from ribbon.definitions import ContractConfig, Offer, SignedBid
+from ribbon.definitions import Bid, ContractConfig, Domain, Offer, SignedBid
 from ribbon.otoken import oTokenContract
 from ribbon.swap import SwapContract
 from ribbon.wallet import Wallet
@@ -87,6 +87,45 @@ class RibbonSDKConfig(SDKConfig):
 
         swap_contract = SwapContract(swap_config)
         return swap_contract.get_offer_details(offer_id)
+
+    def sign_bid(
+        self,
+        contract_address: str,
+        chain_id: int,
+        public_key: str,
+        private_key: str,
+        swap_id: int,
+        nonce: int,
+        signer_wallet: str,
+        sell_amount: int,
+        buy_amount: int,
+        referrer: str,
+        *args: Any,
+        **kwargs: Any,
+    ) -> str:
+        """Sign a bid and return the signature"""
+
+        domain = Domain(
+            name="RIBBON SWAP",
+            version=1,
+            chainId=chain_id,
+            verifyingContract=contract_address,
+        )
+        payload = Bid(
+            swapId=swap_id,
+            nonce=nonce,
+            signerWallet=signer_wallet,
+            sellAmount=sell_amount,
+            buyAmount=buy_amount,
+            referrer=referrer,
+        )
+        wallet = Wallet(public_key=public_key, private_key=private_key)
+        signed_bid = wallet.sign_bid(domain, payload)
+
+        if signed_bid.r is None or signed_bid.s is None or signed_bid.v is None:
+            raise TypeError("Invalid bid")
+
+        return signed_bid.r[2:] + signed_bid.s[2:] + hex(signed_bid.v)[2:]
 
     def validate_bid(
         self,

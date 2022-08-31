@@ -72,6 +72,19 @@ class TestConfig(TestsBase):
         )
 
     @pytest.mark.parametrize("venue", VENUES)
+    def test_sign_bid_signature(self, venue: str):
+        """Verify the signature of sign_bid"""
+
+        config_class_name = self.get_config_class(venue)
+        config_class = self.import_class(venue, "config", config_class_name)
+        c = config_class()
+
+        self.inspect_method_signature(
+            c.sign_bid,
+            reference=SDKConfig.sign_bid,
+        )
+
+    @pytest.mark.parametrize("venue", VENUES)
     def test_validate_bid_signature(self, venue: str):
         """Verify the signature of validate_bid"""
 

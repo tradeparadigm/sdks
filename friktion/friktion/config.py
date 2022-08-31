@@ -2,7 +2,10 @@ import logging
 from decimal import Decimal
 from typing import Any
 
+import solders.keypair
+from anchorpy import Wallet
 from asgiref.sync import async_to_sync
+from solana.keypair import Keypair
 from solana.publickey import PublicKey
 
 from friktion.bid_details import BidDetails
@@ -108,6 +111,32 @@ class FriktionSDKConfig(SDKConfig):
             'oToken': str(details.oToken),
             'availableSize': "???",
         }
+
+    def sign_bid(
+        self,
+        private_key: str,
+        swap_id: int,
+        signer_wallet: str,
+        sell_amount: int,
+        buy_amount: int,
+        referrer: str,
+        *args: Any,
+        **kwargs: Any,
+    ) -> str:
+        """Sign a bid and return the signature"""
+
+        bid = BidDetails(
+            bid_size=buy_amount,
+            referrer=PublicKey(referrer),
+            bid_price=sell_amount // buy_amount,
+            signer_wallet=PublicKey(signer_wallet),
+            order_id=swap_id,
+        )
+
+        wallet = Wallet(Keypair(solders.keypair.Keypair.from_base58_string(private_key)))
+        _, signature = bid.as_signed_msg(wallet)
+
+        return str(signature)
 
     def validate_bid(
         self,

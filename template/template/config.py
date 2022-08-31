@@ -3,7 +3,7 @@ from typing import Any
 from sdk_commons.chains import Chains
 from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
 from sdk_commons.helpers import get_evm_signature_components
-from template.definitions import ContractConfig, Offer, SignedBid
+from template.definitions import Bid, ContractConfig, Offer, SignedBid
 from template.otoken import oTokenContract
 from template.swap import SwapContract
 from template.wallet import Wallet
@@ -87,6 +87,36 @@ class TemplateSDKConfig(SDKConfig):
 
         swap_contract = SwapContract(swap_config)
         return swap_contract.get_offer_details(offer_id)
+
+    def sign_bid(
+        self,
+        contract_address: str,
+        chain_id: int,
+        public_key: str,
+        private_key: str,
+        swap_id: int,
+        nonce: int,
+        signer_wallet: str,
+        sell_amount: int,
+        buy_amount: int,
+        referrer: str,
+        *args: Any,
+        **kwargs: Any,
+    ) -> str:
+        """Sign a bid and return the signature"""
+
+        payload = Bid(
+            swapId=swap_id,
+            nonce=nonce,
+            signerWallet=signer_wallet,
+            sellAmount=sell_amount,
+            buyAmount=buy_amount,
+            referrer=referrer,
+        )
+        wallet = Wallet(public_key=public_key, private_key=private_key)
+        signature = wallet.sign_bid(payload)
+
+        return signature
 
     def validate_bid(
         self,

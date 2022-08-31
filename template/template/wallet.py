@@ -1,5 +1,5 @@
 """ Module for wallet utilities """
-from template.definitions import ContractConfig
+from template.definitions import Bid, ContractConfig
 
 
 class Wallet:
@@ -34,3 +34,6 @@ class Wallet:
         """
 
         return True
+
+    def sign_bid(self, bid: Bid) -> str:
+        return "your-signature"
