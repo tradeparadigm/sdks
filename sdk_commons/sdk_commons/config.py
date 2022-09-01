@@ -118,6 +118,24 @@ class SDKConfig(abc.ABC):
         """Return details for a given offer"""
 
     @abc.abstractmethod
+    def sign_bid(
+        self,
+        *,
+        contract_address: str,
+        chain_id: int,
+        public_key: str,
+        private_key: str,
+        swap_id: int,
+        nonce: int,
+        signer_wallet: str,
+        sell_amount: int,
+        buy_amount: int,
+        referrer: str,
+        **kwargs: Any,
+    ) -> str:
+        """Sign a bid and return the signature"""
+
+    @abc.abstractmethod
     def validate_bid(
         self,
         *,

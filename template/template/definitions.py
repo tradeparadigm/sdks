@@ -6,6 +6,16 @@ from sdk_commons.chains import Chains
 
 
 @dataclass
+class Bid:
+    swapId: int
+    nonce: int
+    signerWallet: str
+    sellAmount: int
+    buyAmount: int
+    referrer: str
+
+
+@dataclass
 class Domain:
     """
     Domain parameters for signatures

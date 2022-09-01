@@ -1,6 +1,6 @@
 from typing import Any
 
-from opyn.definitions import BidData, ContractConfig, Offer
+from opyn.definitions import BidData, ContractConfig, Domain, MessageToSign, Offer
 from opyn.otoken import oTokenContract
 from opyn.settlement import SettlementContract
 from opyn.wallet import Wallet
@@ -88,6 +88,54 @@ class OpynSDKConfig(SDKConfig):
         )
         swap_contract = SettlementContract(swap_config)
         return swap_contract.get_offer_details(offer_id)
+
+    def sign_bid(
+        self,
+        contract_address: str,
+        chain_id: int,
+        public_key: str,
+        private_key: str,
+        swap_id: int,
+        nonce: int,
+        signer_wallet: str,
+        sell_amount: int,
+        buy_amount: int,
+        referrer: str,
+        *args: Any,
+        **kwargs: Any,
+    ) -> str:
+        """Sign a bid and return the signature"""
+
+        domain = Domain(
+            name="OPYN BRIDGE",
+            version="1",
+            chainId=chain_id,
+            verifyingContract=contract_address,
+        )
+
+        # TODO: use the provided nonce instead of retrieve on-chain?
+        rpc_uri = "not-currently-provided"
+        settlement_config = ContractConfig(contract_address, rpc_uri, Chains(chain_id))
+        settlement_contract = SettlementContract(settlement_config)
+        maker_nonce = settlement_contract.nonce(public_key)
+
+        payload = MessageToSign(
+            offerId=1,
+            # This field is missing
+            bidId=0,
+            signerAddress=public_key,
+            bidderAddress=public_key,
+            bidToken="...",
+            offerToken="...",
+            bidAmount=buy_amount,
+            sellAmount=sell_amount,
+            nonce=maker_nonce,
+        )
+
+        wallet = Wallet(public_key=public_key, private_key=private_key)
+        signed_bid = wallet.sign_bid_data(domain, payload)
+
+        return signed_bid.r[2:] + signed_bid.s[2:] + hex(signed_bid.v)[2:]
 
     def validate_bid(
         self,
