@@ -35,7 +35,7 @@ class Domain:
     name: str
     chainId: int
     verifyingContract: str
-    version: int
+    version: str
     salt: Optional[str] = None
 
 

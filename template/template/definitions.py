@@ -22,7 +22,7 @@ class Domain:
     """
 
     name: str
-    version: int
+    version: str
     chainId: int
     verifyingContract: str
 
