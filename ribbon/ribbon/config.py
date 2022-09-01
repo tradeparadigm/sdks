@@ -107,7 +107,7 @@ class RibbonSDKConfig(SDKConfig):
 
         domain = Domain(
             name="RIBBON SWAP",
-            version=1,
+            version="1",
             chainId=chain_id,
             verifyingContract=contract_address,
         )
