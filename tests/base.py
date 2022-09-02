@@ -88,11 +88,6 @@ class TestsBase:
             "args" not in method_signature
         ), f"{method.__module__}.{method.__name__} should not accept *args parameter"
 
-        # Verify that args is exactly *args
-        # assert (
-        #     method_signature["args"].kind == Parameter.VAR_POSITIONAL
-        # ), "wrong args argument, expected *args"
-
         # All concrete implementations are expected to accept **kwargs
         assert (
             "kwargs" in method_signature
