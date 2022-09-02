@@ -138,7 +138,6 @@ class SDKConfig(abc.ABC):
     @abc.abstractmethod
     def validate_bid(
         self,
-        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,

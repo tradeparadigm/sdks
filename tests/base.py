@@ -82,15 +82,16 @@ class TestsBase:
         method_signature = signature(method).parameters
         reference_signature = signature(reference).parameters
 
-        # All concrete implementations are expected to accept *args
+        # Concrete implementations should not accept *args because
+        # interface methods are defined to only have named parameters
         assert (
-            "args" in method_signature
-        ), f"{method.__module__}.{method.__name__} is not accepting *args parameter"
+            "args" not in method_signature
+        ), f"{method.__module__}.{method.__name__} should not accept *args parameter"
 
         # Verify that args is exactly *args
-        assert (
-            method_signature["args"].kind == Parameter.VAR_POSITIONAL
-        ), "wrong args argument, expected *args"
+        # assert (
+        #     method_signature["args"].kind == Parameter.VAR_POSITIONAL
+        # ), "wrong args argument, expected *args"
 
         # All concrete implementations are expected to accept **kwargs
         assert (

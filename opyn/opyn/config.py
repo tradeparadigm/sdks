@@ -24,6 +24,7 @@ class OpynSDKConfig(SDKConfig):
 
     def create_offer(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -34,7 +35,6 @@ class OpynSDKConfig(SDKConfig):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        *args: Any,
         **kwargs: Any,
     ) -> str:
         """Create an offer"""
@@ -58,10 +58,10 @@ class OpynSDKConfig(SDKConfig):
 
     def get_otoken_details(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
-        *args: Any,
         **kwargs: Any,
     ) -> OfferTokenDetails:
         """Return details about the offer token"""
@@ -74,11 +74,11 @@ class OpynSDKConfig(SDKConfig):
 
     def get_offer_details(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
-        *args: Any,
         **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
@@ -91,6 +91,7 @@ class OpynSDKConfig(SDKConfig):
 
     def sign_bid(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         public_key: str,
@@ -101,7 +102,6 @@ class OpynSDKConfig(SDKConfig):
         sell_amount: int,
         buy_amount: int,
         referrer: str,
-        *args: Any,
         **kwargs: Any,
     ) -> str:
         """Sign a bid and return the signature"""
@@ -139,6 +139,7 @@ class OpynSDKConfig(SDKConfig):
 
     def validate_bid(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -149,7 +150,6 @@ class OpynSDKConfig(SDKConfig):
         buy_amount: int,
         referrer: str,
         signature: str,
-        *args: Any,
         **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
@@ -184,12 +184,12 @@ class OpynSDKConfig(SDKConfig):
 
     def verify_allowance(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        *args: Any,
         **kwargs: Any,
     ) -> bool:
         """

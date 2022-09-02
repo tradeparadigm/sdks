@@ -21,6 +21,7 @@ class TemplateSDKConfig(SDKConfig):
 
     def create_offer(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -31,7 +32,6 @@ class TemplateSDKConfig(SDKConfig):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        *args: Any,
         **kwargs: Any,
     ) -> str:
         """Create an offer"""
@@ -55,10 +55,10 @@ class TemplateSDKConfig(SDKConfig):
 
     def get_otoken_details(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
-        *args: Any,
         **kwargs: Any,
     ) -> OfferTokenDetails:
         """Return details about the offer token"""
@@ -72,11 +72,11 @@ class TemplateSDKConfig(SDKConfig):
 
     def get_offer_details(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
-        *args: Any,
         **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
@@ -90,6 +90,7 @@ class TemplateSDKConfig(SDKConfig):
 
     def sign_bid(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         public_key: str,
@@ -100,7 +101,6 @@ class TemplateSDKConfig(SDKConfig):
         sell_amount: int,
         buy_amount: int,
         referrer: str,
-        *args: Any,
         **kwargs: Any,
     ) -> str:
         """Sign a bid and return the signature"""
@@ -120,6 +120,7 @@ class TemplateSDKConfig(SDKConfig):
 
     def validate_bid(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -130,7 +131,6 @@ class TemplateSDKConfig(SDKConfig):
         buy_amount: int,
         referrer: str,
         signature: str,
-        *args: Any,
         **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
@@ -159,12 +159,12 @@ class TemplateSDKConfig(SDKConfig):
 
     def verify_allowance(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        *args: Any,
         **kwargs: Any,
     ) -> bool:
         """
