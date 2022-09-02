@@ -26,6 +26,7 @@ class RibbonSDKConfig(SDKConfig):
 
     def create_offer(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -36,7 +37,6 @@ class RibbonSDKConfig(SDKConfig):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        *args: Any,
         **kwargs: Any,
     ) -> str:
         """Create an offer"""
@@ -59,7 +59,7 @@ class RibbonSDKConfig(SDKConfig):
         return swap_contract.create_offer(new_offer, wallet)
 
     def get_otoken_details(
-        self, contract_address: str, chain_id: int, rpc_uri: str, *args: Any, **kwargs: Any
+        self, *, contract_address: str, chain_id: int, rpc_uri: str, **kwargs: Any
     ) -> OfferTokenDetails:
         """Return details about the offer token"""
 
@@ -72,11 +72,11 @@ class RibbonSDKConfig(SDKConfig):
 
     def get_offer_details(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
-        *args: Any,
         **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
@@ -90,6 +90,7 @@ class RibbonSDKConfig(SDKConfig):
 
     def sign_bid(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         public_key: str,
@@ -100,7 +101,6 @@ class RibbonSDKConfig(SDKConfig):
         sell_amount: int,
         buy_amount: int,
         referrer: str,
-        *args: Any,
         **kwargs: Any,
     ) -> str:
         """Sign a bid and return the signature"""
@@ -129,6 +129,7 @@ class RibbonSDKConfig(SDKConfig):
 
     def validate_bid(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -139,7 +140,6 @@ class RibbonSDKConfig(SDKConfig):
         buy_amount: int,
         referrer: str,
         signature: str,
-        *args: Any,
         **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
@@ -168,12 +168,12 @@ class RibbonSDKConfig(SDKConfig):
 
     def verify_allowance(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        *args: Any,
         **kwargs: Any,
     ) -> bool:
         """

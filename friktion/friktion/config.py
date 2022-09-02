@@ -39,6 +39,7 @@ class FriktionSDKConfig(SDKConfig):
 
     def create_offer(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -49,7 +50,6 @@ class FriktionSDKConfig(SDKConfig):
         offer_amount: int,
         public_key: str,
         private_key: str,
-        *args: Any,
         **kwargs: Any,
     ) -> str:
         """Create an offer"""
@@ -64,12 +64,12 @@ class FriktionSDKConfig(SDKConfig):
 
     def get_otoken_details(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
         seller: str,
-        *args: Any,
         **kwargs: Any,
     ) -> OfferTokenDetails:
         """Return details about the offer token"""
@@ -84,12 +84,12 @@ class FriktionSDKConfig(SDKConfig):
 
     def get_offer_details(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
         seller: str,
-        *args: Any,
         **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
@@ -114,13 +114,13 @@ class FriktionSDKConfig(SDKConfig):
 
     def sign_bid(
         self,
+        *,
         private_key: str,
         swap_id: int,
         signer_wallet: str,
         sell_amount: int,
         buy_amount: int,
         referrer: str,
-        *args: Any,
         **kwargs: Any,
     ) -> str:
         """Sign a bid and return the signature"""
@@ -140,6 +140,7 @@ class FriktionSDKConfig(SDKConfig):
 
     def validate_bid(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
@@ -151,7 +152,6 @@ class FriktionSDKConfig(SDKConfig):
         buy_amount: int,
         referrer: str,
         signature: str,
-        *args: Any,
         **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
@@ -180,12 +180,12 @@ class FriktionSDKConfig(SDKConfig):
 
     def verify_allowance(
         self,
+        *,
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
         public_key: str,
         token_address: str,
-        *args: Any,
         **kwargs: Any,
     ) -> bool:
         """
