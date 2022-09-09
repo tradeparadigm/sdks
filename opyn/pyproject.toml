@@ -29,5 +29,5 @@ eth-typing = '3.0.0'
 eth-utils = '2.0.0'
 PyJWT = '2.3.0'
 web3 = '6.0.0-beta.4'
-python-dotenv = "^0.20.0"
+python-dotenv = "^0.21.0"
 py-eth-sig-utils = "^0.4.0"
