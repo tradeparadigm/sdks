@@ -3,6 +3,10 @@
   "extends": [
     "config:base"
   ],
+  "labels": ["dependencies"],
+  "branchConcurrentLimit": 10,
+  "configMigration": true,
+  "transitiveRemediation": true,
   "commitMessageAction": "Bump",
   "commitMessageTopic": "{{depName}}",
   "commitMessageExtra": "to {{newVersion}}",
