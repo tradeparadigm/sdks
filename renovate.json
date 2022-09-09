@@ -6,10 +6,13 @@
   "labels": ["dependencies"],
   "branchConcurrentLimit": 10,
   "configMigration": true,
-  "transitiveRemediation": true,
   "commitMessageAction": "Bump",
   "commitMessageTopic": "{{depName}}",
   "commitMessageExtra": "to {{newVersion}}",
+  "transitiveRemediation": true,
+  "vulnerabilityAlerts": {
+    "labels": ["dependencies", "security"]
+  },
   "pre-commit": {
     "enabled": true,
     "groupName": "pre-commit"
