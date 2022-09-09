@@ -5,6 +5,7 @@
   ],
   "labels": ["dependencies"],
   "branchConcurrentLimit": 10,
+  "prHourlyLimit": 2,
   "configMigration": true,
   "commitMessageAction": "Bump",
   "commitMessageTopic": "{{depName}}",
