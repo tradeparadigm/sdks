@@ -1,0 +1,21 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "labels": ["dependencies"],
+  "branchConcurrentLimit": 10,
+  "prHourlyLimit": 2,
+  "configMigration": true,
+  "commitMessageAction": "Bump",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageExtra": "to {{newVersion}}",
+  "transitiveRemediation": true,
+  "vulnerabilityAlerts": {
+    "labels": ["dependencies", "security"]
+  },
+  "pre-commit": {
+    "enabled": true,
+    "groupName": "pre-commit"
+  }
+}
