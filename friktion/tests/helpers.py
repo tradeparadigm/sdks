@@ -90,6 +90,7 @@ if __name__ == "__main__":
         bid_price=500000,
         bid_size=10,
         order_id=22,
+        creator=wallet.public_key,
         referrer=PublicKey('7yeeGWxusjqvjYGMSXuyYAdjqr13rJVL9WK2f2u7KbWV'),
         signer_wallet=PublicKey('7yeeGWxusjqvjYGMSXuyYAdjqr13rJVL9WK2f2u7KbWV'),
     )

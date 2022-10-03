@@ -2,7 +2,6 @@ import logging
 from decimal import Decimal
 from typing import Any
 
-import solders.keypair
 from anchorpy import Wallet
 from asgiref.sync import async_to_sync
 from solana.keypair import Keypair
@@ -125,9 +124,14 @@ class FriktionSDKConfig(SDKConfig):
     ) -> str:
         """Sign a bid and return the signature"""
 
+        if 'creator' not in kwargs:
+            raise Exception("Creator is required")
+
         bid = BidDetails(
             bid_size=buy_amount,
             referrer=PublicKey(referrer),
+            # TODO: replace this if necessary
+            creator=kwargs['creator'],
             bid_price=sell_amount // buy_amount,
             signer_wallet=PublicKey(signer_wallet),
             order_id=swap_id,
@@ -156,6 +160,10 @@ class FriktionSDKConfig(SDKConfig):
     ) -> BidValidation:
         """Validate the signing bid"""
 
+
+        if 'creator' not in kwargs:
+            raise Exception("Creator is required")
+
         # TODO: consider changing sdk BidDetails to receive sell amount
         # instead of bid_price to avoid the reverse computation
         bid_price = int(sell_amount / buy_amount)
@@ -163,6 +171,8 @@ class FriktionSDKConfig(SDKConfig):
             bid_price=bid_price,
             bid_size=buy_amount,
             order_id=swap_id,
+            # TODO: replace this if necessary
+            creator=kwargs['creator'],
             referrer=PublicKey(referrer),
             signer_wallet=PublicKey(signer_wallet),
         )

@@ -42,7 +42,13 @@ REFERRER = wallet.public_key
 
 
 async def main_def():
-
+    # bid_details = BidDetails(
+    #     bid_price=100, bid_size=1000000000, order_id=73, signer_wallet=COUNTERPARTY, referrer=REFERRER
+    # )
+    # (msg, signature) =bid_details.as_signed_msg(wallet)
+    # print('msg = ', [b for b in msg])
+    # print('signature = ', signature)
+    # exit()
     # example of signing
     # print('counterparty = ' , COUNTERPARTY)
     # bid_details = BidDetails(
@@ -90,6 +96,7 @@ async def main_def():
 
     print('1. creator initializes swap offer...')
     # create a dummy offer for testing purposes
+    offer_amount = 1000
     (swap_order_pre_fill, swap_order_key) = await c.create_offer(
         wallet,
         SwapOrderTemplate.from_offer(
@@ -97,9 +104,9 @@ async def main_def():
                 oToken=GIVE_MINT,
                 biddingToken=RECEIVE_MINT,
                 expiry=int(time.time()) + 10000,
-                offerAmount=1,
+                offerAmount=offer_amount,
                 minPrice=0,
-                minBidSize=1,
+                minBidSize=offer_amount,
                 seller=wallet.public_key,
             ),
             OPTIONS_CONTRACT_KEY,
@@ -124,18 +131,19 @@ async def main_def():
 
     print('2. taker executes bid against offer...')
     bid_details = BidDetails(
-        bid_price=1, bid_size=1, order_id=order_id, signer_wallet=COUNTERPARTY, referrer=REFERRER
+        bid_price=10, bid_size=offer_amount, order_id=order_id, creator=wallet.public_key, signer_wallet=COUNTERPARTY, referrer=REFERRER
     )
 
     # happens outside of paradigm
     (msg, signature) = bid_details.as_signed_msg(wallet)
 
-    print('signature = ', signature, ', type =', type(signature))
+    print('msg = ', [b for b in msg], 'signature = ', signature, ', type =', type(signature))
 
     # fill offer via bid
     if error := await c.validate_bid(swap_order_creator, bid_details, str(signature)):
         raise ValueError(f'Invalid bid: {error}')
 
+    # NOTE: this will fail now since signature verificaiton is not implemented in python solana SDK
     await c.validate_and_exec_bid_msg(wallet, swap_order_key, bid_details, str(signature))
 
     swap_order_post_fill: SwapOrder = await c.get_swap_order(swap_order_creator, order_id)
