@@ -38,6 +38,7 @@ from .friktion_anchor.instructions import create, exec, exec_msg
 from .swap_order_template import SwapOrderTemplate
 
 GLOBAL_FRIKTION_AUTHORITY = PublicKey("7wYqGsQmfVigMSratssoPddfLU1P5srZcM32nvKAgWkj")
+GLOBAL_FRIKTION_ADMIN = PublicKey("DxMJgeSVoe1cWo1NPExiAsmn83N3bADvkT86dSP1k7WE")
 
 
 def get_token_account(token_account_pk: PublicKey):
@@ -279,6 +280,7 @@ class SwapContract:
             {
                 "payer": wallet.public_key,  # signer
                 "authority": wallet.public_key,
+                "admin": GLOBAL_FRIKTION_ADMIN,
                 "user_orders": pdas.user_orders_address,
                 "swap_order": pdas.swap_order_address,
                 "give_pool": pdas.give_pool_address,
@@ -338,15 +340,11 @@ class SwapContract:
         )
 
         ix = exec_msg(
+   
             {
-                # "signature": str(signature.to_json()),
-                "signature": str(bid_details.as_msg()),
-                "caller": bid_details.signer_wallet,
-                "raw_msg": signature,
-            },
-            {
-                "authority": bid_details.signer_wallet,
+                "authority": tx_sender_wallet.public_key,
                 "delegate_authority": DELEGATE_AUTHORITY_ADDRESS,
+                "counterparty_wallet": bid_details.signer_wallet,
                 "swap_order": swap_order_address,
                 "give_pool": swap_order.give_pool,
                 "receive_pool": swap_order.receive_pool,

@@ -1,5 +1,4 @@
 import typing
-
 from anchorpy.error import ProgramError
 
 
@@ -174,22 +173,88 @@ class InvalidSwapAdmin(ProgramError):
     msg = "invalid swap admin"
 
 
-class InvalidEd25519InstructionData(ProgramError):
+class UnableToLoadEd25519Instruction(ProgramError):
     def __init__(self) -> None:
-        super().__init__(6019, "")
+        super().__init__(6019, "unable to load instruction at currentIdx-1 position")
 
     code = 6019
+    name = "UnableToLoadEd25519Instruction"
+    msg = "unable to load instruction at currentIdx-1 position"
+
+
+class InvalidEd25519InstructionData(ProgramError):
+    def __init__(self) -> None:
+        super().__init__(6020, "invalid signature data")
+
+    code = 6020
     name = "InvalidEd25519InstructionData"
-    msg = ""
+    msg = "invalid signature data"
+
+
+class CounterpartyMismatch(ProgramError):
+    def __init__(self) -> None:
+        super().__init__(
+            6021,
+            "mismatch between swap_order couterparty and signed message counterparty",
+        )
+
+    code = 6021
+    name = "CounterpartyMismatch"
+    msg = "mismatch between swap_order couterparty and signed message counterparty"
 
 
 class OptionAndGiveMintDontMatch(ProgramError):
     def __init__(self) -> None:
-        super().__init__(6020, "option and give mint don't match")
+        super().__init__(6022, "option and give mint don't match")
 
-    code = 6020
+    code = 6022
     name = "OptionAndGiveMintDontMatch"
     msg = "option and give mint don't match"
+
+
+class DisabledInstruction(ProgramError):
+    def __init__(self) -> None:
+        super().__init__(6023, None)
+
+    code = 6023
+    name = "DisabledInstruction"
+    msg = None
+
+
+class InvalidCounterparty(ProgramError):
+    def __init__(self) -> None:
+        super().__init__(6024, None)
+
+    code = 6024
+    name = "InvalidCounterparty"
+    msg = None
+
+
+class InvalidSigner(ProgramError):
+    def __init__(self) -> None:
+        super().__init__(6025, None)
+
+    code = 6025
+    name = "InvalidSigner"
+    msg = None
+
+
+class InvalidParam(ProgramError):
+    def __init__(self) -> None:
+        super().__init__(6026, None)
+
+    code = 6026
+    name = "InvalidParam"
+    msg = None
+
+
+class InvalidCounterpartyPool(ProgramError):
+    def __init__(self) -> None:
+        super().__init__(6027, None)
+
+    code = 6027
+    name = "InvalidCounterpartyPool"
+    msg = None
 
 
 CustomError = typing.Union[
@@ -212,8 +277,15 @@ CustomError = typing.Union[
     OrderMustBeTrading,
     InvalidEd25519Program,
     InvalidSwapAdmin,
+    UnableToLoadEd25519Instruction,
     InvalidEd25519InstructionData,
+    CounterpartyMismatch,
     OptionAndGiveMintDontMatch,
+    DisabledInstruction,
+    InvalidCounterparty,
+    InvalidSigner,
+    InvalidParam,
+    InvalidCounterpartyPool,
 ]
 CUSTOM_ERROR_MAP: dict[int, CustomError] = {
     6000: InvalidCounterParty(),
@@ -235,8 +307,15 @@ CUSTOM_ERROR_MAP: dict[int, CustomError] = {
     6016: OrderMustBeTrading(),
     6017: InvalidEd25519Program(),
     6018: InvalidSwapAdmin(),
-    6019: InvalidEd25519InstructionData(),
-    6020: OptionAndGiveMintDontMatch(),
+    6019: UnableToLoadEd25519Instruction(),
+    6020: InvalidEd25519InstructionData(),
+    6021: CounterpartyMismatch(),
+    6022: OptionAndGiveMintDontMatch(),
+    6023: DisabledInstruction(),
+    6024: InvalidCounterparty(),
+    6025: InvalidSigner(),
+    6026: InvalidParam(),
+    6027: InvalidCounterpartyPool(),
 }
 
 

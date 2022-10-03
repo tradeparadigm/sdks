@@ -1,18 +1,16 @@
 import typing
-from base64 import b64decode
 from dataclasses import dataclass
-
-import borsh_construct as borsh
-from anchorpy.borsh_extension import BorshPubkey
-from anchorpy.coder.accounts import ACCOUNT_DISCRIMINATOR_SIZE
-from anchorpy.error import AccountInvalidDiscriminator
-from anchorpy.utils.rpc import get_multiple_accounts
+from base64 import b64decode
 from solana.publickey import PublicKey
 from solana.rpc.async_api import AsyncClient
 from solana.rpc.commitment import Commitment
-
-from .. import types
+import borsh_construct as borsh
+from anchorpy.coder.accounts import ACCOUNT_DISCRIMINATOR_SIZE
+from anchorpy.error import AccountInvalidDiscriminator
+from anchorpy.utils.rpc import get_multiple_accounts
+from anchorpy.borsh_extension import BorshPubkey
 from ..program_id import PROGRAM_ID
+from .. import types
 
 
 class SwapOrderJSON(typing.TypedDict):
@@ -28,7 +26,7 @@ class SwapOrderJSON(typing.TypedDict):
     is_counterparty_provided: bool
     counterparty: str
     is_whitelisted: bool
-    whitelist_token_mint: str
+    admin: str
     is_disabled: bool
     status: types.order_status.OrderStatusJSON
     order_id: int
@@ -52,7 +50,7 @@ class SwapOrder:
         "is_counterparty_provided" / borsh.Bool,
         "counterparty" / BorshPubkey,
         "is_whitelisted" / borsh.Bool,
-        "whitelist_token_mint" / BorshPubkey,
+        "admin" / BorshPubkey,
         "is_disabled" / borsh.Bool,
         "status" / types.order_status.layout,
         "order_id" / borsh.U64,
@@ -71,7 +69,7 @@ class SwapOrder:
     is_counterparty_provided: bool
     counterparty: PublicKey
     is_whitelisted: bool
-    whitelist_token_mint: PublicKey
+    admin: PublicKey
     is_disabled: bool
     status: types.order_status.OrderStatusKind
     order_id: int
@@ -115,7 +113,9 @@ class SwapOrder:
     @classmethod
     def decode(cls, data: bytes) -> "SwapOrder":
         if data[:ACCOUNT_DISCRIMINATOR_SIZE] != cls.discriminator:
-            raise AccountInvalidDiscriminator("The discriminator for this account is invalid")
+            raise AccountInvalidDiscriminator(
+                "The discriminator for this account is invalid"
+            )
         dec = SwapOrder.layout.parse(data[ACCOUNT_DISCRIMINATOR_SIZE:])
         return cls(
             creator=dec.creator,
@@ -130,7 +130,7 @@ class SwapOrder:
             is_counterparty_provided=dec.is_counterparty_provided,
             counterparty=dec.counterparty,
             is_whitelisted=dec.is_whitelisted,
-            whitelist_token_mint=dec.whitelist_token_mint,
+            admin=dec.admin,
             is_disabled=dec.is_disabled,
             status=types.order_status.from_decoded(dec.status),
             order_id=dec.order_id,
@@ -152,7 +152,7 @@ class SwapOrder:
             "is_counterparty_provided": self.is_counterparty_provided,
             "counterparty": str(self.counterparty),
             "is_whitelisted": self.is_whitelisted,
-            "whitelist_token_mint": str(self.whitelist_token_mint),
+            "admin": str(self.admin),
             "is_disabled": self.is_disabled,
             "status": self.status.to_json(),
             "order_id": self.order_id,
@@ -175,7 +175,7 @@ class SwapOrder:
             is_counterparty_provided=obj["is_counterparty_provided"],
             counterparty=PublicKey(obj["counterparty"]),
             is_whitelisted=obj["is_whitelisted"],
-            whitelist_token_mint=PublicKey(obj["whitelist_token_mint"]),
+            admin=PublicKey(obj["admin"]),
             is_disabled=obj["is_disabled"],
             status=types.order_status.from_json(obj["status"]),
             order_id=obj["order_id"],

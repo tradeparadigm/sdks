@@ -1,10 +1,8 @@
 from __future__ import annotations
-
 import typing
 from dataclasses import dataclass
-
-import borsh_construct as borsh
 from anchorpy.borsh_extension import EnumForCodegen
+import borsh_construct as borsh
 
 
 class CreatedJSON(typing.TypedDict):
@@ -122,10 +120,7 @@ def from_json(obj: OrderStatusJSON) -> OrderStatusKind:
         return Filled()
     if obj["kind"] == "Disabled":
         return Disabled()
-
-    # This statement is unreachable, all cases of
-    # OrderStatusJSON are already verified
-    kind = obj["kind"]  # type: ignore
+    kind = obj["kind"]
     raise ValueError(f"Unrecognized enum kind: {kind}")
 
 

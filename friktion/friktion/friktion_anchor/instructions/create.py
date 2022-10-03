@@ -1,11 +1,8 @@
 from __future__ import annotations
-
 import typing
-
-import borsh_construct as borsh
 from solana.publickey import PublicKey
-from solana.transaction import AccountMeta, TransactionInstruction
-
+from solana.transaction import TransactionInstruction, AccountMeta
+import borsh_construct as borsh
 from ..program_id import PROGRAM_ID
 
 
@@ -31,6 +28,7 @@ layout = borsh.CStruct(
 class CreateAccounts(typing.TypedDict):
     payer: PublicKey
     authority: PublicKey
+    admin: PublicKey
     user_orders: PublicKey
     swap_order: PublicKey
     give_pool: PublicKey
@@ -48,20 +46,35 @@ class CreateAccounts(typing.TypedDict):
 
 def create(args: CreateArgs, accounts: CreateAccounts) -> TransactionInstruction:
     keys: list[AccountMeta] = [
-        AccountMeta(pubkey=accounts["payer"], is_signer=False, is_writable=True),
+        AccountMeta(pubkey=accounts["payer"], is_signer=True, is_writable=True),
         AccountMeta(pubkey=accounts["authority"], is_signer=True, is_writable=False),
+        AccountMeta(pubkey=accounts["admin"], is_signer=False, is_writable=False),
         AccountMeta(pubkey=accounts["user_orders"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["swap_order"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["give_pool"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["give_mint"], is_signer=False, is_writable=False),
         AccountMeta(pubkey=accounts["receive_pool"], is_signer=False, is_writable=True),
-        AccountMeta(pubkey=accounts["receive_mint"], is_signer=False, is_writable=False),
-        AccountMeta(pubkey=accounts["creator_give_pool"], is_signer=False, is_writable=True),
-        AccountMeta(pubkey=accounts["counterparty"], is_signer=False, is_writable=False),
-        AccountMeta(pubkey=accounts["whitelist_token_mint"], is_signer=False, is_writable=False),
-        AccountMeta(pubkey=accounts["options_contract"], is_signer=False, is_writable=False),
-        AccountMeta(pubkey=accounts["system_program"], is_signer=False, is_writable=False),
-        AccountMeta(pubkey=accounts["token_program"], is_signer=False, is_writable=False),
+        AccountMeta(
+            pubkey=accounts["receive_mint"], is_signer=False, is_writable=False
+        ),
+        AccountMeta(
+            pubkey=accounts["creator_give_pool"], is_signer=False, is_writable=True
+        ),
+        AccountMeta(
+            pubkey=accounts["counterparty"], is_signer=False, is_writable=False
+        ),
+        AccountMeta(
+            pubkey=accounts["whitelist_token_mint"], is_signer=False, is_writable=False
+        ),
+        AccountMeta(
+            pubkey=accounts["options_contract"], is_signer=False, is_writable=False
+        ),
+        AccountMeta(
+            pubkey=accounts["system_program"], is_signer=False, is_writable=False
+        ),
+        AccountMeta(
+            pubkey=accounts["token_program"], is_signer=False, is_writable=False
+        ),
         AccountMeta(pubkey=accounts["rent"], is_signer=False, is_writable=False),
     ]
     identifier = b"\x18\x1e\xc8(\x05\x1c\x07w"

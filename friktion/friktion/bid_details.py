@@ -15,21 +15,29 @@ class BidDetails:
     bid_price: int  # 1e9
     referrer: PublicKey
 
-    def as_msg(self):
+    def as_msg(self) -> bytes:
         give_amount = self.bid_size
-        receive_amount = self.bid_price * self.bid_size
-        payload = [
-            [self.order_id],
-            str(self.signer_wallet),
-            str(self.referrer),
-            [give_amount, receive_amount],
-        ]
+        receive_amount = self.bid_price * self.bid_size * 10 ** 2
+        print("receive amount = ", receive_amount)
+        payload = bytearray()
+        payload.extend(self.order_id.to_bytes(
+            8,
+            'little',
+            signed = False
+        ))
+        payload.extend(self.signer_wallet.__bytes__())
+        payload.extend(self.referrer.__bytes__())
+        payload.extend(give_amount.to_bytes(8,'little',
+                    signed = False
+))
+        payload.extend(receive_amount.to_bytes(
+            8,'little',
+                        signed = False
 
-        # set separators to remove whitespaces
-        dumped_payload = json.dumps(payload, separators=(',', ':'))
-
-        return bytes(dumped_payload, 'utf-8')
-
+        ))
+        
+        return bytes(payload)
+ 
     def as_signed_msg(self, wallet: Wallet) -> Tuple[bytes, Signature]:
         msg_bytes = self.as_msg()
         return (msg_bytes, wallet.payer.sign(msg_bytes))

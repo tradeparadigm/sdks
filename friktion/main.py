@@ -43,6 +43,19 @@ REFERRER = wallet.public_key
 
 async def main_def():
 
+    # example of signing
+    # print('counterparty = ' , COUNTERPARTY)
+    # bid_details = BidDetails(
+    #     bid_price=1, bid_size=100000000, order_id=0, signer_wallet=COUNTERPARTY, referrer=REFERRER
+    # )
+
+    # # happens outside of paradigm
+    # (msg, signature) = bid_details.as_signed_msg(wallet)
+    # print()
+    # print(msg)
+    # print('bytes = ', [b for b in msg])
+    # print(signature)
+
     client = AsyncClient(c.url)
     await client.is_connected()
 

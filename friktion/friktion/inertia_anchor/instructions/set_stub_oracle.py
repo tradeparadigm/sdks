@@ -1,11 +1,8 @@
 from __future__ import annotations
-
 import typing
-
-import borsh_construct as borsh
 from solana.publickey import PublicKey
-from solana.transaction import AccountMeta, TransactionInstruction
-
+from solana.transaction import TransactionInstruction, AccountMeta
+import borsh_construct as borsh
 from ..program_id import PROGRAM_ID
 
 
@@ -28,7 +25,9 @@ def set_stub_oracle(
     keys: list[AccountMeta] = [
         AccountMeta(pubkey=accounts["authority"], is_signer=True, is_writable=False),
         AccountMeta(pubkey=accounts["stub_oracle"], is_signer=False, is_writable=True),
-        AccountMeta(pubkey=accounts["system_program"], is_signer=False, is_writable=False),
+        AccountMeta(
+            pubkey=accounts["system_program"], is_signer=False, is_writable=False
+        ),
     ]
     identifier = b"\x95E\x02\x84\x8b\x89\xde\x1b"
     encoded_args = layout.build(

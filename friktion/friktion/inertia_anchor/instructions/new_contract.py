@@ -1,11 +1,8 @@
 from __future__ import annotations
-
 import typing
-
-import borsh_construct as borsh
 from solana.publickey import PublicKey
-from solana.transaction import AccountMeta, TransactionInstruction
-
+from solana.transaction import TransactionInstruction, AccountMeta
+import borsh_construct as borsh
 from ..program_id import PROGRAM_ID
 
 
@@ -14,11 +11,6 @@ class NewContractArgs(typing.TypedDict):
     quote_amount: int
     expiry_ts: int
     is_call: int
-    contract_bump: int
-    option_bump: int
-    writer_bump: int
-    underlying_pool_bump: int
-    claimable_pool_bump: int
 
 
 layout = borsh.CStruct(
@@ -26,11 +18,6 @@ layout = borsh.CStruct(
     "quote_amount" / borsh.U64,
     "expiry_ts" / borsh.U64,
     "is_call" / borsh.U64,
-    "contract_bump" / borsh.U8,
-    "option_bump" / borsh.U8,
-    "writer_bump" / borsh.U8,
-    "underlying_pool_bump" / borsh.U8,
-    "claimable_pool_bump" / borsh.U8,
 )
 
 
@@ -52,7 +39,9 @@ class NewContractAccounts(typing.TypedDict):
     rent: PublicKey
 
 
-def new_contract(args: NewContractArgs, accounts: NewContractAccounts) -> TransactionInstruction:
+def new_contract(
+    args: NewContractArgs, accounts: NewContractAccounts
+) -> TransactionInstruction:
     keys: list[AccountMeta] = [
         AccountMeta(pubkey=accounts["payer"], is_signer=True, is_writable=True),
         AccountMeta(pubkey=accounts["admin_key"], is_signer=False, is_writable=False),
@@ -60,14 +49,28 @@ def new_contract(args: NewContractArgs, accounts: NewContractAccounts) -> Transa
         AccountMeta(pubkey=accounts["contract"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["writer_mint"], is_signer=False, is_writable=True),
         AccountMeta(pubkey=accounts["option_mint"], is_signer=False, is_writable=True),
-        AccountMeta(pubkey=accounts["underlying_mint"], is_signer=False, is_writable=True),
+        AccountMeta(
+            pubkey=accounts["underlying_mint"], is_signer=False, is_writable=True
+        ),
         AccountMeta(pubkey=accounts["quote_mint"], is_signer=False, is_writable=True),
-        AccountMeta(pubkey=accounts["underlying_pool"], is_signer=False, is_writable=True),
-        AccountMeta(pubkey=accounts["claimable_pool"], is_signer=False, is_writable=True),
-        AccountMeta(pubkey=accounts["mint_fee_account"], is_signer=False, is_writable=False),
-        AccountMeta(pubkey=accounts["exercise_fee_account"], is_signer=False, is_writable=False),
-        AccountMeta(pubkey=accounts["system_program"], is_signer=False, is_writable=False),
-        AccountMeta(pubkey=accounts["token_program"], is_signer=False, is_writable=False),
+        AccountMeta(
+            pubkey=accounts["underlying_pool"], is_signer=False, is_writable=True
+        ),
+        AccountMeta(
+            pubkey=accounts["claimable_pool"], is_signer=False, is_writable=True
+        ),
+        AccountMeta(
+            pubkey=accounts["mint_fee_account"], is_signer=False, is_writable=False
+        ),
+        AccountMeta(
+            pubkey=accounts["exercise_fee_account"], is_signer=False, is_writable=False
+        ),
+        AccountMeta(
+            pubkey=accounts["system_program"], is_signer=False, is_writable=False
+        ),
+        AccountMeta(
+            pubkey=accounts["token_program"], is_signer=False, is_writable=False
+        ),
         AccountMeta(pubkey=accounts["rent"], is_signer=False, is_writable=False),
     ]
     identifier = b'\n\xd4,"c\x7f\xc3\x8f'
@@ -77,11 +80,6 @@ def new_contract(args: NewContractArgs, accounts: NewContractAccounts) -> Transa
             "quote_amount": args["quote_amount"],
             "expiry_ts": args["expiry_ts"],
             "is_call": args["is_call"],
-            "contract_bump": args["contract_bump"],
-            "option_bump": args["option_bump"],
-            "writer_bump": args["writer_bump"],
-            "underlying_pool_bump": args["underlying_pool_bump"],
-            "claimable_pool_bump": args["claimable_pool_bump"],
         }
     )
     data = identifier + encoded_args
