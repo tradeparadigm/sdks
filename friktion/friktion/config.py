@@ -89,7 +89,6 @@ class FriktionSDKConfig(SDKConfig):
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
-        seller: str,
         **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
@@ -98,7 +97,7 @@ class FriktionSDKConfig(SDKConfig):
         swap_contract = SwapContract(network)
 
         details: Offer = async_to_sync(swap_contract.get_offer_details)(
-            PublicKey(seller), offer_id
+            PublicKey(contract_address)
         )
         return {
             'seller': str(details.seller),
@@ -115,6 +114,7 @@ class FriktionSDKConfig(SDKConfig):
     def sign_bid(
         self,
         *,
+        contract_address: str,
         private_key: str,
         swap_id: int,
         signer_wallet: str,
@@ -124,12 +124,12 @@ class FriktionSDKConfig(SDKConfig):
         **kwargs: Any,
     ) -> str:
         """Sign a bid and return the signature"""
-
         bid = BidDetails(
             bid_size=buy_amount,
             referrer=PublicKey(referrer),
             bid_price=sell_amount // buy_amount,
             signer_wallet=PublicKey(signer_wallet),
+            swap_order_addr=PublicKey(contract_address),
             order_id=swap_id,
         )
 
@@ -144,7 +144,6 @@ class FriktionSDKConfig(SDKConfig):
         contract_address: str,
         chain_id: int,
         rpc_uri: str,
-        seller: str,
         swap_id: int,
         nonce: int,
         signer_wallet: str,
@@ -165,13 +164,12 @@ class FriktionSDKConfig(SDKConfig):
             order_id=swap_id,
             referrer=PublicKey(referrer),
             signer_wallet=PublicKey(signer_wallet),
+            swap_order_addr=PublicKey(contract_address),
         )
 
         network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
         swap_contract = SwapContract(network)
-        error: str = async_to_sync(swap_contract.validate_bid)(
-            PublicKey(seller), bid_details, signature
-        )
+        error: str = async_to_sync(swap_contract.validate_bid)(bid_details, signature)
 
         if error:
             return {'errors': 1, 'messages': [error]}

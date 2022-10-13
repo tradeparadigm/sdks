@@ -77,7 +77,7 @@ async def main_def():
 
     print('1. creator initializes swap offer...')
     # create a dummy offer for testing purposes
-    (swap_order_pre_fill, swap_order_key) = await c.create_offer(
+    (swap_order_pre_fill, swap_order_addr) = await c.create_offer(
         wallet,
         SwapOrderTemplate.from_offer(
             Offer(
@@ -103,7 +103,7 @@ async def main_def():
     order_id = swap_order_pre_fill.order_id
     swap_order_creator = swap_order_pre_fill.creator
 
-    offer_pre_fill: Offer = await c.get_offer_details(swap_order_creator, order_id)
+    offer_pre_fill: Offer = await c.get_offer_details(swap_order_addr)
     print(f'order post fill: {offer_pre_fill}')
 
     offered_token_details = await c.get_offered_token_details(swap_order_creator, order_id)
@@ -111,7 +111,12 @@ async def main_def():
 
     print('2. taker executes bid against offer...')
     bid_details = BidDetails(
-        bid_price=1, bid_size=1, order_id=order_id, signer_wallet=COUNTERPARTY, referrer=REFERRER
+        bid_price=1,
+        bid_size=1,
+        order_id=order_id,
+        signer_wallet=COUNTERPARTY,
+        swap_order_addr=swap_order_addr,
+        referrer=REFERRER,
     )
 
     # happens outside of paradigm
@@ -120,10 +125,10 @@ async def main_def():
     print('signature = ', signature, ', type =', type(signature))
 
     # fill offer via bid
-    if error := await c.validate_bid(swap_order_creator, bid_details, str(signature)):
+    if error := await c.validate_bid(bid_details, str(signature)):
         raise ValueError(f'Invalid bid: {error}')
 
-    await c.validate_and_exec_bid_msg(wallet, swap_order_key, bid_details, str(signature))
+    await c.validate_and_exec_bid_msg(wallet, swap_order_addr, bid_details, str(signature))
 
     swap_order_post_fill: SwapOrder = await c.get_swap_order(swap_order_creator, order_id)
     assert swap_order_post_fill.status == Filled()
@@ -132,7 +137,7 @@ async def main_def():
     print('3. creator reclaims assets...')
 
     await c.reclaim_assets_post_fill(
-        wallet, swap_order_key, creator_give_pool_key, creator_receive_pool_key
+        wallet, swap_order_addr, creator_give_pool_key, creator_receive_pool_key
     )
     print('Finished!')
 

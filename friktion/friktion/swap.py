@@ -183,19 +183,13 @@ class SwapContract:
         [addr, bump] = find_swap_order_address(user, order_id)
         return await self.get_swap_order_for_key(addr)
 
-    async def get_offer_details(self, user: PublicKey, order_id: int) -> Offer:
+    async def get_offer_details(self, swap_order_addr: PublicKey) -> Offer:
         """
-        Method to get offer details
-        Args:
-            offer_id (int): Offer ID
-        Raises:
-            ValueError: The argument is not a valid offer
-        Returns:
-            details (SwapOrder): Offer details
+        Get offer details
+        Raises ValueError if the argument is not a valid offer
         """
-        [addr, bump] = find_swap_order_address(user, order_id)
-        swap_order = await self.get_swap_order_for_key(addr)
-        return Offer.from_swap_order(swap_order, addr)
+        swap_order = await self.get_swap_order_for_key(swap_order_addr)
+        return Offer.from_swap_order(swap_order, swap_order_addr)
 
     async def _validate_bid_allowance(
         self, bidding_token: PublicKey, bid_details: BidDetails
@@ -214,10 +208,8 @@ class SwapContract:
 
         return None
 
-    async def validate_bid(
-        self, swap_order_creator: PublicKey, bid_details: BidDetails, signature: str
-    ) -> Optional[str]:
-        offer: Offer = await self.get_offer_details(swap_order_creator, bid_details.order_id)
+    async def validate_bid(self, bid_details: BidDetails, signature: str) -> Optional[str]:
+        offer: Offer = await self.get_offer_details(bid_details.swap_order_addr)
 
         if bid_details.bid_size < offer.minBidSize:
             return "bid size is below min bid size"
@@ -327,7 +319,7 @@ class SwapContract:
         """
         swap_order = await self.get_swap_order_for_key(swap_order_address)
 
-        if error := await self.validate_bid(swap_order.creator, bid_details, signature):
+        if error := await self.validate_bid(bid_details, signature):
             raise ValueError(f'Invalid bid: {error}')
 
         counterparty_give_pool = get_associated_token_address(
@@ -392,7 +384,7 @@ class SwapContract:
         """
         swap_order = await self.get_swap_order_for_key(swap_order_address)
 
-        if error := await self.validate_bid(swap_order.creator, bid_details, signature):
+        if error := await self.validate_bid(bid_details, signature):
             raise ValueError(f'Invalid bid: {error}')
 
         counterparty_give_pool = get_associated_token_address(
