@@ -55,7 +55,7 @@ class TemplateSDKConfig(SDKConfig):
         )
 
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri));
-        bridgeContract = w3.eth.contract(w3.toChecksumAddress(contract_address), abi=json.load( open("abis/ParadigmBridge.json","r") ) ;    
+        bridgeContract = w3.eth.contract(w3.toChecksumAddress(contract_address), abi=json.load( open("abis/ParadigmBridge.json","r") ) ) 
         
         aucDetails = bridgeContract.functions.getAuctionDetails( contract_address ).call()
         
@@ -86,7 +86,7 @@ class TemplateSDKConfig(SDKConfig):
         )
 
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri));
-        bridgeContract = w3.eth.contract(w3.toChecksumAddress(contract_address), abi=json.load( open("abis/ParadigmBridge.json","r") ) ;
+        bridgeContract = w3.eth.contract(w3.toChecksumAddress(contract_address), abi=json.load( open("abis/ParadigmBridge.json","r") ) )
         vault_address = "0x%040"%offer_id
          
         try:

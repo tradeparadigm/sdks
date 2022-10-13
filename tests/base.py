@@ -10,13 +10,14 @@ class VenuePackages(Enum):
     RIBBON = 'ribbon'
     FRIKTION = 'friktion'
     OPYN = 'opyn'
-
+    THETANUTS = "thetanuts"
 
 VENUES = [
     VenuePackages.TEMPLATE.value,
     VenuePackages.RIBBON.value,
     VenuePackages.FRIKTION.value,
     VenuePackages.OPYN.value,
+    VenuePackages.THETANUTS.value,
 ]
 
 
