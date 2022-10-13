@@ -39,33 +39,6 @@ class TemplateSDKConfig(SDKConfig):
 
         return int( oToken[2:], 16 )
 
-    """ ## Sample transaction sending
-
-        wallet = Wallet(public_key=public_key, private_key=private_key)
-
-        config = ContractConfig(
-            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
-        )
-
-        swap_contract = SwapContract(config)
-
-        new_offer = Offer(
-            oToken=oToken,
-            biddingToken=bidding_token,
-            minBidSize=min_bid_size,
-            minPrice=min_price,
-            offerAmount=offer_amount,
-        )
-        
-        w3 = web3.Web3(web3.HTTPProvider(rpc_uri));
-        swap_contract = w3.eth.contract(w3.toChecksumAddress(contract_address), abi=json.load( open("abis/ParadigmBridge.json","r") ) ;
-
-        tx = swap_contract.functions.createOffer( oToken )
-        tx = tx.buildTransaction('nonce': w3.eth.getTransactionCount(public_key)})
-        signed = w3.eth.account.sign_transaction(tx, PRVKEY)
-        tx = w3_infura.eth.sendRawTransaction(signed.rawTransaction)
-    ""
-
 
     def get_otoken_details(
         self,
@@ -112,14 +85,11 @@ class TemplateSDKConfig(SDKConfig):
             address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
         )
 
-        swap_contract = SwapContract(swap_config)
-        
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri));
         bridgeContract = w3.eth.contract(w3.toChecksumAddress(contract_address), abi=json.load( open("abis/ParadigmBridge.json","r") ) ;
         vault_address = "0x%040"%offer_id
          
         try:
-            bridgeContract.
             aucDetails = bridgeContract.functions.getAuctionDetails( contract_address ).call()
         except:
             raise ValueError("The argument is not a valid offer")
@@ -130,20 +100,10 @@ class TemplateSDKConfig(SDKConfig):
             'biddingToken': aucDetails[0],
             'minPrice': Decimal(0.0),
             'minBidSize': Decimal(0.0),
-            'totalSize': Decimal(0.0),
-            'availableSize': Decimal(0.0),
+            'totalSize': aucDetails[6],
+            'availableSize': aucDetails[6],
         }
         
-
-    """
-    from eth_abi.packed import encode_abi_packed
-    from eth_account.messages import encode_defunct
-    def quote(strikeX1e6, premium, collatAmt, targetExpiry, vault, designatedMaker):
-        toSign = encode_abi_packed( ['uint[]', 'uint', 'uint', "uint", "address", "address"], [strikeX1e6, int(premium), int(collatAmt), int(targetExpiry), vault, designatedMaker.address] )
-        signed = web3.eth.account.sign_message(encode_defunct(web3.keccak(toSign)), private_key=designatedMaker.private_key)
-        sigHex = signed.signature.hex()
-        return sigHex
-    """
     def sign_bid(
         self,
         *,
@@ -160,7 +120,12 @@ class TemplateSDKConfig(SDKConfig):
         **kwargs: Any,
     ) -> str:
         """Sign a bid and return the signature"""
-
+        
+        try:
+            aucDetails = bridgeContract.functions.getAuctionDetails( contract_address ).call()
+        except:
+            raise ValueError("The argument is not a valid offer")
+        
         payload = Bid(
             swapId=swap_id,
             nonce=nonce,
@@ -198,8 +163,6 @@ class TemplateSDKConfig(SDKConfig):
             rpc_uri=rpc_uri,
         )
 
-        swap_contract = SwapContract(config)
-
         signed_bid = SignedBid(
             swapId=swap_id,
             nonce=nonce,
@@ -211,7 +174,10 @@ class TemplateSDKConfig(SDKConfig):
             s=s,
             v=v,
         )
-        return swap_contract.validate_bid(signed_bid)
+        
+        reSign = this.sign_bid(contract_address = contract_address, chain_id = chain_id, rpc_uri = rpc_uri, swap_id = swap_id, nonce = nonce, signer_wallet = signer_wallet, sell_amount = sell_amount, buy_amount = buy_amount, referrer = referrer)
+        
+        return {'errors': reSign.v == signature.v and reSign.r == signature.r and reSign.s == signature.s}  
 
     def verify_allowance(
         self,
@@ -234,3 +200,5 @@ class TemplateSDKConfig(SDKConfig):
 
         wallet = Wallet(public_key=public_key)
         return wallet.verify_allowance(config, token_address=token_address)
+
+

@@ -127,6 +127,7 @@ class Wallet:
             rpc_uri=swap_config.rpc_uri,
             chain_id=swap_config.chain_id,
         )
+        
         bidding_token = ERC20Contract(token_config)        
 
         allowance = (
