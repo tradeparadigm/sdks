@@ -21,9 +21,7 @@ class BidDetails:
         receive_amount = self.bid_price * self.bid_size
         payload = [
             [self.order_id],
-            str(
-                self.swap_order_addr
-            ),  # TODO: temp change to allow testing. We need to wait for the PR from Friktion
+            str(self.swap_order_addr),
             str(self.signer_wallet),
             str(self.referrer),
             [give_amount, receive_amount],

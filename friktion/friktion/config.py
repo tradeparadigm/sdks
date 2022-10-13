@@ -114,7 +114,7 @@ class FriktionSDKConfig(SDKConfig):
     def sign_bid(
         self,
         *,
-        contract_address: str,  # TODO: add param to clients(code sample and qa)
+        contract_address: str,
         private_key: str,
         swap_id: int,
         signer_wallet: str,
