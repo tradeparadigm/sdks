@@ -134,8 +134,17 @@ class SwapContract:
             / options_contract.quote_amount
         )
 
+        # For puts, it must use the quote asset as the underlying
+        # because 'underlying asset' means 'asset required to
+        # collateralize this option' on Friktion smart contract
+        underlying_asset = (
+            options_contract.underlying_mint
+            if options_contract.is_call
+            else options_contract.quote_mint
+        )
+
         return {
-            'underlyingAsset': str(options_contract.underlying_mint),
+            'underlyingAsset': str(underlying_asset),
             # options expiration is in seconds since epoch
             'expiryTimestamp': options_contract.expiry_ts,
             'isPut': not options_contract.is_call,
