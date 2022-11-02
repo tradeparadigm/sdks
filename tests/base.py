@@ -12,6 +12,7 @@ class VenuePackages(Enum):
     OPYN = 'opyn'
     THETANUTS = "thetanuts"
 
+
 VENUES = [
     VenuePackages.TEMPLATE.value,
     VenuePackages.RIBBON.value,

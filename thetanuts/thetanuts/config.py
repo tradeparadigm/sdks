@@ -1,14 +1,14 @@
+import json
+from decimal import Decimal
 from typing import Any
+
+import web3
 
 from sdk_commons.chains import Chains
 from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
-from sdk_commons.helpers import get_evm_signature_components
-from template.definitions import Bid, ContractConfig, Offer, SignedBid
-from template.otoken import oTokenContract
-from template.swap import SwapContract
+from template.definitions import Bid
 from template.wallet import Wallet
 
-import web3, json
 
 class AuthorizationPages:
     mainnet = "https://thetanuts.finance/paradigm/mm-approval"
@@ -35,10 +35,8 @@ class TemplateSDKConfig(SDKConfig):
         private_key: str,
         **kwargs: Any,
     ) -> str:
-        """Create an offer"""        
-
-        return int( oToken[2:], 16 )
-
+        """Create an offer"""
+        return int(oToken[2:], 16)
 
     def get_otoken_details(
         self,
@@ -50,15 +48,14 @@ class TemplateSDKConfig(SDKConfig):
     ) -> OfferTokenDetails:
         """Return details about the offer token"""
 
-        config = ContractConfig(
-            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
+        bridgeContract = w3.eth.contract(
+            w3.toChecksumAddress(contract_address),
+            abi=json.load(open("abis/ParadigmBridge.json", "r")),
         )
 
-        w3 = web3.Web3(web3.HTTPProvider(rpc_uri));
-        bridgeContract = w3.eth.contract(w3.toChecksumAddress(contract_address), abi=json.load( open("abis/ParadigmBridge.json","r") ) ) 
-        
-        aucDetails = bridgeContract.functions.getAuctionDetails( contract_address ).call()
-        
+        aucDetails = bridgeContract.functions.getAuctionDetails(contract_address).call()
+
         return {
             "collateralAsset": aucDetails[0],
             "underlyingAsset": aucDetails[1],
@@ -67,8 +64,6 @@ class TemplateSDKConfig(SDKConfig):
             "expiryTimestamp": aucDetails[4],
             "isPut": aucDetails[5],
         }
-
-
 
     def get_offer_details(
         self,
@@ -81,29 +76,28 @@ class TemplateSDKConfig(SDKConfig):
     ) -> OfferDetails:
         """Return details for a given offer"""
 
-        swap_config = ContractConfig(
-            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
+        bridgeContract = w3.eth.contract(
+            w3.toChecksumAddress(contract_address),
+            abi=json.load(open("abis/ParadigmBridge.json", "r")),
         )
+        vault_address = "0x%040x" % offer_id
 
-        w3 = web3.Web3(web3.HTTPProvider(rpc_uri));
-        bridgeContract = w3.eth.contract(w3.toChecksumAddress(contract_address), abi=json.load( open("abis/ParadigmBridge.json","r") ) )
-        vault_address = "0x%040"%offer_id
-         
         try:
-            aucDetails = bridgeContract.functions.getAuctionDetails( contract_address ).call()
-        except:
+            aucDetails = bridgeContract.functions.getAuctionDetails(contract_address).call()
+        except Exception:
             raise ValueError("The argument is not a valid offer")
-                    
+
         return {
             'seller': vault_address,
             'oToken': vault_address,
             'biddingToken': aucDetails[0],
             'minPrice': Decimal(0.0),
-            'minBidSize': Decimal(0.0),
-            'totalSize': aucDetails[6],
-            'availableSize': aucDetails[6],
+            'minBidSize': Decimal(aucDetails[5]) / Decimal("1000000"),
+            'totalSize': Decimal(aucDetails[5]) / Decimal("1000000"),
+            'availableSize': Decimal(aucDetails[5]) / Decimal("1000000"),
         }
-        
+
     def sign_bid(
         self,
         *,
@@ -120,18 +114,13 @@ class TemplateSDKConfig(SDKConfig):
         **kwargs: Any,
     ) -> str:
         """Sign a bid and return the signature"""
-        
-        try:
-            aucDetails = bridgeContract.functions.getAuctionDetails( contract_address ).call()
-        except:
-            raise ValueError("The argument is not a valid offer")
-        
+
         payload = Bid(
-            swapId=swap_id,
-            nonce=nonce,
+            swapId=swap_id,  # Vault address casted as integer
+            nonce=nonce,  # expiryTimestamp
             signerWallet=signer_wallet,
             sellAmount=sell_amount,
-            buyAmount=buy_amount,
+            buyAmount=buy_amount,  # Only entire vault allowed, no partials
             referrer=referrer,
         )
         wallet = Wallet(public_key=public_key, private_key=private_key)
@@ -155,29 +144,18 @@ class TemplateSDKConfig(SDKConfig):
         **kwargs: Any,
     ) -> BidValidation:
         """Validate the signing bid"""
-        r, s, v = get_evm_signature_components(signature)
 
-        config = ContractConfig(
-            address=contract_address,
-            chain_id=Chains(chain_id),
-            rpc_uri=rpc_uri,
+        w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
+        bridgeContract = w3.eth.contract(
+            w3.toChecksumAddress(contract_address),
+            abi=json.load(open("abis/ParadigmBridge.json", "r")),
         )
 
-        signed_bid = SignedBid(
-            swapId=swap_id,
-            nonce=nonce,
-            signerWallet=signer_wallet,
-            sellAmount=sell_amount,
-            buyAmount=buy_amount,
-            referrer=referrer,
-            r=r,
-            s=s,
-            v=v,
-        )
-        
-        reSign = this.sign_bid(contract_address = contract_address, chain_id = chain_id, rpc_uri = rpc_uri, swap_id = swap_id, nonce = nonce, signer_wallet = signer_wallet, sell_amount = sell_amount, buy_amount = buy_amount, referrer = referrer)
-        
-        return {'errors': reSign.v == signature.v and reSign.r == signature.r and reSign.s == signature.s}  
+        isValid = bridgeContract.functions.validateSignature(
+            hex(swap_id), nonce, sell_amount, signer_wallet, signature
+        ).call()
+
+        return {'errors': not isValid}
 
     def verify_allowance(
         self,
@@ -194,11 +172,15 @@ class TemplateSDKConfig(SDKConfig):
         the given token on the wallet
         """
 
-        config = ContractConfig(
-            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
+        w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
+        assert w3.eth.chainId == chain_id
+        bidding_token = w3.eth.contract(
+            w3.toChecksumAddress(token_address),
+            abi=json.load(open("abis/ERC20.json", "r")),
         )
 
-        wallet = Wallet(public_key=public_key)
-        return wallet.verify_allowance(config, token_address=token_address)
+        allowance = bidding_token.functions.allowance(self.public_key, contract_address).call() / (
+            10 ** bidding_token.functions.decimals().call()
+        )
 
-
+        return allowance > 1e30

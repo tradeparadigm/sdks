@@ -5,6 +5,7 @@ from sdk_commons.config import BidValidation, OfferDetails
 from template.definitions import ContractConfig, Offer, SignedBid
 from template.wallet import Wallet
 
+
 class SwapContract:
     """
     Object to create connection to the Swap contract
@@ -84,4 +85,4 @@ class SwapContract:
         if not isinstance(offer, Offer):
             raise TypeError("Invalid offer")
 
-        return web3
+        return "offer"

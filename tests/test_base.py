@@ -1,8 +1,7 @@
 from importlib import import_module
 
 import pytest
-
-from tests.base import VENUES, TestsBase
+from base import VENUES, TestsBase
 
 
 class TestSDK(TestsBase):
