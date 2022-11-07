@@ -33,9 +33,9 @@ from ribbon.swap import SwapContract, asdict
 # Define the following variables:
 rpc_token = "..."
 swap_address = "0x..."
-current_chain = Chains.KOVAN
+current_chain = Chains.GOERLI
 
-rpc = {Chains.KOVAN: "https://kovan.infura.io/v3/"}
+rpc = {Chains.GOERLI: "https://goerli.infura.io/v3/"}
 chain_data = {
     "chain_id": current_chain,
     "rpc_uri": rpc[current_chain] + rpc_token,

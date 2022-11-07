@@ -21,7 +21,7 @@ class RibbonSDKConfig(SDKConfig):
         Chains.AVALANCHE,
         Chains.ETHEREUM,
         Chains.FUJI,
-        Chains.KOVAN,
+        Chains.GOERLI,
     ]
 
     def create_offer(
