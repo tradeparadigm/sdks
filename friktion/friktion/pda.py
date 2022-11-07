@@ -42,7 +42,12 @@ class SwapOrderAddresses:
     receive_pool_address: PublicKey
     delegate_authority_address: PublicKey
 
-    def __init__(self, user: PublicKey, order_id: int = None, swap_order_address=None):
+    def __init__(
+        self,
+        user: PublicKey,
+        order_id: int | None = None,
+        swap_order_address: PublicKey | None = None,
+    ):
         self.user_orders_address = find_user_orders_address(user)[0]
         if order_id is not None:
             self.swap_order_address = find_swap_order_address(user, order_id)[0]
@@ -56,13 +61,10 @@ class SwapOrderAddresses:
 
     @staticmethod
     async def from_user(
-        client: AsyncClient, user: PublicKey, order_id: int = None
+        client: AsyncClient, user: PublicKey, order_id: int | None = None
     ) -> 'SwapOrderAddresses':
         if order_id is None:
             user_orders_address = find_user_orders_address(user)[0]
             user_orders = await UserOrders.fetch(client, user_orders_address)
-            if user_orders is None:
-                order_id = 0
-            else:
-                order_id = user_orders.curr_order_id
+            order_id = 0 if user_orders is None else user_orders.curr_order_id
         return SwapOrderAddresses(user, order_id)
