@@ -62,7 +62,7 @@ def get_url_for_network(network: Network) -> str:
         return "https://api.testnet.solana.com"
     else:
         # mainnet
-        return "https://solana-api.projectserum.com"
+        return "https://api.mainnet-beta.solana.com"
 
 
 MIN_REQUIRED_ALLOWANCE = 100
