@@ -2,6 +2,26 @@
 
 Python SDK to interact with Thetanuts Finance auctions on Paradigm
 
+## Setup to run sample thetanuts test script
+
+Open a container with python
+$ docker run -it --rm \
+    -v $(pwd):/tmp/code -w /tmp/code \
+    -p 8888:8888 \
+    python:3.10 \
+    bash
+
+# install the library in development mode
+pip3 install --editable /tmp/code
+
+# Install the libraries
+pip3 install eth_keys python-dotenv web3==5.31.3
+
+# Install the sdk_commons
+pip3 install /tmp/code/sdk_commons
+
+python3 thetanuts_test.py
+
 ## Usage
 
 To begin, define your domain of interaction
@@ -27,8 +47,6 @@ To begin, define your domain of interaction
 Interface to Thetanuts 
 
 	thetanuts = Thetanuts(domain, rpc)
-
-	
 
 ## Sign Bid
 

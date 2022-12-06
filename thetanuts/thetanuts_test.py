@@ -7,16 +7,16 @@
 # ---------------------------------------------------------------------------
 
 import os
+from binascii import unhexlify
 
-from dotenv import load_dotenv
+import eth_keys
+import web3
+from web3.middleware import geth_poa_middleware
 
-from opyn.definitions import Chains, ContractConfig, Domain, MessageToSign, Offer
-from opyn.settlement import SettlementContract
-from opyn.wallet import Wallet
+from thetanuts.definitions import Bid, Chains, ContractConfig, Domain, Offer, SignedBid
+from thetanuts.wallet import Wallet
 
-load_dotenv()
-
-current_chain = Chains.ROPSTEN
+current_chain = Chains.MATIC
 
 
 def get_env(variable: str) -> str:
@@ -25,28 +25,38 @@ def get_env(variable: str) -> str:
     return value
 
 
-rpc_token = get_env('RPC_TOKEN')
-rpc_url = get_env('RPC_URL')
-maker_public = get_env('MAKER_PubKEY')
-maker_private = get_env('MAKER_PrivKEY')
-taker_public = get_env('TAKER_PubKEY')
-taker_private = get_env('TAKER_PrivKEY')
+rpc_uri = "https://polygon-rpc.com"
 
-rpc_uri = rpc_url + rpc_token
+owner_private = get_env('OWNER_PRVKEY')
+maker_private = get_env('MAKER_PRVKEY')
+taker_private = get_env('TAKER_PRVKEY')
 
-osqth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
-opyn_usdc_token_address = "0x27415c30d8c87437becbd4f98474f26e712047f4"
+owner_public = eth_keys.keys.private_key_to_public_key(
+    eth_keys.datatypes.PrivateKey(unhexlify(owner_private))
+).to_checksum_address()
+maker_public = eth_keys.keys.private_key_to_public_key(
+    eth_keys.datatypes.PrivateKey(unhexlify(maker_private))
+).to_checksum_address()
+taker_public = eth_keys.keys.private_key_to_public_key(
+    eth_keys.datatypes.PrivateKey(unhexlify(taker_private))
+).to_checksum_address()
 
-settlement_contract_address = "0xc18DAA3DBE4B0F0810c8A4EeABc225713313204e"
-settlement_config = ContractConfig(settlement_contract_address, rpc_uri, current_chain)
-settlement_contract = SettlementContract(settlement_config)
+tweth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
+vault_contract_address = "0x4a3c6DA195506ADC87D984C5B429708c8Ddd4237"
+bridge_contract_address = "0x1d1a9ff640F58740F2c240C460BfE193CcE395d1"
+domain = Domain("Thetanuts", "1.0", 137, bridge_contract_address)
 
-domain = Domain("OPYN BRIDGE", "1", 3, settlement_contract_address)
-
-maker_wallet = Wallet(maker_public, maker_private)
-taker_wallet = Wallet(taker_public, taker_private)
+owner_wallet = Wallet(owner_public, "0x" + owner_private)
+maker_wallet = Wallet(maker_public, "0x" + maker_private)
+taker_wallet = Wallet(taker_public, "0x" + taker_private)
 
 assert maker_wallet.public_key, "Maker Public Key is None"
+
+# Start new round
+
+thetanuts = TemplateSDKConfig()
+
+
 total_size = 10**18
 min_bid_amount = total_size
 min_price = 1

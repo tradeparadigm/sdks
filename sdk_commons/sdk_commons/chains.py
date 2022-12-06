@@ -23,3 +23,4 @@ class Chains(Enum, metaclass=MembershipTestEnumMeta):
     FUJI = 43113
     SOLANA_DEV = 777777
     SOLANA_MAIN = 888888
+    MATIC = 137

@@ -3,9 +3,9 @@ import eth_keys
 import web3
 from eth_abi.packed import encode_abi_packed
 from eth_account.messages import encode_defunct
-from web3.Web3 import toChecksumAddress
+from web3 import Web3
 
-from template.definitions import Bid
+from thetanuts.definitions import Bid
 
 
 class Wallet:
@@ -32,7 +32,7 @@ class Wallet:
         if self.private_key:
             self.signer = eth_keys.keys.PrivateKey(bytes.fromhex(self.private_key[2:]))
             if not self.public_key:
-                self.public_key = toChecksumAddress(self.signer.public_key.to_address())
+                self.public_key = Web3.toChecksumAddress(self.signer.public_key.to_address())
 
     def sign_msg(self, messageHash: str) -> str:
         """Sign a hash message using the signer object
@@ -42,7 +42,7 @@ class Wallet:
         Returns:
             signature (dict): returns Signature in hex string
         """
-        return self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:])).hex()
+        return self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:])).to_hex()
 
     def sign_bid(self, bid: Bid) -> str:
         """Sign a bid
@@ -59,7 +59,7 @@ class Wallet:
         if not self.private_key:
             raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
 
-        signerWallet = toChecksumAddress(bid.signerWallet)
+        signerWallet = Web3.toChecksumAddress(bid.signerWallet)
 
         if signerWallet != self.public_key:
             raise ValueError("Signer wallet address mismatch")

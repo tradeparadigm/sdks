@@ -6,8 +6,8 @@ import web3
 
 from sdk_commons.chains import Chains
 from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
-from template.definitions import Bid
-from template.wallet import Wallet
+from thetanuts.definitions import Bid
+from thetanuts.wallet import Wallet
 
 
 class AuthorizationPages:
@@ -15,10 +15,10 @@ class AuthorizationPages:
     polygon = "https://thetanuts.finance/paradigm/mm-matic-approval"
 
 
-class TemplateSDKConfig(SDKConfig):
+class Thetanuts(SDKConfig):
 
     authorization_pages = AuthorizationPages
-    supported_chains = [Chains.MAINNET, Chains.MATIC]
+    supported_chains = [Chains.ETHEREUM, Chains.MATIC]
 
     def create_offer(
         self,
@@ -35,7 +35,37 @@ class TemplateSDKConfig(SDKConfig):
         private_key: str,
         **kwargs: Any,
     ) -> str:
-        """Create an offer"""
+        """Start new round by forcefully ending previous round - Needs to be done by Vault Owner"""
+
+        w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
+        if chain_id == Chains.MATIC.value:
+            w3.middleware_onion.inject(geth_poa_middleware, layer=0)  # For MATIC chains
+        vaultContract = w3.eth.contract(
+            w3.toChecksumAddress(oToken),
+            abi=json.load(open("abis/Vault.json", "r")),
+        )
+
+        if vaultContract.functions.expiry().call() > 0:  # Round in progress, let's end it
+            currentTime = setExpiry(int(time.time()))
+            w3.eth.sendRawTransaction(
+                w3.eth.account.sign_transaction(
+                    vaultContract.functions.setExpiry(currentTime).buildTransaction(
+                        {'nonce': w3.eth.getTransactionCount(public_key)}
+                    ),
+                    private_key,
+                ).rawTransaction
+            )
+            w3.eth.sendRawTransaction(
+                w3.eth.account.sign_transaction(
+                    vaultContract.functions.settleStrike_chainlink().buildTransaction(
+                        {'nonce': w3.eth.getTransactionCount(public_key)}
+                    ),
+                    private_key,
+                ).rawTransaction
+            )
+
+        # Initiate new round details
+
         return int(oToken[2:], 16)
 
     def get_otoken_details(
