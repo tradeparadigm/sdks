@@ -4,7 +4,6 @@ import web3
 from eth_abi.packed import encode_abi_packed
 from eth_account.messages import encode_defunct
 from web3 import Web3
-
 from thetanuts.definitions import Bid
 
 

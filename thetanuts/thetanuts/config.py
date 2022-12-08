@@ -8,7 +8,7 @@ from sdk_commons.chains import Chains
 from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
 from thetanuts.definitions import Bid
 from thetanuts.wallet import Wallet
-
+from web3.middleware import geth_poa_middleware
 
 class AuthorizationPages:
     mainnet = "https://thetanuts.finance/paradigm/mm-approval"
@@ -36,35 +36,25 @@ class Thetanuts(SDKConfig):
         **kwargs: Any,
     ) -> str:
         """Start new round by forcefully ending previous round - Needs to be done by Vault Owner"""
-
+        
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
-        if chain_id == Chains.MATIC.value:
-            w3.middleware_onion.inject(geth_poa_middleware, layer=0)  # For MATIC chains
+        if chain_id == Chains.MATIC.value: w3.middleware_onion.inject(geth_poa_middleware, layer=0) # For MATIC chains
         vaultContract = w3.eth.contract(
             w3.toChecksumAddress(oToken),
-            abi=json.load(open("abis/Vault.json", "r")),
+            abi=json.load(open("thetanuts/abis/Vault.json", "r")),
         )
-
-        if vaultContract.functions.expiry().call() > 0:  # Round in progress, let's end it
-            currentTime = setExpiry(int(time.time()))
-            w3.eth.sendRawTransaction(
-                w3.eth.account.sign_transaction(
-                    vaultContract.functions.setExpiry(currentTime).buildTransaction(
-                        {'nonce': w3.eth.getTransactionCount(public_key)}
-                    ),
-                    private_key,
-                ).rawTransaction
-            )
-            w3.eth.sendRawTransaction(
-                w3.eth.account.sign_transaction(
-                    vaultContract.functions.settleStrike_chainlink().buildTransaction(
-                        {'nonce': w3.eth.getTransactionCount(public_key)}
-                    ),
-                    private_key,
-                ).rawTransaction
-            )
-
-        # Initiate new round details
+        
+        if vaultContract.functions.expiry().call() > 0: # Round in progress, let's end it
+            currentTime = setExpiry( int(time.time()) )
+            w3.eth.sendRawTransaction(w3.eth.account.sign_transaction(vaultContract.functions.setExpiry( currentTime ).buildTransaction( {'nonce': w3.eth.getTransactionCount(public_key)}), private_key).rawTransaction)
+            w3.eth.sendRawTransaction(w3.eth.account.sign_transaction(vaultContract.functions.settleStrike_chainlink().buildTransaction( {'nonce': w3.eth.getTransactionCount(public_key)}), private_key).rawTransaction)
+    
+        # Initiate new round details        
+        w3 = web3.Web3(web3.HTTPProvider(rpc_uri))    
+        bridgeContract = w3.eth.contract(
+            w3.toChecksumAddress(vault_contract_address),
+            abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
+        )
 
         return int(oToken[2:], 16)
 
@@ -81,7 +71,7 @@ class Thetanuts(SDKConfig):
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
         bridgeContract = w3.eth.contract(
             w3.toChecksumAddress(contract_address),
-            abi=json.load(open("abis/ParadigmBridge.json", "r")),
+            abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
         )
 
         aucDetails = bridgeContract.functions.getAuctionDetails(contract_address).call()
@@ -109,7 +99,7 @@ class Thetanuts(SDKConfig):
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
         bridgeContract = w3.eth.contract(
             w3.toChecksumAddress(contract_address),
-            abi=json.load(open("abis/ParadigmBridge.json", "r")),
+            abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
         )
         vault_address = "0x%040x" % offer_id
 
@@ -178,7 +168,7 @@ class Thetanuts(SDKConfig):
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
         bridgeContract = w3.eth.contract(
             w3.toChecksumAddress(contract_address),
-            abi=json.load(open("abis/ParadigmBridge.json", "r")),
+            abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
         )
 
         isValid = bridgeContract.functions.validateSignature(
@@ -206,7 +196,7 @@ class Thetanuts(SDKConfig):
         assert w3.eth.chainId == chain_id
         bidding_token = w3.eth.contract(
             w3.toChecksumAddress(token_address),
-            abi=json.load(open("abis/ERC20.json", "r")),
+            abi=json.load(open("thetanuts/abis/ERC20.json", "r")),
         )
 
         allowance = bidding_token.functions.allowance(self.public_key, contract_address).call() / (

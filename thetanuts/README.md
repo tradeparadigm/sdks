@@ -14,12 +14,19 @@ $ docker run -it --rm \
 # install the library in development mode
 pip3 install --editable /tmp/code
 
-# Install the libraries
-pip3 install eth_keys python-dotenv web3==5.31.3
+# export keys into environment
+export OWNER_PRVKEY="..."
+export TAKER_PRVKEY="..."
+export MAKER_PRVKEY="..."
+
+ # Install the libraries
+pip3 install eth_keys web3==5.31.3
 
 # Install the sdk_commons
 pip3 install /tmp/code/sdk_commons
 
+# Run thetanuts test
+cd thetanuts
 python3 thetanuts_test.py
 
 ## Usage
