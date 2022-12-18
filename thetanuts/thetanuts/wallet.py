@@ -4,6 +4,7 @@ import web3
 from eth_abi.packed import encode_abi_packed
 from eth_account.messages import encode_defunct
 from web3 import Web3
+
 from thetanuts.definitions import Bid
 
 
@@ -41,7 +42,7 @@ class Wallet:
         Returns:
             signature (dict): returns Signature in hex string
         """
-        return self.signer.sign_msg_hash(bytes.fromhex(messageHash[2:])).to_hex()
+        return self.signer.sign_message(bytes.fromhex(messageHash[2:])).to_hex()
 
     def sign_bid(self, bid: Bid) -> str:
         """Sign a bid
@@ -65,8 +66,18 @@ class Wallet:
 
         toSign = encode_abi_packed(
             ['address', 'uint', 'uint', 'address'],
-            [hex(bid.swapId, 16), bid.sellAmount, bid.nonce, signerWallet],
+            [
+                Web3.toChecksumAddress(hex(bid.swapId)),
+                bid.nonce,
+                int(bid.sellAmount),
+                signerWallet,
+            ],
         )
-        signature = self.sign_msg(encode_defunct(web3.keccak(toSign)))
+        print(
+            [Web3.toChecksumAddress(hex(bid.swapId)), bid.nonce, int(bid.sellAmount), signerWallet]
+        )
+        signature = web3.eth.Eth.account.sign_message(
+            encode_defunct(web3.Web3.keccak(toSign)), private_key=self.signer.to_hex()
+        ).signature.hex()
 
         return signature

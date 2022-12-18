@@ -6,17 +6,19 @@
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
 
+import json
 import os
+import time
 from binascii import unhexlify
+from decimal import Decimal
 
 import eth_keys
 import web3
 from web3.middleware import geth_poa_middleware
 
-from thetanuts.definitions import Bid, Chains, ContractConfig, Domain, Offer, SignedBid
+from thetanuts.config import Thetanuts
+from thetanuts.definitions import Chains, Domain
 from thetanuts.wallet import Wallet
-
-current_chain = Chains.MATIC
 
 
 def get_env(variable: str) -> str:
@@ -25,66 +27,161 @@ def get_env(variable: str) -> str:
     return value
 
 
+current_chain = Chains.MATIC
+chain_id = current_chain.value
 rpc_uri = "https://polygon-rpc.com"
 
-owner_private = get_env('OWNER_PRVKEY')
-maker_private = get_env('MAKER_PRVKEY')
-taker_private = get_env('TAKER_PRVKEY')
+w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
+if chain_id == Chains.MATIC.value:
+    w3.middleware_onion.inject(geth_poa_middleware, layer=0)  # For MATIC chains
+
+
+owner_private = "0x" + get_env('OWNER_PRVKEY')
+maker_private = "0x" + get_env('MAKER_PRVKEY')
+taker_private = "0x" + get_env('TAKER_PRVKEY')
 
 owner_public = eth_keys.keys.private_key_to_public_key(
-    eth_keys.datatypes.PrivateKey(unhexlify(owner_private))
+    eth_keys.datatypes.PrivateKey(unhexlify(owner_private[2:]))
 ).to_checksum_address()
 maker_public = eth_keys.keys.private_key_to_public_key(
-    eth_keys.datatypes.PrivateKey(unhexlify(maker_private))
+    eth_keys.datatypes.PrivateKey(unhexlify(maker_private[2:]))
 ).to_checksum_address()
 taker_public = eth_keys.keys.private_key_to_public_key(
-    eth_keys.datatypes.PrivateKey(unhexlify(taker_private))
+    eth_keys.datatypes.PrivateKey(unhexlify(taker_private[2:]))
 ).to_checksum_address()
 
-tweth_token_address = "0xa4222f78d23593e82Aa74742d25D06720DCa4ab7"
-vault_contract_address = "0x4a3c6DA195506ADC87D984C5B429708c8Ddd4237"
-bridge_contract_address = "0x1d1a9ff640F58740F2c240C460BfE193CcE395d1"
+tweth_token_address = "0xd9F0446AedadCf16A12692E02FA26C617FA4D217"
+oToken = vault_contract_address = "0x4a3c6DA195506ADC87D984C5B429708c8Ddd4237"
+contract_address = bridge_contract_address = "0x3a9212E96EEeBEADDCe647E298C0610BEB071eE3"
+
+bridgeContract = w3.eth.contract(
+    w3.toChecksumAddress(bridge_contract_address),
+    abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
+)
+
 domain = Domain("Thetanuts", "1.0", 137, bridge_contract_address)
 
-owner_wallet = Wallet(owner_public, "0x" + owner_private)
-maker_wallet = Wallet(maker_public, "0x" + maker_private)
-taker_wallet = Wallet(taker_public, "0x" + taker_private)
+owner_wallet = Wallet(owner_public, owner_private)
+maker_wallet = Wallet(maker_public, maker_private)
+taker_wallet = Wallet(taker_public, taker_private)
 
+assert owner_wallet.public_key, "Owner Public Key is None"
 assert maker_wallet.public_key, "Maker Public Key is None"
+assert taker_wallet.public_key, "Taker Public Key is None"
 
-# Start new round
-
-thetanuts = TemplateSDKConfig()
-
-
-total_size = 10**18
-min_bid_amount = total_size
-min_price = 1
-offerToCreate = Offer(
-    osqth_token_address, opyn_usdc_token_address, min_price, min_bid_amount, total_size
+# Start new round (Performed by Bridge/Vault owner account)
+thetanuts = Thetanuts()
+thetanuts.create_offer(
+    oToken=vault_contract_address,
+    contract_address=bridge_contract_address,
+    chain_id=current_chain.value,
+    rpc_uri=rpc_uri,
+    bidding_token=tweth_token_address,
+    min_price=0,
+    min_bid_size=0,
+    offer_amount=0,
+    public_key=owner_public,
+    private_key=owner_private,
 )
-settlement_contract.create_offer(offerToCreate, taker_wallet)
 
-offerId = settlement_contract.get_offer_counter()
-maker_order_amount = 10**18
-maker_nonce = settlement_contract.nonce(maker_wallet.public_key)
-maker_message = MessageToSign(
-    offerId=offerId,
-    bidId=1,
-    signerAddress=maker_wallet.public_key,
-    bidderAddress=maker_wallet.public_key,
-    bidToken=opyn_usdc_token_address,
-    offerToken=osqth_token_address,
-    bidAmount=maker_order_amount,
-    sellAmount=1000 * 10**6,
-    nonce=maker_nonce,
+# Wait for RPC to be ready
+while True:
+    if bridgeContract.functions.getAuctionDetails(oToken).call()[3] == 0:
+        print("Waiting for RPC to be ready...")
+        time.sleep(5)
+    else:
+        break
+
+
+# Maker checks contract for auction info
+
+vaultInfo = thetanuts.get_otoken_details(
+    contract_address=bridge_contract_address,
+    oToken=vault_contract_address,
+    chain_id=current_chain.value,
+    rpc_uri=rpc_uri,
 )
-signed_maker_order = maker_wallet.sign_bid_data(domain, maker_message)
-on_chain_signer = settlement_contract.get_bid_signer(signed_maker_order)
-print("maker_public", maker_public)
-print('on_chain_signer', on_chain_signer)
-result = settlement_contract.validate_bid(signed_maker_order)
-print(result)
-offer_details = settlement_contract.get_offer_details(offerId)
-print('offerDetails', offer_details)
-maker_wallet.allow_more(settlement_config, osqth_token_address, 1 * 10**18)
+print("Vault info:", vaultInfo)
+
+# Maker checks contract for offer info
+offer = thetanuts.get_offer_details(
+    contract_address=bridge_contract_address,
+    offer_id=int(vault_contract_address, 16),
+    chain_id=current_chain.value,
+    rpc_uri=rpc_uri,
+)
+print("Current offer:", offer)
+
+# Maker signs bid for submission
+
+signed_bid = thetanuts.sign_bid(
+    contract_address=bridge_contract_address,
+    chain_id=current_chain.value,
+    rpc_uri=rpc_uri,
+    swap_id=int(vault_contract_address, 16),
+    sell_amount=offer["availableSize"] * Decimal("0.002"),
+    buy_amount=offer["availableSize"],
+    referrer="0x" + "0" * 40,
+    signer_wallet=maker_public,
+    public_key=maker_public,
+    private_key=maker_private,
+    nonce=vaultInfo["expiryTimestamp"],
+)
+print("Signed bid:", signed_bid)
+
+# Validate bid through ParadigmBridge contract
+
+print("Validating bid via assert")
+if (
+    thetanuts.validate_bid(
+        contract_address=bridge_contract_address,
+        chain_id=current_chain.value,
+        rpc_uri=rpc_uri,
+        swap_id=int(vault_contract_address, 16),
+        nonce=vaultInfo["expiryTimestamp"],
+        signer_wallet=maker_public,
+        sell_amount=offer["availableSize"] * Decimal("0.002"),
+        buy_amount=offer["availableSize"],
+        referrer="0x" + "0" * 40,
+        signature=signed_bid,
+    )["errors"]
+    is False
+):
+    print("Bid validated")
+
+# Paradigm validates allowance
+
+print("Verifying allowance via assert")
+allowance = thetanuts.verify_allowance(
+    contract_address=bridge_contract_address,
+    chain_id=current_chain.value,
+    rpc_uri=rpc_uri,
+    public_key=maker_public,
+    token_address=offer["biddingToken"],
+)
+if (
+    thetanuts.verify_allowance(
+        contract_address=bridge_contract_address,
+        chain_id=current_chain.value,
+        rpc_uri=rpc_uri,
+        public_key=maker_public,
+        token_address=offer["biddingToken"],
+    )
+    is True
+):
+    print("Allowance verified")
+
+# Contract/ParadigmBridge owner transmits sign_bid to ParadigmBridge
+
+tx = bridgeContract.functions.pullAssetsAndStartRound(
+    vault_contract_address,
+    [int(vaultInfo["strikePrice"] * Decimal("1e6"))],
+    int(offer["availableSize"] * Decimal("0.002") * Decimal("1e18")),
+    int(offer["availableSize"] * Decimal("1e18")),
+    int(vaultInfo["expiryTimestamp"]),
+    maker_public,
+    signed_bid,
+).buildTransaction({'nonce': w3.eth.getTransactionCount(owner_public), 'from': owner_public})
+tx = w3.eth.sendRawTransaction(w3.eth.account.sign_transaction(tx, owner_private).rawTransaction)
+print("Sent OWNER transaction for pulling assets from MAKER to start new round", tx.hex())
+w3.eth.wait_for_transaction_receipt(tx)
