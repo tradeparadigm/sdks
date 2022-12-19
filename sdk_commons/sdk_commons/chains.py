@@ -25,3 +25,4 @@ class Chains(Enum, metaclass=MembershipTestEnumMeta):
     SOLANA_DEV = 777777
     SOLANA_MAIN = 888888
     MATIC = 137
+
