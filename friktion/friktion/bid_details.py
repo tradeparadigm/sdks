@@ -10,9 +10,10 @@ from solders.signature import Signature
 @dataclass
 class BidDetails:
     signer_wallet: PublicKey
+    swap_order_addr: PublicKey
     order_id: int
-    bid_size: int  # 1e9
-    bid_price: int  # 1e9
+    bid_size: int
+    bid_price: int
     referrer: PublicKey
 
     def as_msg(self):
@@ -20,6 +21,7 @@ class BidDetails:
         receive_amount = self.bid_price * self.bid_size
         payload = [
             [self.order_id],
+            str(self.swap_order_addr),
             str(self.signer_wallet),
             str(self.referrer),
             [give_amount, receive_amount],

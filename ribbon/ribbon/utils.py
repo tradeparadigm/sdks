@@ -73,7 +73,7 @@ def hex_concat(items: list) -> str:
     return '0x' + ''.join([i[2:] for i in items])
 
 
-def is_hex_string(value: str, length: int = None) -> bool:
+def is_hex_string(value: str, length: int | None = None) -> bool:
     """
     Check if string is a hex with a specified length
 

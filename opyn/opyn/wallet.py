@@ -65,7 +65,7 @@ class Wallet:
         signer (object): Instance of signer to generate signature
     """
 
-    def __init__(self, public_key: str = None, private_key: str = None):
+    def __init__(self, public_key: str | None = None, private_key: str | None = None):
         if not private_key and not public_key:
             raise ValueError("Can't instanciate a Wallet without a public or private key")
 
