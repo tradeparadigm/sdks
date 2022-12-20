@@ -12,7 +12,7 @@ authors = [
     "Paolo D'Onorio De Meo <paolo@paradigm.co>",
 ]
 packages = [
-    { include = 'abis' },
+    { include = 'thetanuts/abis' },
     { include = 'thetanuts' },
 ]
 
@@ -29,4 +29,3 @@ eth-typing = '3.0.0'
 eth-utils = '2.0.0'
 PyJWT = '2.3.0'
 web3 = '6.0.0-beta.4'
-~

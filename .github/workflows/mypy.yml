@@ -37,7 +37,7 @@ jobs:
       - name: Install MyPy
         run: |
           pip install mypy
-          pip install ./sdk_commons ./template ./opyn ./friktion ./ribbon
+          pip install ./sdk_commons ./template ./opyn ./friktion ./ribbon ./thetanuts
 
       - name: Run MyPy
         if: always()

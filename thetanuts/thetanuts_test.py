@@ -12,7 +12,7 @@ import time
 from binascii import unhexlify
 from decimal import Decimal
 
-import eth_keys
+import eth_keys  # type: ignore
 import web3
 from web3.middleware import geth_poa_middleware
 
@@ -50,7 +50,8 @@ taker_public = eth_keys.keys.private_key_to_public_key(
     eth_keys.datatypes.PrivateKey(unhexlify(taker_private[2:]))
 ).to_checksum_address()
 
-tweth_token_address = "0xd9F0446AedadCf16A12692E02FA26C617FA4D217"
+# tweth_token_address = "0xd9F0446AedadCf16A12692E02FA26C617FA4D217"
+# Above address to be picked up from the vault contract
 oToken = vault_contract_address = "0x4a3c6DA195506ADC87D984C5B429708c8Ddd4237"
 contract_address = bridge_contract_address = "0x3a9212E96EEeBEADDCe647E298C0610BEB071eE3"
 
@@ -68,6 +69,30 @@ taker_wallet = Wallet(taker_public, taker_private)
 assert owner_wallet.public_key, "Owner Public Key is None"
 assert maker_wallet.public_key, "Maker Public Key is None"
 assert taker_wallet.public_key, "Taker Public Key is None"
+
+# Maker gets information on asset
+
+vault = w3.eth.contract(
+    w3.toChecksumAddress(vault_contract_address),
+    abi=json.load(open("thetanuts/abis/Vault.json", "r")),
+)
+
+tweth_token_address = vault.functions.COLLAT().call()
+
+collat = w3.eth.contract(
+    w3.toChecksumAddress(tweth_token_address),
+    abi=json.load(open("thetanuts/abis/ERC20.json", "r")),
+)
+
+COLLAT_DECIMALS = Decimal(10 ** collat.functions.decimals().call())
+BRIDGE_DECIMALS = Decimal(
+    "1e6"
+)  # Strike price and number of contracts returned from the ParadigmBridge is multiplied by 1e6
+
+
+# Maker sets price per contract
+
+pricePerContract = "0.002"
 
 # Start new round (Performed by Bridge/Vault owner account)
 thetanuts = Thetanuts()
@@ -119,8 +144,13 @@ signed_bid = thetanuts.sign_bid(
     chain_id=current_chain.value,
     rpc_uri=rpc_uri,
     swap_id=int(vault_contract_address, 16),
-    sell_amount=offer["availableSize"] * Decimal("0.002"),
-    buy_amount=offer["availableSize"],
+    sell_amount=int(
+        Decimal(offer["availableSize"])
+        * Decimal(pricePerContract)
+        * COLLAT_DECIMALS
+        / BRIDGE_DECIMALS
+    ),
+    buy_amount=int(offer["availableSize"]),
     referrer="0x" + "0" * 40,
     signer_wallet=maker_public,
     public_key=maker_public,
@@ -140,8 +170,13 @@ if (
         swap_id=int(vault_contract_address, 16),
         nonce=vaultInfo["expiryTimestamp"],
         signer_wallet=maker_public,
-        sell_amount=offer["availableSize"] * Decimal("0.002"),
-        buy_amount=offer["availableSize"],
+        sell_amount=int(
+            Decimal(offer["availableSize"])
+            * Decimal(pricePerContract)
+            * COLLAT_DECIMALS
+            / BRIDGE_DECIMALS
+        ),
+        buy_amount=int(Decimal(offer["availableSize"]) * COLLAT_DECIMALS / BRIDGE_DECIMALS),
         referrer="0x" + "0" * 40,
         signature=signed_bid,
     )["errors"]
@@ -175,13 +210,20 @@ if (
 
 tx = bridgeContract.functions.pullAssetsAndStartRound(
     vault_contract_address,
-    [int(vaultInfo["strikePrice"] * Decimal("1e6"))],
-    int(offer["availableSize"] * Decimal("0.002") * Decimal("1e18")),
-    int(offer["availableSize"] * Decimal("1e18")),
+    [vaultInfo["strikePrice"]],
+    int(
+        Decimal(offer["availableSize"])
+        * Decimal(pricePerContract)
+        * COLLAT_DECIMALS
+        / BRIDGE_DECIMALS
+    ),
+    int(Decimal(offer["availableSize"]) * COLLAT_DECIMALS / BRIDGE_DECIMALS),
     int(vaultInfo["expiryTimestamp"]),
     maker_public,
     signed_bid,
-).buildTransaction({'nonce': w3.eth.getTransactionCount(owner_public), 'from': owner_public})
-tx = w3.eth.sendRawTransaction(w3.eth.account.sign_transaction(tx, owner_private).rawTransaction)
-print("Sent OWNER transaction for pulling assets from MAKER to start new round", tx.hex())
-w3.eth.wait_for_transaction_receipt(tx)
+).build_transaction({'nonce': w3.eth.get_transaction_count(owner_public), 'from': owner_public})
+signedTx = w3.eth.send_raw_transaction(
+    w3.eth.account.sign_transaction(tx, owner_private).rawTransaction
+)
+print("Sent OWNER transaction for pulling assets from MAKER to start new round", signedTx.hex())
+w3.eth.wait_for_transaction_receipt(signedTx)

@@ -1,5 +1,5 @@
 """ Module for wallet utilities """
-import eth_keys
+import eth_keys  # type: ignore
 import web3
 from eth_abi.packed import encode_abi_packed
 from eth_account.messages import encode_defunct
@@ -22,8 +22,8 @@ class Wallet:
         signer (object): Instance of signer to generate signature
     """
 
-    def __init__(self, public_key: str = None, private_key: str = None):
-        if not private_key and not public_key:
+    def __init__(self, public_key: str = "", private_key: str = ""):
+        if private_key == "" and public_key == "":
             raise ValueError("Can't instanciate a Wallet without a public or private key")
 
         self.private_key = private_key
@@ -42,7 +42,7 @@ class Wallet:
         Returns:
             signature (dict): returns Signature in hex string
         """
-        return self.signer.sign_message(bytes.fromhex(messageHash[2:])).to_hex()
+        return str(self.signer.sign_message(bytes.fromhex(messageHash[2:])).to_hex())
 
     def sign_bid(self, bid: Bid) -> str:
         """Sign a bid
@@ -74,10 +74,16 @@ class Wallet:
             ],
         )
         print(
-            [Web3.toChecksumAddress(hex(bid.swapId)), bid.nonce, int(bid.sellAmount), signerWallet]
+            "Wallet signing bid",
+            [
+                Web3.toChecksumAddress(hex(bid.swapId)),
+                bid.nonce,
+                int(bid.sellAmount),
+                signerWallet,
+            ],
         )
         signature = web3.eth.Eth.account.sign_message(
             encode_defunct(web3.Web3.keccak(toSign)), private_key=self.signer.to_hex()
         ).signature.hex()
 
-        return signature
+        return str(signature)
