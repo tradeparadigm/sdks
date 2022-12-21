@@ -25,7 +25,8 @@ jobs:
             template,
             ribbon,
             opyn,
-            friktion
+            friktion,
+            thetanuts
           ]
 
     steps:
