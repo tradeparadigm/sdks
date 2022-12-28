@@ -161,7 +161,7 @@ print("Signed bid:", signed_bid)
 
 # Validate bid through ParadigmBridge contract
 
-print("Validating bid via assert")
+print("Validating bid by checking validate_bid(..) returns {'errors': False} ")
 if (
     thetanuts.validate_bid(
         contract_address=bridge_contract_address,
@@ -183,10 +183,12 @@ if (
     is False
 ):
     print("Bid validated")
+else:
+    print("Bid validation failed!")
 
 # Paradigm validates allowance
 
-print("Verifying allowance via assert")
+print("Verifying allowance by ensuring verify_allowance returns True")
 allowance = thetanuts.verify_allowance(
     contract_address=bridge_contract_address,
     chain_id=current_chain.value,
@@ -205,6 +207,8 @@ if (
     is True
 ):
     print("Allowance verified")
+else:
+    print("Allowance not set!")
 
 # Contract/ParadigmBridge owner transmits sign_bid to ParadigmBridge
 

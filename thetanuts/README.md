@@ -11,10 +11,6 @@ $ docker run -it --rm \
     python:3.10 \
     bash
 
-## Install the library in development mode
-
-    pip3 install --editable /tmp/code
-
 ## Export keys into environment
 
     export OWNER_PRVKEY="..."

@@ -1,6 +1,5 @@
 import json
 import time
-from decimal import Decimal
 from typing import Any
 
 import web3
@@ -67,6 +66,7 @@ class Thetanuts(SDKConfig):
             )
             print("Sent OWNER transaction for setting expiry", tx.hex())
             w3.eth.wait_for_transaction_receipt(tx)
+            time.sleep(5)
             tx = w3.eth.send_raw_transaction(
                 w3.eth.account.sign_transaction(
                     vaultContract.functions.settleStrike_MM(0).build_transaction(
@@ -77,6 +77,7 @@ class Thetanuts(SDKConfig):
             )
             print("Sent OWNER transaction for settling vault", tx.hex())
             w3.eth.wait_for_transaction_receipt(tx)
+            time.sleep(5)
             nonce = Nonce(nonce + 2)
 
         # Configure ParadigmBridge
@@ -118,6 +119,7 @@ class Thetanuts(SDKConfig):
             )
             print("Sent OWNER transaction for setting new strike and size", tx.hex())
             w3.eth.wait_for_transaction_receipt(tx)
+            time.sleep(5)
         return str(int(oToken[2:], 16))
 
     def get_otoken_details(
@@ -233,24 +235,11 @@ class Thetanuts(SDKConfig):
             abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
         )
 
-        vault = w3.eth.contract(
-            w3.toChecksumAddress(hex(swap_id)),
-            abi=json.load(open("thetanuts/abis/Vault.json", "r")),
-        )
-
-        collat_address = vault.functions.COLLAT().call()
-
-        collat = w3.eth.contract(
-            w3.toChecksumAddress(collat_address),
-            abi=json.load(open("thetanuts/abis/ERC20.json", "r")),
-        )
-        decimals = collat.functions.decimals().call()
-
         try:
             isValid = bridgeContract.functions.validateSignature(
                 w3.toChecksumAddress(hex(swap_id)),
                 nonce,
-                int(sell_amount * Decimal(10**decimals)),
+                sell_amount,
                 w3.toChecksumAddress(signer_wallet),
                 signature,
             ).call()
