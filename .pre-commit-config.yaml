@@ -21,4 +21,3 @@ repos:
   rev: v0.32.2
   hooks:
   - id: markdownlint
-    language_version: lts 
