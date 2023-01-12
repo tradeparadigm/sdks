@@ -12,7 +12,6 @@ authors = [
     "Paolo D'Onorio De Meo <paolo@paradigm.co>",
 ]
 packages = [
-    { include = 'thetanuts/abis' },
     { include = 'thetanuts' },
 ]
 
