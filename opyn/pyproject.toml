@@ -12,7 +12,6 @@ authors = [
     "Haythem <haythem@opyn.co>",
 ]
 packages = [
-    { include = 'abis' },
     { include = 'opyn' },
 ]
 

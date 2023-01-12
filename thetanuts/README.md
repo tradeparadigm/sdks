@@ -5,11 +5,12 @@ Python SDK to interact with Thetanuts Finance auctions on Paradigm
 ## Setup to run sample thetanuts test script
 
 Open a container with python
-$ docker run -it --rm \
-    -v $(pwd):/tmp/code -w /tmp/code \
-    -p 8888:8888 \
-    python:3.10 \
-    bash
+
+    $ docker run -it --rm \
+        -v $(pwd):/tmp/code -w /tmp/code \
+        -p 8888:8888 \
+        python:3.10 \
+        bash
 
 ## Export keys into environment
 
@@ -34,6 +35,7 @@ $ docker run -it --rm \
 
 ### To begin, define the interaction chain
 
+    import sdk_commons
     from thetanuts.definitions import Bid, Domain, ContractConfig, Offer, SignedBid, Chains
     from thetanuts.wallet import Wallet
     from thetanuts.config import Thetanuts
@@ -75,14 +77,14 @@ $ docker run -it --rm \
 
     vault = w3.eth.contract(
         w3.toChecksumAddress(vault_contract_address),
-        abi=json.load(open("thetanuts/abis/Vault.json", "r")),
+        abi=sdk_commons.helpers.get_abi("Thetanuts_Vault"),
     )
 
     tweth_token_address = vault.functions.COLLAT().call()
 
     collat = w3.eth.contract(
         w3.toChecksumAddress(tweth_token_address),
-        abi=json.load(open("thetanuts/abis/ERC20.json", "r")),
+        abi=sdk_commons.helpers.get_abi("ERC20"),
     )
 
 

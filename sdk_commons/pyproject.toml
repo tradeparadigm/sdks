@@ -12,6 +12,7 @@ authors = [
 ]
 packages = [
     { include = 'sdk_commons' },
+    { include = 'sdk_commons/abis' },
 ]
 
 [tool.poetry.dependencies]

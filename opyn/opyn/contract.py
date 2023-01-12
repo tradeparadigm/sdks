@@ -8,16 +8,11 @@
 """ Abstract class for contract connection """
 # ---------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------
-# Imports
-# ---------------------------------------------------------------------------
-import json
-from pathlib import Path
-
 from web3 import Web3
 
 from opyn.definitions import ContractConfig
 from opyn.utils import get_address
+from sdk_commons.helpers import get_abi
 
 
 # ---------------------------------------------------------------------------
@@ -37,13 +32,6 @@ class ContractConnection:
         w3 (object): RPC connection instance
         contract (object): Contract instance
     """
-
-    abi_location = "abis/Settlement.json"
-
-    @property
-    def abi_file_path(self):
-        # TODO: move in utils when we clean up the code
-        return Path(__file__).resolve().parent.parent / self.abi_location
 
     def __init__(self, config: ContractConfig):
 
@@ -69,7 +57,7 @@ class ContractConnection:
                 + f"({chain.value})"
             )
 
-        with open(self.abi_file_path) as f:
-            abi = json.load(f)
+        # Note: Settlement.json is not included in common abis
+        abi = get_abi('Settlement')
 
         self.contract = self.w3.eth.contract(self.address, abi=abi)
