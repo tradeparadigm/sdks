@@ -1,4 +1,3 @@
-import json
 import time
 from typing import Any
 
@@ -8,6 +7,7 @@ from web3.types import Nonce
 
 from sdk_commons.chains import Chains
 from sdk_commons.config import BidValidation, OfferDetails, OfferTokenDetails, SDKConfig
+from sdk_commons.helpers import get_abi
 from thetanuts.definitions import Bid
 from thetanuts.wallet import Wallet
 
@@ -46,7 +46,7 @@ class Thetanuts(SDKConfig):
         vaultContract = w3.eth.contract(
             w3.toChecksumAddress(oToken),
             # w3.toChecksumAddress(vault_contract_address),
-            abi=json.load(open("thetanuts/abis/Vault.json", "r")),
+            abi=get_abi("Thetanuts_Vault"),
         )
 
         nonce = w3.eth.get_transaction_count(public_key)
@@ -80,7 +80,7 @@ class Thetanuts(SDKConfig):
         # Configure ParadigmBridge
         bridgeContract = w3.eth.contract(
             w3.toChecksumAddress(contract_address),
-            abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
+            abi=get_abi("Thetanuts_ParadigmBridge"),
         )
 
         # Do Once! Configure ParadigmBridge to accept this vault
@@ -132,7 +132,7 @@ class Thetanuts(SDKConfig):
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
         bridgeContract = w3.eth.contract(
             w3.toChecksumAddress(contract_address),
-            abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
+            abi=get_abi("Thetanuts_ParadigmBridge"),
         )
 
         aucDetails = bridgeContract.functions.getAuctionDetails(kwargs["oToken"]).call()
@@ -160,7 +160,7 @@ class Thetanuts(SDKConfig):
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
         bridgeContract = w3.eth.contract(
             w3.toChecksumAddress(contract_address),
-            abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
+            abi=get_abi("Thetanuts_ParadigmBridge"),
         )
         vault_address = w3.toChecksumAddress("0x%040x" % offer_id)
 
@@ -229,7 +229,7 @@ class Thetanuts(SDKConfig):
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
         bridgeContract = w3.eth.contract(
             w3.toChecksumAddress(contract_address),
-            abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
+            abi=get_abi("Thetanuts_ParadigmBridge"),
         )
 
         try:
@@ -264,7 +264,7 @@ class Thetanuts(SDKConfig):
         assert w3.eth.chain_id == chain_id
         bidding_token = w3.eth.contract(
             w3.toChecksumAddress(token_address),
-            abi=json.load(open("thetanuts/abis/ERC20.json", "r")),
+            abi=get_abi("ERC20"),
         )
 
         allowance = bidding_token.functions.allowance(public_key, contract_address).call() / (

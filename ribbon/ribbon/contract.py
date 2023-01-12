@@ -8,18 +8,13 @@
 """ Abstract class for contract connection """
 # ---------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------
-# Imports
-# ---------------------------------------------------------------------------
-import json
-from pathlib import Path
-
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
 from ribbon.definitions import ContractConfig
 from ribbon.utils import get_address
 from sdk_commons.chains import Chains
+from sdk_commons.helpers import get_abi
 
 
 # ---------------------------------------------------------------------------
@@ -39,13 +34,6 @@ class ContractConnection:
         w3 (object): RPC connection instance
         contract (object): Contract instance
     """
-
-    abi_location = "abis/Swap.json"
-
-    @property
-    def abi_file_path(self):
-        # TODO: move in utils when we clean up the code
-        return Path(__file__).resolve().parent.parent / self.abi_location
 
     def __init__(self, config: ContractConfig):
         # Can't be imported on top due to a circular dependency
@@ -73,7 +61,6 @@ class ContractConnection:
         if chain == Chains.FUJI:
             self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
-        with open(self.abi_file_path) as f:
-            abi = json.load(f)
+        abi = get_abi('Ribbon_Swap')
 
         self.contract = self.w3.eth.contract(self.address, abi=abi)

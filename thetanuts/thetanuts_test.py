@@ -6,7 +6,6 @@
 # version ='0.1.0'
 # ---------------------------------------------------------------------------
 
-import json
 import os
 import time
 from binascii import unhexlify
@@ -16,6 +15,7 @@ import eth_keys  # type: ignore
 import web3
 from web3.middleware import geth_poa_middleware
 
+import sdk_commons
 from thetanuts.config import Thetanuts
 from thetanuts.definitions import Chains, Domain
 from thetanuts.wallet import Wallet
@@ -57,7 +57,7 @@ contract_address = bridge_contract_address = "0x3a9212E96EEeBEADDCe647E298C0610B
 
 bridgeContract = w3.eth.contract(
     w3.toChecksumAddress(bridge_contract_address),
-    abi=json.load(open("thetanuts/abis/ParadigmBridge.json", "r")),
+    abi=sdk_commons.helpers.get_abi("Thetanuts_ParadigmBridge"),
 )
 
 domain = Domain("Thetanuts", "1.0", 137, bridge_contract_address)
@@ -74,14 +74,14 @@ assert taker_wallet.public_key, "Taker Public Key is None"
 
 vault = w3.eth.contract(
     w3.toChecksumAddress(vault_contract_address),
-    abi=json.load(open("thetanuts/abis/Vault.json", "r")),
+    abi=sdk_commons.helpers.get_abi("Thetanuts_Vault"),
 )
 
 tweth_token_address = vault.functions.COLLAT().call()
 
 collat = w3.eth.contract(
     w3.toChecksumAddress(tweth_token_address),
-    abi=json.load(open("thetanuts/abis/ERC20.json", "r")),
+    abi=sdk_commons.helpers.get_abi("ERC20"),
 )
 
 COLLAT_DECIMALS = Decimal(10 ** collat.functions.decimals().call())

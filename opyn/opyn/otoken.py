@@ -13,6 +13,7 @@
 # ---------------------------------------------------------------------------
 from opyn.erc20 import ERC20Contract
 from sdk_commons.config import OfferTokenDetails
+from sdk_commons.helpers import get_abi_path
 
 
 # ---------------------------------------------------------------------------
@@ -26,7 +27,7 @@ class oTokenContract(ERC20Contract):
         config (ContractConfig): Configuration to setup the Contract
     """
 
-    abi_location = 'abis/oToken.json'
+    abi_location = get_abi_path('Ribbon_oToken')
 
     def get_otoken_details(self) -> OfferTokenDetails:
         """

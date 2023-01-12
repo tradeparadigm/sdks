@@ -16,6 +16,7 @@ from typing import Optional, cast
 from ribbon.contract import ContractConnection
 from ribbon.definitions import ContractConfig
 from ribbon.utils import get_address
+from sdk_commons.helpers import get_abi_path
 
 
 # ---------------------------------------------------------------------------
@@ -29,7 +30,7 @@ class ERC20Contract(ContractConnection):
         config (ContractConfig): Configuration to setup the Contract
     """
 
-    abi_location = "abis/ERC20.json"
+    abi_location = get_abi_path("ERC20")
 
     def __init__(self, config: ContractConfig):
         super().__init__(config)
