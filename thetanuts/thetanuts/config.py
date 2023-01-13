@@ -122,7 +122,10 @@ class Thetanuts(SDKConfig):
     def get_otoken_details(
         self,
         *,
+        # TODO: to be renamed into token_address
         contract_address: str,
+        # TODO: to be normalized with the other methods
+        swap_contract_address: str,
         chain_id: int,
         rpc_uri: str,
         **kwargs: Any,
@@ -131,11 +134,11 @@ class Thetanuts(SDKConfig):
 
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
         bridgeContract = w3.eth.contract(
-            w3.toChecksumAddress(contract_address),
+            w3.toChecksumAddress(swap_contract_address),
             abi=get_abi("Thetanuts_ParadigmBridge"),
         )
 
-        aucDetails = bridgeContract.functions.getAuctionDetails(kwargs["oToken"]).call()
+        aucDetails = bridgeContract.functions.getAuctionDetails(contract_address).call()
 
         return {
             "collateralAsset": aucDetails[0],

@@ -121,8 +121,8 @@ while True:
 # Maker checks contract for auction info
 
 vaultInfo = thetanuts.get_otoken_details(
-    contract_address=bridge_contract_address,
-    oToken=vault_contract_address,
+    contract_address=vault_contract_address,
+    swap_contract_address=bridge_contract_address,
     chain_id=current_chain.value,
     rpc_uri=rpc_uri,
 )

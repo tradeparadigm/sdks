@@ -93,7 +93,10 @@ class SDKConfig(abc.ABC):
     def get_otoken_details(
         self,
         *,
+        # TODO: to be renamed into token_address
         contract_address: str,
+        # TODO: to be normalized with the other methods
+        swap_contract_address: str,
         chain_id: int,
         rpc_uri: str,
         offer_id: int,
