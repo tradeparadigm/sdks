@@ -59,7 +59,13 @@ class RibbonSDKConfig(SDKConfig):
         return swap_contract.create_offer(new_offer, wallet)
 
     def get_otoken_details(
-        self, *, contract_address: str, chain_id: int, rpc_uri: str, **kwargs: Any
+        self,
+        *,
+        # TODO: to be renamed into token_address
+        contract_address: str,
+        chain_id: int,
+        rpc_uri: str,
+        **kwargs: Any,
     ) -> OfferTokenDetails:
         """Return details about the offer token"""
 
