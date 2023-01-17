@@ -36,7 +36,7 @@ BID_TYPES = {
         {"name": "referrer", "type": "address"},
     ]
 }
-MIN_ALLOWANCE = 100000000
+MIN_ALLOWANCE = 1
 
 
 # ---------------------------------------------------------------------------
@@ -172,7 +172,7 @@ class Wallet:
 
         allowance = (
             bidding_token.get_allowance(self.public_key, swap_config.address)
-            / bidding_token.decimals
+            / 10**bidding_token.decimals
         )
 
         return allowance > MIN_ALLOWANCE
