@@ -28,11 +28,10 @@ def get_env(variable: str) -> str:
 
 
 current_chain = Chains.MATIC
-chain_id = current_chain.value
 rpc_uri = "https://polygon-rpc.com"
 
 w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
-if chain_id == Chains.MATIC.value:
+if current_chain == Chains.MATIC:
     w3.middleware_onion.inject(geth_poa_middleware, layer=0)  # For MATIC chains
 
 
@@ -99,7 +98,7 @@ thetanuts = Thetanuts()
 thetanuts.create_offer(
     oToken=vault_contract_address,
     contract_address=bridge_contract_address,
-    chain_id=current_chain.value,
+    chain_id=current_chain,
     rpc_uri=rpc_uri,
     bidding_token=tweth_token_address,
     min_price=0,
@@ -123,7 +122,7 @@ while True:
 vaultInfo = thetanuts.get_otoken_details(
     contract_address=vault_contract_address,
     swap_contract_address=bridge_contract_address,
-    chain_id=current_chain.value,
+    chain_id=current_chain,
     rpc_uri=rpc_uri,
 )
 print("Vault info:", vaultInfo)
@@ -132,7 +131,7 @@ print("Vault info:", vaultInfo)
 offer = thetanuts.get_offer_details(
     contract_address=bridge_contract_address,
     offer_id=int(vault_contract_address, 16),
-    chain_id=current_chain.value,
+    chain_id=current_chain,
     rpc_uri=rpc_uri,
 )
 print("Current offer:", offer)
@@ -141,7 +140,7 @@ print("Current offer:", offer)
 
 signed_bid = thetanuts.sign_bid(
     contract_address=bridge_contract_address,
-    chain_id=current_chain.value,
+    chain_id=current_chain,
     rpc_uri=rpc_uri,
     swap_id=int(vault_contract_address, 16),
     sell_amount=int(
@@ -165,7 +164,7 @@ print("Validating bid by checking validate_bid(..) returns {'errors': False} ")
 if (
     thetanuts.validate_bid(
         contract_address=bridge_contract_address,
-        chain_id=current_chain.value,
+        chain_id=current_chain,
         rpc_uri=rpc_uri,
         swap_id=int(vault_contract_address, 16),
         nonce=vaultInfo["expiryTimestamp"],
@@ -191,7 +190,7 @@ else:
 print("Verifying allowance by ensuring verify_allowance returns True")
 allowance = thetanuts.verify_allowance(
     contract_address=bridge_contract_address,
-    chain_id=current_chain.value,
+    chain_id=current_chain,
     rpc_uri=rpc_uri,
     public_key=maker_public,
     token_address=offer["biddingToken"],
@@ -199,7 +198,7 @@ allowance = thetanuts.verify_allowance(
 if (
     thetanuts.verify_allowance(
         contract_address=bridge_contract_address,
-        chain_id=current_chain.value,
+        chain_id=current_chain,
         rpc_uri=rpc_uri,
         public_key=maker_public,
         token_address=offer["biddingToken"],
