@@ -27,7 +27,7 @@ class Thetanuts(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         oToken: str,
         bidding_token: str,
@@ -41,7 +41,7 @@ class Thetanuts(SDKConfig):
         """
 
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
-        if chain_id == Chains.MATIC.value:
+        if chain_id == Chains.MATIC:
             w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         vaultContract = w3.eth.contract(
             w3.toChecksumAddress(oToken),
@@ -126,7 +126,7 @@ class Thetanuts(SDKConfig):
         contract_address: str,
         # TODO: to be normalized with the other methods
         swap_contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         **kwargs: Any,
     ) -> OfferTokenDetails:
@@ -153,7 +153,7 @@ class Thetanuts(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         offer_id: int,
         **kwargs: Any,
@@ -186,7 +186,7 @@ class Thetanuts(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         public_key: str,
         private_key: str,
         swap_id: int,
@@ -216,7 +216,7 @@ class Thetanuts(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         swap_id: int,
         nonce: int,
@@ -252,7 +252,7 @@ class Thetanuts(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         public_key: str,
         token_address: str,
@@ -264,7 +264,9 @@ class Thetanuts(SDKConfig):
         """
 
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
-        assert w3.eth.chain_id == chain_id
+        if not w3.eth.chain_id == chain_id.value:
+            return False
+
         bidding_token = w3.eth.contract(
             w3.toChecksumAddress(token_address),
             abi=get_abi("ERC20"),

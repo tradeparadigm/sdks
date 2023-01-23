@@ -28,7 +28,7 @@ class RibbonSDKConfig(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         oToken: str,
         bidding_token: str,
@@ -43,9 +43,7 @@ class RibbonSDKConfig(SDKConfig):
 
         wallet = Wallet(public_key=public_key, private_key=private_key)
 
-        config = ContractConfig(
-            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
-        )
+        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
 
         swap_contract = SwapContract(config)
 
@@ -63,15 +61,13 @@ class RibbonSDKConfig(SDKConfig):
         *,
         # TODO: to be renamed into token_address
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         **kwargs: Any,
     ) -> OfferTokenDetails:
         """Return details about the offer token"""
 
-        config = ContractConfig(
-            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
-        )
+        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
 
         otoken_contract = oTokenContract(config)
         return otoken_contract.get_otoken_details()
@@ -80,16 +76,14 @@ class RibbonSDKConfig(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         offer_id: int,
         **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
 
-        swap_config = ContractConfig(
-            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
-        )
+        swap_config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
 
         swap_contract = SwapContract(swap_config)
         return swap_contract.get_offer_details(offer_id)
@@ -98,7 +92,7 @@ class RibbonSDKConfig(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         public_key: str,
         private_key: str,
         swap_id: int,
@@ -114,7 +108,7 @@ class RibbonSDKConfig(SDKConfig):
         domain = Domain(
             name="RIBBON SWAP",
             version="1",
-            chainId=chain_id,
+            chainId=chain_id.value,
             verifyingContract=contract_address,
         )
         payload = Bid(
@@ -137,7 +131,7 @@ class RibbonSDKConfig(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         swap_id: int,
         nonce: int,
@@ -153,7 +147,7 @@ class RibbonSDKConfig(SDKConfig):
 
         config = ContractConfig(
             address=contract_address,
-            chain_id=Chains(chain_id),
+            chain_id=chain_id,
             rpc_uri=rpc_uri,
         )
 
@@ -176,7 +170,7 @@ class RibbonSDKConfig(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         public_key: str,
         token_address: str,
@@ -187,9 +181,7 @@ class RibbonSDKConfig(SDKConfig):
         the given token on the wallet
         """
 
-        config = ContractConfig(
-            address=contract_address, chain_id=Chains(chain_id), rpc_uri=rpc_uri
-        )
+        config = ContractConfig(address=contract_address, chain_id=chain_id, rpc_uri=rpc_uri)
 
         wallet = Wallet(public_key=public_key)
         return wallet.verify_allowance(config, token_address=token_address)

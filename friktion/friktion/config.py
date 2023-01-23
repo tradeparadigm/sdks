@@ -41,7 +41,7 @@ class FriktionSDKConfig(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         oToken: str,
         bidding_token: str,
@@ -66,7 +66,7 @@ class FriktionSDKConfig(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         offer_id: int,
         seller: str,
@@ -74,7 +74,7 @@ class FriktionSDKConfig(SDKConfig):
     ) -> OfferTokenDetails:
         """Return details about the offer token"""
 
-        network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
+        network = self.CHAIN_NETWORK_MAP[chain_id]
         swap_contract = SwapContract(network)
         details: OfferTokenDetails = async_to_sync(swap_contract.get_offered_token_details)(
             PublicKey(seller), offer_id
@@ -86,14 +86,14 @@ class FriktionSDKConfig(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         offer_id: int,
         **kwargs: Any,
     ) -> OfferDetails:
         """Return details for a given offer"""
 
-        network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
+        network = self.CHAIN_NETWORK_MAP[chain_id]
         swap_contract = SwapContract(network)
 
         details: Offer = async_to_sync(swap_contract.get_offer_details)(
@@ -142,7 +142,7 @@ class FriktionSDKConfig(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         swap_id: int,
         nonce: int,
@@ -167,7 +167,7 @@ class FriktionSDKConfig(SDKConfig):
             swap_order_addr=PublicKey(contract_address),
         )
 
-        network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
+        network = self.CHAIN_NETWORK_MAP[chain_id]
         swap_contract = SwapContract(network)
         error: str = async_to_sync(swap_contract.validate_bid)(bid_details, signature)
 
@@ -180,7 +180,7 @@ class FriktionSDKConfig(SDKConfig):
         self,
         *,
         contract_address: str,
-        chain_id: int,
+        chain_id: Chains,
         rpc_uri: str,
         public_key: str,
         token_address: str,
@@ -190,7 +190,7 @@ class FriktionSDKConfig(SDKConfig):
         Verify if the contract is allowed to access
         the given token on the wallet
         """
-        network = self.CHAIN_NETWORK_MAP[Chains(chain_id)]
+        network = self.CHAIN_NETWORK_MAP[chain_id]
         swap_contract = SwapContract(network)
 
         try:
