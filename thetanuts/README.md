@@ -18,13 +18,9 @@ Open a container with python
     export TAKER_PRVKEY="..."
     export MAKER_PRVKEY="..."
 
-## Install the sdk_commons
+## Install the SDK
 
-    pip3 install /tmp/code/sdk_commons
-
-## Install the Thetanuts libraries
-
-    pip3 install /tmp/code/thetanuts
+    pip3 install /tmp/code
 
 ## Run thetanuts test for a end-to-end flow
 
