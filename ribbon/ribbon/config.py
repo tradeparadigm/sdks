@@ -21,7 +21,8 @@ class RibbonSDKConfig(SDKConfig):
         Chains.AVALANCHE,
         Chains.ETHEREUM,
         Chains.FUJI,
-        Chains.GOERLI,
+        # Temporarly disable because not supported yet our side
+        # Chains.GOERLI,
     ]
 
     def create_offer(

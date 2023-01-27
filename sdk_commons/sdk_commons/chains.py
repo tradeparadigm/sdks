@@ -18,7 +18,8 @@ class MembershipTestEnumMeta(EnumMeta):
 class Chains(Enum, metaclass=MembershipTestEnumMeta):
     ETHEREUM = 1
     ROPSTEN = 3
-    GOERLI = 5
+    # Temporarly disable because not supported yet our side
+    # GOERLI = 5
     KOVAN = 42
     AVALANCHE = 43114
     FUJI = 43113
