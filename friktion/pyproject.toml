@@ -6,7 +6,7 @@ authors = ["bigdefidev <bigdefidev@protonmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-solana = "0.25.0"
+solana = "0.29.1"
 anchorpy = "0.9.4"
 requests = "^2.28.1"
 solders = "^0.2.0"
