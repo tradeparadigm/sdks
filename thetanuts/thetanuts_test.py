@@ -144,7 +144,7 @@ signed_bid = thetanuts.sign_bid(
     contract_address=vault_contract_address,
     chain_id=current_chain,
     rpc_uri=rpc_uri,
-    swap_id = vault_id << 16 + vault_epoch,
+    swap_id=vault_id << 16 + vault_epoch,
     sell_amount=int(
         Decimal(offer["availableSize"])
         * Decimal(pricePerContract)

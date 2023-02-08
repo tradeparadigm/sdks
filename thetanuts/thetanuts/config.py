@@ -165,7 +165,9 @@ class Thetanuts(SDKConfig):
             abi=get_abi("Thetanuts_ParadigmBridge"),
         )
 
-        vault_address = w3.toChecksumAddress( bridgeContract.functions.vaultIndex( int(offer_id >> 16) ).call() )
+        vault_address = w3.toChecksumAddress(
+            bridgeContract.functions.vaultIndex(int(offer_id >> 16)).call()
+        )
 
         try:
             aucDetails = bridgeContract.functions.getAuctionDetails(vault_address).call()
@@ -198,7 +200,7 @@ class Thetanuts(SDKConfig):
         **kwargs: Any,
     ) -> str:
         """Sign a bid and return the signature"""
-        
+
         payload = Bid(
             vaultAddress=contract_address,  # Vault address casted as integer
             nonce=nonce,  # expiryTimestamp
@@ -235,10 +237,13 @@ class Thetanuts(SDKConfig):
             w3.toChecksumAddress(contract_address),
             abi=get_abi("Thetanuts_ParadigmBridge"),
         )
+        vault_address = w3.toChecksumAddress(
+            bridgeContract.functions.vaultIndex(int(swap_id >> 16)).call()
+        )
 
         try:
             isValid = bridgeContract.functions.validateSignature(
-                w3.toChecksumAddress( bridgeContract.functions.vaultIndex( int(swap_id) >> 16 ).call() ),
+                vault_address,
                 nonce,
                 sell_amount,
                 w3.toChecksumAddress(signer_wallet),
