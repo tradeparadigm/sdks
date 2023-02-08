@@ -45,7 +45,6 @@ class Thetanuts(SDKConfig):
             w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         vaultContract = w3.eth.contract(
             w3.toChecksumAddress(oToken),
-            # w3.toChecksumAddress(vault_contract_address),
             abi=get_abi("Thetanuts_Vault"),
         )
 
@@ -165,7 +164,8 @@ class Thetanuts(SDKConfig):
             w3.toChecksumAddress(contract_address),
             abi=get_abi("Thetanuts_ParadigmBridge"),
         )
-        vault_address = w3.toChecksumAddress("0x%040x" % offer_id)
+
+        vault_address = w3.toChecksumAddress( bridgeContract.functions.vaultIndex( int(offer_id >> 16) ).call() )
 
         try:
             aucDetails = bridgeContract.functions.getAuctionDetails(vault_address).call()
@@ -198,15 +198,16 @@ class Thetanuts(SDKConfig):
         **kwargs: Any,
     ) -> str:
         """Sign a bid and return the signature"""
-
+        
         payload = Bid(
-            swapId=swap_id,  # Vault address casted as integer
+            vaultAddress=contract_address,  # Vault address casted as integer
             nonce=nonce,  # expiryTimestamp
             signerWallet=signer_wallet,
             sellAmount=sell_amount,
             buyAmount=buy_amount,  # Only entire vault allowed, no partials
             referrer=referrer,
         )
+
         wallet = Wallet(public_key=public_key, private_key=private_key)
         signature = wallet.sign_bid(payload)
 
@@ -237,7 +238,7 @@ class Thetanuts(SDKConfig):
 
         try:
             isValid = bridgeContract.functions.validateSignature(
-                w3.toChecksumAddress(hex(swap_id)),
+                w3.toChecksumAddress( bridgeContract.functions.vaultIndex( int(swap_id) >> 16 ).call() ),
                 nonce,
                 sell_amount,
                 w3.toChecksumAddress(signer_wallet),
