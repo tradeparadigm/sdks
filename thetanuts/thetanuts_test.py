@@ -16,8 +16,8 @@ import web3
 from web3.middleware import geth_poa_middleware
 
 import sdk_commons
+from sdk_commons.chains import Chains
 from thetanuts.config import Thetanuts
-from thetanuts.definitions import Chains
 from thetanuts.wallet import Wallet
 
 
