@@ -132,7 +132,7 @@ print("Vault info:", vaultInfo)
 # Maker checks contract for offer info
 offer = thetanuts.get_offer_details(
     contract_address=bridge_contract_address,
-    offer_id=vault_id << 16 + vault_epoch,
+    offer_id=(vault_id << 16) + vault_epoch,
     chain_id=current_chain,
     rpc_uri=rpc_uri,
 )
@@ -144,7 +144,7 @@ signed_bid = thetanuts.sign_bid(
     contract_address=vault_contract_address,
     chain_id=current_chain,
     rpc_uri=rpc_uri,
-    swap_id=vault_id << 16 + vault_epoch,
+    swap_id=(vault_id << 16) + vault_epoch,
     sell_amount=int(
         Decimal(offer["availableSize"])
         * Decimal(pricePerContract)
@@ -168,7 +168,7 @@ if (
         contract_address=bridge_contract_address,
         chain_id=current_chain,
         rpc_uri=rpc_uri,
-        swap_id=vault_id << 16 + vault_epoch,
+        swap_id=(vault_id << 16) + vault_epoch,
         nonce=vaultInfo["expiryTimestamp"],
         signer_wallet=maker_public,
         sell_amount=int(
@@ -190,13 +190,6 @@ else:
 # Paradigm validates allowance
 
 print("Verifying allowance by ensuring verify_allowance returns True")
-allowance = thetanuts.verify_allowance(
-    contract_address=bridge_contract_address,
-    chain_id=current_chain,
-    rpc_uri=rpc_uri,
-    public_key=maker_public,
-    token_address=offer["biddingToken"],
-)
 if (
     thetanuts.verify_allowance(
         contract_address=bridge_contract_address,
