@@ -16,8 +16,8 @@ import web3
 from web3.middleware import geth_poa_middleware
 
 import sdk_commons
+from sdk_commons.chains import Chains
 from thetanuts.config import Thetanuts
-from thetanuts.definitions import Chains, Domain
 from thetanuts.wallet import Wallet
 
 
@@ -52,14 +52,15 @@ taker_public = eth_keys.keys.private_key_to_public_key(
 # tweth_token_address = "0xd9F0446AedadCf16A12692E02FA26C617FA4D217"
 # Above address to be picked up from the vault contract
 oToken = vault_contract_address = "0x4a3c6DA195506ADC87D984C5B429708c8Ddd4237"
-contract_address = bridge_contract_address = "0x3a9212E96EEeBEADDCe647E298C0610BEB071eE3"
+contract_address = bridge_contract_address = "0xD7888f3BCA29bf9d857Db868f7603Ec05b50F7B9"
+
 
 bridgeContract = w3.eth.contract(
     w3.toChecksumAddress(bridge_contract_address),
     abi=sdk_commons.helpers.get_abi("Thetanuts_ParadigmBridge"),
 )
 
-domain = Domain("Thetanuts", "1.0", 137, bridge_contract_address)
+vault_id = bridgeContract.functions.vaultIndexToAddress(vault_contract_address).call()
 
 owner_wallet = Wallet(owner_public, owner_private)
 maker_wallet = Wallet(maker_public, maker_private)
@@ -77,6 +78,7 @@ vault = w3.eth.contract(
 )
 
 tweth_token_address = vault.functions.COLLAT().call()
+vault_epoch = vault.functions.epoch().call() + 1
 
 collat = w3.eth.contract(
     w3.toChecksumAddress(tweth_token_address),
@@ -130,7 +132,7 @@ print("Vault info:", vaultInfo)
 # Maker checks contract for offer info
 offer = thetanuts.get_offer_details(
     contract_address=bridge_contract_address,
-    offer_id=int(vault_contract_address, 16),
+    offer_id=(vault_id << 16) + vault_epoch,
     chain_id=current_chain,
     rpc_uri=rpc_uri,
 )
@@ -139,10 +141,10 @@ print("Current offer:", offer)
 # Maker signs bid for submission
 
 signed_bid = thetanuts.sign_bid(
-    contract_address=bridge_contract_address,
+    contract_address=vault_contract_address,
     chain_id=current_chain,
     rpc_uri=rpc_uri,
-    swap_id=int(vault_contract_address, 16),
+    swap_id=(vault_id << 16) + vault_epoch,
     sell_amount=int(
         Decimal(offer["availableSize"])
         * Decimal(pricePerContract)
@@ -166,7 +168,7 @@ if (
         contract_address=bridge_contract_address,
         chain_id=current_chain,
         rpc_uri=rpc_uri,
-        swap_id=int(vault_contract_address, 16),
+        swap_id=(vault_id << 16) + vault_epoch,
         nonce=vaultInfo["expiryTimestamp"],
         signer_wallet=maker_public,
         sell_amount=int(
@@ -181,20 +183,13 @@ if (
     )["errors"]
     is False
 ):
-    print("Bid validated")
+    print(" -> Bid validated")
 else:
-    print("Bid validation failed!")
+    print(" -> Bid validation failed!")
 
 # Paradigm validates allowance
 
 print("Verifying allowance by ensuring verify_allowance returns True")
-allowance = thetanuts.verify_allowance(
-    contract_address=bridge_contract_address,
-    chain_id=current_chain,
-    rpc_uri=rpc_uri,
-    public_key=maker_public,
-    token_address=offer["biddingToken"],
-)
 if (
     thetanuts.verify_allowance(
         contract_address=bridge_contract_address,
@@ -205,9 +200,9 @@ if (
     )
     is True
 ):
-    print("Allowance verified")
+    print(" -> Allowance verified")
 else:
-    print("Allowance not set!")
+    print(" -> Allowance not set!")
 
 # Contract/ParadigmBridge owner transmits sign_bid to ParadigmBridge
 

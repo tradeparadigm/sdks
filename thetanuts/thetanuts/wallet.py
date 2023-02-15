@@ -67,7 +67,7 @@ class Wallet:
         toSign = encode_abi_packed(
             ['address', 'uint', 'uint', 'address'],
             [
-                Web3.toChecksumAddress(hex(bid.swapId)),
+                bid.vaultAddress,
                 bid.nonce,
                 int(bid.sellAmount),
                 signerWallet,
@@ -76,7 +76,7 @@ class Wallet:
         print(
             "Wallet signing bid",
             [
-                Web3.toChecksumAddress(hex(bid.swapId)),
+                bid.vaultAddress,
                 bid.nonce,
                 int(bid.sellAmount),
                 signerWallet,
