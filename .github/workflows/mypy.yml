@@ -24,7 +24,6 @@ jobs:
           [
             template,
             ribbon,
-            friktion,
             thetanuts
           ]
 
@@ -37,7 +36,7 @@ jobs:
       - name: Install MyPy
         run: |
           pip install mypy
-          pip install ./sdk_commons ./template ./friktion ./ribbon ./thetanuts
+          pip install ./sdk_commons ./template ./ribbon ./thetanuts
 
       - name: Run MyPy
         if: always()
