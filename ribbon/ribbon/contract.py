@@ -14,7 +14,7 @@ from web3.middleware import geth_poa_middleware
 from ribbon.definitions import ContractConfig
 from ribbon.utils import get_address
 from sdk_commons.chains import Chains
-from sdk_commons.helpers import get_abi
+from sdk_commons.helpers import get_abi, get_abi_path
 
 
 # ---------------------------------------------------------------------------
@@ -34,6 +34,8 @@ class ContractConnection:
         w3 (object): RPC connection instance
         contract (object): Contract instance
     """
+
+    abi_location = get_abi_path("Ribbon_Swap")
 
     def __init__(self, config: ContractConfig):
         # Can't be imported on top due to a circular dependency
@@ -61,6 +63,6 @@ class ContractConnection:
         if chain == Chains.FUJI:
             self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
-        abi = get_abi('Ribbon_Swap')
+        abi = get_abi(self.abi_location)
 
         self.contract = self.w3.eth.contract(self.address, abi=abi)
