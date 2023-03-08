@@ -19,6 +19,7 @@ class RibbonSDKConfig(SDKConfig):
     authorization_pages = AuthorizationPages
     supported_chains = [
         Chains.AVALANCHE,
+        Chains.BSC,
         Chains.ETHEREUM,
         Chains.FUJI,
         Chains.GOERLI,
