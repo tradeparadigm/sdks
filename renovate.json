@@ -24,6 +24,7 @@
       "groupName": "WEB3 and ETH dependencies",
       "matchManagers": [
         "pip_requirements",
+        "poetry"
       ],
       "matchPackageNames": [
         "eth-abi",
