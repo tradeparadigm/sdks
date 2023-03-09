@@ -24,7 +24,7 @@ python = '>=3.7.2,<3.11'
 
 # Shared Ribbon & Thetanuts
 eth-abi = '3.0.0'
-eth-account = '0.6.0'
+eth-account = '0.8.0'
 eth-keys = '0.4.0'
 eth-typing = '3.0.0'
 eth-utils = '2.0.0'
