@@ -36,7 +36,7 @@ jobs:
       - name: Install MyPy
         run: |
           pip install mypy
-          pip install ./sdk_commons ./template ./ribbon ./thetanuts
+          pip install . ./template
 
       - name: Run MyPy
         if: always()

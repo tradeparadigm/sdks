@@ -28,7 +28,7 @@ jobs:
         run: |
           # TODO: move me in a requirements file
           pip install pytest
-          pip install ./sdk_commons ./template ./ribbon ./thetanuts
+          pip install . ./template
 
       - name: Run pytest
         run: |
