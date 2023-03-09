@@ -28,7 +28,7 @@ eth-account = '0.6.0'
 eth-keys = '0.4.0'
 eth-typing = '3.0.0'
 eth-utils = '2.0.0'
-web3 = '6.0.0-beta.4'
+web3 = '6.0.0b11'
 
 # Ribbon only
 cryptography = '36.0.2'
