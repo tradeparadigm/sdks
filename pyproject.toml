@@ -35,7 +35,6 @@ cryptography = '39.0.2'
 eth-hash = '0.5.1'
 eth-keyfile = '0.6.1'
 eth-rlp = '0.3.0'
-PyJWT = '2.3.0'
 
 [tool.black]
 target-version = ['py310']
