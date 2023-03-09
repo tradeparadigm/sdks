@@ -17,5 +17,25 @@
   "pre-commit": {
     "enabled": true,
     "groupName": "pre-commit"
-  }
+  },
+  "packageRules": [
+    {
+      "description": "Group together WEB3 and all ETH packages",
+      "groupName": "WEB3 and ETH dependencies",
+      "matchManagers": [
+        "pip_requirements",
+      ],
+      "matchPackageNames": [
+        "eth-abi",
+        "eth-account",
+        "eth-hash",
+        "eth-keyfile",
+        "eth-keys",
+        "eth-rlp",
+        "eth-typing",
+        "eth-utils",
+        "web3"
+      ]
+    }
+  ]
 }
