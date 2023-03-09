@@ -27,7 +27,7 @@ eth-abi = '3.0.0'
 eth-account = '0.6.0'
 eth-keys = '0.4.0'
 eth-typing = '3.0.0'
-eth-utils = '2.0.0'
+eth-utils = '2.1.0'
 web3 = '6.0.0-beta.4'
 
 # Ribbon only
