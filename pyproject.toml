@@ -31,7 +31,7 @@ eth-utils = '2.0.0'
 web3 = '6.0.0-beta.4'
 
 # Ribbon only
-cryptography = '36.0.2'
+cryptography = '39.0.1'
 eth-hash = '0.3.2'
 eth-keyfile = '0.6.0'
 eth-rlp = '0.3.0'
