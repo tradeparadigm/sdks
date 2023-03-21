@@ -26,9 +26,10 @@ from sdk_commons.config import BidValidation, OfferDetails
 # ---------------------------------------------------------------------------
 DETAILED_ERROR_MESSAGES = {
     "SIGNATURE_INVALID": "Signature invalid.",
-    "SIGNATURE_MISMATCHED": (
-        "Signature's origin does not match signer's address. "
-        "Ensure you are using the correct wallet."
+    "UNAUTHORIZED": (
+        "Signer address in bid not authorized by signatory. "
+        "Either ensure the signatory authorizes the signer wallet address. "
+        "Or ensure the signatory and signer wallet address is the same."
     ),
     "NONCE_ALREADY_USED": "This nonce has been previously used.",
     "BID_TOO_SMALL": "Bid size has to be larger than minimum bid.",
@@ -42,8 +43,6 @@ DETAILED_ERROR_MESSAGES = {
         "Insufficient bidding token balance. "
         "Ensure you have sufficient balance of bidding token in your wallet."
     ),
-    "SELLER_ALLOWANCE_LOW": "Seller has insufficient oToken allowance.",
-    "SELLER_BALANCE_LOW": "Seller has insufficienct oToken balance.",
 }
 
 GAS_LIMIT = 200000
