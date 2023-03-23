@@ -27,9 +27,9 @@ from sdk_commons.config import BidValidation, OfferDetails
 DETAILED_ERROR_MESSAGES = {
     "SIGNATURE_INVALID": "Signature invalid.",
     "UNAUTHORIZED": (
-        "Signer address in bid not authorized by signatory. "
-        "Either ensure the signatory authorizes the signer wallet address. "
-        "Or ensure the signatory and signer wallet address is the same."
+        "Signer address in bid differs from signatory. "
+        "Either ensure the signer wallet has authorized signatory if using a delegate, "
+        "or ensure the signed message details are accurate."
     ),
     "NONCE_ALREADY_USED": "This nonce has been previously used.",
     "BID_TOO_SMALL": "Bid size has to be larger than minimum bid.",
