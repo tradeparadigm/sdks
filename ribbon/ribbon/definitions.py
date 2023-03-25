@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 # Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 04/04/2022
@@ -12,7 +11,6 @@
 # Imports
 # ---------------------------------------------------------------------------
 from dataclasses import dataclass
-from typing import Optional
 
 from ribbon.encode import ADDRESS_ZERO
 from sdk_commons.chains import Chains
@@ -36,7 +34,7 @@ class Domain:
     chainId: int
     verifyingContract: str
     version: str
-    salt: Optional[str] = None
+    salt: str | None = None
 
 
 @dataclass
@@ -51,9 +49,9 @@ class Bid:
 
 @dataclass
 class SignedBid(Bid):
-    v: Optional[int] = None
-    r: Optional[str] = None
-    s: Optional[str] = None
+    v: int | None = None
+    r: str | None = None
+    s: str | None = None
 
 
 @dataclass

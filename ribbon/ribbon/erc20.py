@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 # Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 08/04/2022
@@ -8,7 +7,7 @@
 """ Module to interact with ERC20 contracts """
 # ---------------------------------------------------------------------------
 
-from typing import Optional, cast
+from typing import cast
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -39,7 +38,7 @@ class ERC20Contract(ContractConnection):
         # TODO: Which is the correct type here? int? Decimal? float?
         self.decimals = cast(float, self.contract.functions.decimals().call())
 
-    def get_allowance(self, owner: Optional[str], spender: str) -> int:
+    def get_allowance(self, owner: str | None, spender: str) -> int:
         """
         Method to get allowance of owner
 

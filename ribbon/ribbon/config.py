@@ -15,7 +15,6 @@ class AuthorizationPages:
 
 
 class RibbonSDKConfig(SDKConfig):
-
     authorization_pages = AuthorizationPages
     supported_chains = [
         Chains.AVALANCHE,
