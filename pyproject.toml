@@ -6,7 +6,7 @@ build-backend = 'poetry.core.masonry.api'
 name = 'sdks'
 description = 'Paradigm SDK to interact with DeFi Venues'
 license = 'MIT'
-version = '0.5.1'
+version = '0.5.2'
 authors = [
     "Paolo D'Onorio De Meo <paolo@paradigm.co>",
     "Cássios Marques <cassios@paradigm.co>",
@@ -31,7 +31,8 @@ eth-utils = '2.1.0'
 web3 = '6.0.0-beta.4'
 
 # Ribbon only
-cryptography = '39.0.2'
+cryptography = '38.0.4'
+pyOpenSSL = '22.0.0'
 eth-hash = '0.5.1'
 eth-keyfile = '0.6.1'
 eth-rlp = '0.3.0'
