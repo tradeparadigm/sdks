@@ -19,6 +19,7 @@ from ribbon.definitions import Offer, SignedBid
 from ribbon.encode import ADDRESS_ZERO
 from ribbon.utils import get_address
 from ribbon.wallet import Wallet
+from sdk_commons.chains import Chains
 from sdk_commons.config import BidValidation, OfferDetails
 
 # ---------------------------------------------------------------------------
@@ -165,12 +166,12 @@ class SwapContract(ContractConnection):
         offer.biddingToken = get_address(offer.biddingToken)
 
         nonce = self.w3.eth.get_transaction_count(wallet.public_key)
-        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).build_transaction(
-            {
-                "nonce": nonce,
-                "gas": GAS_LIMIT,
-            }
-        )
+        if self.config.chain_id == Chains.BSC or self.config.chain_id == Chains.BSC_TESTNET:
+            # BSC transactions require the gasPrice parameter
+            tx_params = {"nonce": nonce, "gas": GAS_LIMIT, 'gasPrice': self.w3.eth.gas_price}
+        else:
+            tx_params = {"nonce": nonce, "gas": GAS_LIMIT}
+        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).build_transaction(tx_params)
 
         signed_tx = self.w3.eth.account.sign_transaction(tx, private_key=wallet.private_key)
 

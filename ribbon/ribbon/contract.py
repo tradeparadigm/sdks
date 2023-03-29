@@ -49,7 +49,7 @@ class ContractConnection:
 
         self.w3 = Web3(Web3.HTTPProvider(self.config.rpc_uri))
         if not self.w3.isConnected():
-            raise ValueError("RPC connection error")
+            raise ValueError("RPC connection error")            
 
         chain = self.config.chain_id
         rpc_chain_id = self.w3.eth.chain_id
@@ -60,7 +60,7 @@ class ContractConnection:
                 + f"({chain.value})"
             )
 
-        if chain == Chains.FUJI:
+        if chain == Chains.FUJI or chain == Chains.BSC or chain == Chains.BSC_TESTNET:
             self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         abi = get_abi(self.abi_location)
