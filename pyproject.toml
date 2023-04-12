@@ -24,11 +24,11 @@ python = '>=3.7.2,<3.11'
 
 # Shared Ribbon & Thetanuts
 eth-abi = '3.0.1'
-eth-account = '0.6.0'
+eth-account = '0.8.0'
 eth-keys = '0.4.0'
 eth-typing = '3.3.0'
 eth-utils = '2.1.0'
-web3 = '6.0.0-beta.4'
+web3 = '6.2.0'
 
 # Ribbon only
 cryptography = '38.0.4'
