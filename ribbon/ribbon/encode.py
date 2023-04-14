@@ -154,7 +154,6 @@ class TypedDataEncoder:
         self.subtypes: dict[str, dict[str, bool]] = {}
 
         for name in types:
-
             self.links.setdefault(name, {})
             self.parents.setdefault(name, [])
             self.subtypes.setdefault(name, {})
