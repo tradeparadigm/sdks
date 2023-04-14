@@ -19,7 +19,6 @@ class AuthorizationPages:
 
 
 class Thetanuts(SDKConfig):
-
     authorization_pages = AuthorizationPages
     supported_chains = [Chains.ETHEREUM, Chains.MATIC]
 

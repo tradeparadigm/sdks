@@ -15,7 +15,6 @@ class AuthorizationPages:
 
 
 class TemplateSDKConfig(SDKConfig):
-
     authorization_pages = AuthorizationPages
     supported_chains = [Chains.ROPSTEN, Chains.KOVAN]
 
