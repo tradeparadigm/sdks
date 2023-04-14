@@ -166,7 +166,7 @@ class SwapContract(ContractConnection):
         offer.biddingToken = get_address(offer.biddingToken)
 
         nonce = self.w3.eth.get_transaction_count(wallet.public_key)
-        if self.config.chain_id == Chains.BSC or self.config.chain_id == Chains.BSC_TESTNET:
+        if self.config.chain_id in [Chains.BSC, Chains.BSC_TESTNET]:
             # BSC transactions require the gasPrice parameter
             tx_params = {"nonce": nonce, "gas": GAS_LIMIT, 'gasPrice': self.w3.eth.gas_price}
         else:
