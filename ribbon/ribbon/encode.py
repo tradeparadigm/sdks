@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 # Created By: Steven@Ribbon
 # Created Date: 04/04/2022
@@ -9,7 +8,8 @@
 # ---------------------------------------------------------------------------
 
 import re
-from typing import Any, Callable, Optional, cast
+from collections.abc import Callable
+from typing import Any, cast
 
 # ---------------------------------------------------------------------------
 # Imports
@@ -51,7 +51,7 @@ def uint_encoder(data_type: str) -> EncoderType:
     Returns:
         encoder (EncoderType): Uint encoder
     """
-    match = re.findall('^(u?)int(\d*)$', data_type).pop()
+    match = re.findall(r'^(u?)int(\d*)$', data_type).pop()
     signed = match[1] == ''
     width = int(match[2]) if len(match) == 3 else 256
 
@@ -83,7 +83,7 @@ def bytes_encoder(data_type: str) -> EncoderType:
     Returns:
         encoder (EncoderType): Bytes encoder
     """
-    match = re.findall('^bytes(\d+)$', data_type).pop()
+    match = re.findall(r'^bytes(\d+)$', data_type).pop()
     width = int(match[1])
 
     if width == 0 or width > 32 or match[1] != str(width):
@@ -102,7 +102,7 @@ def bytes_encoder(data_type: str) -> EncoderType:
     )
 
 
-def get_base_encoder(data_type: str) -> Optional[EncoderType]:
+def get_base_encoder(data_type: str) -> EncoderType | None:
     """
     Get the encoder for base types
 
@@ -112,9 +112,9 @@ def get_base_encoder(data_type: str) -> Optional[EncoderType]:
     Returns:
         encoder (EncoderType): Encoder
     """
-    if re.match('^(u?)int(\d*)$', data_type):
+    if re.match(r'^(u?)int(\d*)$', data_type):
         return uint_encoder(data_type)
-    elif re.match('^bytes(\d+)$', data_type):
+    elif re.match(r'^bytes(\d+)$', data_type):
         return bytes_encoder(data_type)
     elif data_type == 'address':
         return lambda value: hex_zero_pad(get_address(value), 32)
@@ -168,7 +168,7 @@ class TypedDataEncoder:
 
                 uniqueNames[fieldName] = True
 
-                baseType = re.sub('\[[^()]*\]', '', field['type'])
+                baseType = re.sub(r'\[[^()]*\]', '', field['type'])
 
                 if baseType == name:
                     raise ValueError(f'Circular type reference: {baseType}')
@@ -213,7 +213,7 @@ class TypedDataEncoder:
                 [encode_type(t, types[t]) for t in st]
             )
 
-    def _get_encoder(self, data_type: str) -> Optional[EncoderType]:
+    def _get_encoder(self, data_type: str) -> EncoderType | None:
         """
         Get the encoder for a given type
 
@@ -226,13 +226,12 @@ class TypedDataEncoder:
         if encoder := get_base_encoder(data_type):
             return encoder
 
-        match = re.findall('\[[^()]*\]', data_type)
+        match = re.findall(r'\[[^()]*\]', data_type)
         if len(match) > 0:
             match = data_type[:-1].split('[')
             subtype = match[0]
             subEncoder = self.get_encoder(subtype)
             length = 0 if len(match) == 1 else int(match[1])
-            # print(length)
             return cast(
                 EncoderType,
                 (

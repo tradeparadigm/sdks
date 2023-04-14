@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 # Created By: Steven@Ribbon
 # Created Date: 04/04/2022
@@ -9,7 +8,6 @@
 # ---------------------------------------------------------------------------
 
 import re
-from typing import Optional
 
 from eth_typing import ChecksumAddress
 from web3 import Web3
@@ -40,7 +38,7 @@ def id(text: str) -> str:
     return Web3.keccak(text=text).hex()
 
 
-def get_address(address: Optional[str]) -> ChecksumAddress:
+def get_address(address: str | None) -> ChecksumAddress:
     """
     Validate address validity and return the checksum address
 
