@@ -126,6 +126,7 @@ class SDKConfig(abc.ABC):
         *,
         contract_address: str,
         chain_id: Chains,
+        rpc_uri: str,
         public_key: str,
         private_key: str,
         swap_id: int,
