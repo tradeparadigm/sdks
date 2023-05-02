@@ -60,7 +60,7 @@ class ContractConnection:
                 + f"({chain.value})"
             )
 
-        if chain == Chains.FUJI or chain == Chains.BSC or chain == Chains.BSC_TESTNET:
+        if chain in [Chains.FUJI, Chains.BSC, Chains.BSC_TESTNET]:
             self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         abi = get_abi(self.abi_location)
