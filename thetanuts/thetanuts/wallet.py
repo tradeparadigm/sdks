@@ -1,7 +1,7 @@
 """ Module for wallet utilities """
 import eth_keys  # type: ignore
 import web3
-from eth_abi.packed import encode_abi_packed
+from eth_abi.packed import encode_packed
 from eth_account.messages import encode_defunct
 from web3 import Web3
 
@@ -64,7 +64,7 @@ class Wallet:
         if signerWallet != self.public_key:
             raise ValueError("Signer wallet address mismatch")
 
-        toSign = encode_abi_packed(
+        toSign = encode_packed(
             ['address', 'uint', 'uint', 'address'],
             [
                 bid.vaultAddress,
