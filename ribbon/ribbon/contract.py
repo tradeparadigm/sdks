@@ -49,7 +49,7 @@ class ContractConnection:
 
         self.w3 = Web3(Web3.HTTPProvider(self.config.rpc_uri))
         if not self.w3.isConnected():
-            raise ValueError("RPC connection error")            
+            raise ValueError("RPC connection error")
 
         chain = self.config.chain_id
         rpc_chain_id = self.w3.eth.chain_id

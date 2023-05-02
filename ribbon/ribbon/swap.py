@@ -171,7 +171,9 @@ class SwapContract(ContractConnection):
             tx_params = {"nonce": nonce, "gas": GAS_LIMIT, 'gasPrice': self.w3.eth.gas_price}
         else:
             tx_params = {"nonce": nonce, "gas": GAS_LIMIT}
-        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).build_transaction(tx_params)
+        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).build_transaction(
+            tx_params
+        )
 
         signed_tx = self.w3.eth.account.sign_transaction(tx, private_key=wallet.private_key)
 
