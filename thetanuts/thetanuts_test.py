@@ -228,9 +228,9 @@ print("Perform test for PUT vault - using tUSDC")
 
 vault_contract_address = "0x95f907d6Dcd0ea1F4F53E1e63c72Ed1E1471FEa7"
 vault_id = bridgeContract.functions.vaultIndexToAddress(vault_contract_address).call()
-tusdc_token_address = "0xcEAfECFf7F1923F72e5506c3FB726abB890C4391" 
+tusdc_token_address = "0xcEAfECFf7F1923F72e5506c3FB726abB890C4391"
 pricePerContract = "10"
-COLLAT_DECIMALS = Decimal("1e6") # TUSDC resolution
+COLLAT_DECIMALS = Decimal("1e6")  # TUSDC resolution
 
 # Start new round (Performed by Bridge/Vault owner account)
 thetanuts.create_offer(
@@ -357,11 +357,11 @@ tx = bridgeContract.functions.pullAssetsAndStartRound(
         / PARADIGM_DECIMALS
     ),
     int(
-      Decimal(offer["availableSize"]) 
-      * BRIDGE_DECIMALS 
-      / PARADIGM_DECIMALS
-      * (vaultInfo["strikePrice"])
-      / PARADIGM_DECIMALS 
+        Decimal(offer["availableSize"])
+        * BRIDGE_DECIMALS
+        / PARADIGM_DECIMALS
+        * (vaultInfo["strikePrice"])
+        / PARADIGM_DECIMALS
     ),
     int(vaultInfo["expiryTimestamp"]),
     maker_public,
