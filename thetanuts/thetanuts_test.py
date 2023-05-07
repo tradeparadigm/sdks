@@ -248,7 +248,7 @@ thetanuts.create_offer(
 
 # Wait for RPC to be ready
 while True:
-    if bridgeContract.functions.getAuctionDetails(oToken).call()[3] == 0:
+    if bridgeContract.functions.getAuctionDetails(vault_contract_address).call()[3] == 0:
         print("Waiting for RPC to be ready...")
         time.sleep(5)
     else:
@@ -285,8 +285,6 @@ signed_bid = thetanuts.sign_bid(
         / PARADIGM_DECIMALS
         * Decimal(pricePerContract)
         * COLLAT_DECIMALS
-        * (vaultInfo["strikePrice"])
-        / PARADIGM_DECIMALS
     ),
     buy_amount=int(Decimal(offer["availableSize"]) * BRIDGE_DECIMALS / PARADIGM_DECIMALS),
     referrer="0x" + "0" * 40,
@@ -313,8 +311,6 @@ if (
             / PARADIGM_DECIMALS
             * Decimal(pricePerContract)
             * COLLAT_DECIMALS
-            * (vaultInfo["strikePrice"])
-            / PARADIGM_DECIMALS
         ),
         buy_amount=int(Decimal(offer["availableSize"]) * BRIDGE_DECIMALS / PARADIGM_DECIMALS),
         referrer="0x" + "0" * 40,
@@ -353,8 +349,6 @@ tx = bridgeContract.functions.pullAssetsAndStartRound(
         / PARADIGM_DECIMALS
         * Decimal(pricePerContract)
         * COLLAT_DECIMALS
-        * (vaultInfo["strikePrice"])
-        / PARADIGM_DECIMALS
     ),
     int(
         Decimal(offer["availableSize"])

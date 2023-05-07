@@ -65,7 +65,7 @@ class Thetanuts(SDKConfig):
             time.sleep(5)
             tx = w3.eth.send_raw_transaction(
                 w3.eth.account.sign_transaction(
-                    vaultContract.functions.settleStrike_MM(0).build_transaction(
+                    vaultContract.functions.settleStrike_MM(int(1000e6)).build_transaction(
                         {'nonce': Nonce(nonce + 1), 'from': public_key}
                     ),
                     private_key,
