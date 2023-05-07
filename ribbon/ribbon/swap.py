@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 # Created By: Steven@Ribbon, Paolo@Paradigm
 # Created Date: 04/04/2022
@@ -13,12 +12,14 @@ from shutil import ExecError
 from typing import cast
 
 from web3 import Web3
+from web3.types import TxParams
 
 from ribbon.contract import ContractConnection
 from ribbon.definitions import Offer, SignedBid
 from ribbon.encode import ADDRESS_ZERO
 from ribbon.utils import get_address
 from ribbon.wallet import Wallet
+from sdk_commons.chains import Chains
 from sdk_commons.config import BidValidation, OfferDetails
 
 # ---------------------------------------------------------------------------
@@ -26,9 +27,10 @@ from sdk_commons.config import BidValidation, OfferDetails
 # ---------------------------------------------------------------------------
 DETAILED_ERROR_MESSAGES = {
     "SIGNATURE_INVALID": "Signature invalid.",
-    "SIGNATURE_MISMATCHED": (
-        "Signature's origin does not match signer's address. "
-        "Ensure you are using the correct wallet."
+    "UNAUTHORIZED": (
+        "Signer address in bid differs from signatory. "
+        "Either ensure the signer wallet has authorized signatory if using a delegate, "
+        "or ensure the signed message details are accurate."
     ),
     "NONCE_ALREADY_USED": "This nonce has been previously used.",
     "BID_TOO_SMALL": "Bid size has to be larger than minimum bid.",
@@ -42,8 +44,6 @@ DETAILED_ERROR_MESSAGES = {
         "Insufficient bidding token balance. "
         "Ensure you have sufficient balance of bidding token in your wallet."
     ),
-    "SELLER_ALLOWANCE_LOW": "Seller has insufficient oToken allowance.",
-    "SELLER_BALANCE_LOW": "Seller has insufficienct oToken balance.",
 }
 
 GAS_LIMIT = 200000
@@ -166,11 +166,18 @@ class SwapContract(ContractConnection):
         offer.biddingToken = get_address(offer.biddingToken)
 
         nonce = self.w3.eth.get_transaction_count(wallet.public_key)
-        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).build_transaction(
-            {
+        tx_params: TxParams = {}
+        if self.config.chain_id in [Chains.BSC, Chains.BSC_TESTNET]:
+            # BSC transactions require the gasPrice parameter
+            tx_params = {
                 "nonce": nonce,
                 "gas": GAS_LIMIT,
+                'gasPrice': self.w3.eth.gas_price,
             }
+        else:
+            tx_params = {"nonce": nonce, "gas": GAS_LIMIT}
+        tx = self.contract.functions.createOffer(*list(asdict(offer).values())).build_transaction(
+            tx_params
         )
 
         signed_tx = self.w3.eth.account.sign_transaction(tx, private_key=wallet.private_key)

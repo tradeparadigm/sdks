@@ -186,17 +186,3 @@ new_offer = Offer(
 
 new_offer_id = swap_contract.create_offer(new_offer, wallet)
 ```
-
-### Produce a JWT signature
-
-```python
-
-from ribbon.authenticate import Authenticator
-
-# Define the following variables:
-api_key = "..."
-
-auth = Authenticator(api_key)
-jwtSignature = auth.sign_jwt({"some": "payload"})
-print(jwtSignature)
-```

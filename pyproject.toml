@@ -1,3 +1,42 @@
+[build-system]
+requires = ['poetry-core~=1.0']
+build-backend = 'poetry.core.masonry.api'
+
+[tool.poetry]
+name = 'sdks'
+description = 'Paradigm SDK to interact with DeFi Venues'
+license = 'MIT'
+version = '0.5.3'
+authors = [
+    "Paolo D'Onorio De Meo <paolo@paradigm.co>",
+    "Cássios Marques <cassios@paradigm.co>",
+    "Mattia D'Antonio <mattia@paradigm.co>",
+]
+packages = [
+    { include = 'sdk_commons', from = 'sdk_commons' },
+    { include = 'sdk_commons/abis', from = 'sdk_commons' },
+    { include = 'ribbon', from = 'ribbon' },
+    { include = 'thetanuts', from = 'thetanuts' },
+]
+
+[tool.poetry.dependencies]
+python = '>=3.7.2,<3.11'
+
+# Shared Ribbon & Thetanuts
+eth-abi = '3.0.1'
+eth-account = '0.6.0'
+eth-keys = '0.4.0'
+eth-typing = '3.3.0'
+eth-utils = '2.1.0'
+web3 = '6.0.0-beta.4'
+
+# Ribbon only
+cryptography = '38.0.4'
+pyOpenSSL = '22.0.0'
+eth-hash = '0.5.1'
+eth-keyfile = '0.6.1'
+eth-rlp = '0.3.0'
+
 [tool.black]
 target-version = ['py310']
 include = '\.pyi?$'

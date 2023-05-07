@@ -8,14 +8,12 @@ from sdk_commons.config import SDKConfig
 class VenuePackages(Enum):
     TEMPLATE = 'template'
     RIBBON = 'ribbon'
-    FRIKTION = 'friktion'
     THETANUTS = "thetanuts"
 
 
 VENUES = [
     VenuePackages.TEMPLATE.value,
     VenuePackages.RIBBON.value,
-    VenuePackages.FRIKTION.value,
     VenuePackages.THETANUTS.value,
 ]
 

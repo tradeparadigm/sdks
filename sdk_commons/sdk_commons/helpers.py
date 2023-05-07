@@ -16,14 +16,16 @@ def get_evm_signature_components(signature: str) -> tuple[str, str, int]:
     return r, s, v
 
 
-def get_abi_path(abi_name: str) -> Path:
+def get_abi_path(abi_name: str | Path) -> Path:
     """
     Resolve an abi name to the absolute path of the abi json
     """
+    if isinstance(abi_name, Path):
+        return abi_name
     return Path(__file__).parent.joinpath('abis', abi_name).with_suffix('.json')
 
 
-def get_abi(abi_name: str) -> Any:
+def get_abi(abi_name: str | Path) -> Any:
     """
     Resolve an abi name to the content of the abi json
     """
