@@ -22,6 +22,7 @@ class Thetanuts(SDKConfig):
     authorization_pages = AuthorizationPages
     supported_chains = [Chains.ETHEREUM, Chains.MATIC]
     PARADIGM_OFFSET = 100  # Bridge returns 1e6, Paradigm expects 1e8
+    PRIORITY_FEE = {Chains.ETHEREUM: hex(int(1e8)), Chains.MATIC: hex(int(30e9))}
 
     def create_offer(
         self,
@@ -55,7 +56,12 @@ class Thetanuts(SDKConfig):
             tx = w3.eth.send_raw_transaction(
                 w3.eth.account.sign_transaction(
                     vaultContract.functions.setExpiry(currentTime).build_transaction(
-                        {'nonce': Nonce(nonce), 'from': public_key}
+                        {
+                            'nonce': Nonce(nonce),
+                            'from': public_key,
+                            'maxPriorityFeePerGas': self.PRIORITY_FEE[chain_id],
+                            'maxFeePerGas': hex(w3.eth.gas_price * 2),
+                        }
                     ),
                     private_key,
                 ).rawTransaction
@@ -66,7 +72,12 @@ class Thetanuts(SDKConfig):
             tx = w3.eth.send_raw_transaction(
                 w3.eth.account.sign_transaction(
                     vaultContract.functions.settleStrike_MM(int(1000e6)).build_transaction(
-                        {'nonce': Nonce(nonce + 1), 'from': public_key}
+                        {
+                            'nonce': Nonce(nonce + 1),
+                            'from': public_key,
+                            'maxPriorityFeePerGas': self.PRIORITY_FEE[chain_id],
+                            'maxFeePerGas': hex(w3.eth.gas_price * 2),
+                        }
                     ),
                     private_key,
                 ).rawTransaction
@@ -114,7 +125,13 @@ class Thetanuts(SDKConfig):
                     bridgeContract.functions.setNextStrikeAndSize(
                         oToken, int(price), amtToSell
                     ).build_transaction(
-                        {'nonce': Nonce(nonce), 'from': public_key, "gas": 200000}
+                        {
+                            'nonce': Nonce(nonce),
+                            'from': public_key,
+                            "gas": 200000,
+                            "maxPriorityFeePerGas": self.PRIORITY_FEE[chain_id],
+                            'maxFeePerGas': hex(w3.eth.gas_price * 2),
+                        }
                     ),
                     private_key,
                 ).rawTransaction

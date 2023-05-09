@@ -28,6 +28,7 @@ def get_env(variable: str) -> str:
 
 current_chain = Chains.MATIC
 rpc_uri = "https://polygon-rpc.com"
+PRIORITY_FEE = {Chains.ETHEREUM: hex(int(1e8)), Chains.MATIC: hex(int(30e9))}
 
 w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
 if current_chain == Chains.MATIC:
@@ -216,7 +217,14 @@ tx = bridgeContract.functions.pullAssetsAndStartRound(
     int(vaultInfo["expiryTimestamp"]),
     maker_public,
     signed_bid,
-).build_transaction({'nonce': w3.eth.get_transaction_count(owner_public), 'from': owner_public})
+).build_transaction(
+    {
+        'nonce': w3.eth.get_transaction_count(owner_public),
+        'from': owner_public,
+        'maxPriorityFeePerGas': PRIORITY_FEE[current_chain],
+        'maxFeePerGas': hex(w3.eth.gas_price * 2),
+    }
+)
 signedTx = w3.eth.send_raw_transaction(
     w3.eth.account.sign_transaction(tx, owner_private).rawTransaction
 )
@@ -360,7 +368,14 @@ tx = bridgeContract.functions.pullAssetsAndStartRound(
     int(vaultInfo["expiryTimestamp"]),
     maker_public,
     signed_bid,
-).build_transaction({'nonce': w3.eth.get_transaction_count(owner_public), 'from': owner_public})
+).build_transaction(
+    {
+        'nonce': w3.eth.get_transaction_count(owner_public),
+        'from': owner_public,
+        'maxPriorityFeePerGas': PRIORITY_FEE[current_chain],
+        'maxFeePerGas': hex(w3.eth.gas_price * 2),
+    }
+)
 signedTx = w3.eth.send_raw_transaction(
     w3.eth.account.sign_transaction(tx, owner_private).rawTransaction
 )
