@@ -21,6 +21,7 @@ class AuthorizationPages:
 class Thetanuts(SDKConfig):
     authorization_pages = AuthorizationPages
     supported_chains = [Chains.ETHEREUM, Chains.MATIC]
+    PARADIGM_OFFSET = 100  # Bridge returns 1e6, Paradigm expects 1e8
 
     def create_offer(
         self,
@@ -64,7 +65,7 @@ class Thetanuts(SDKConfig):
             time.sleep(5)
             tx = w3.eth.send_raw_transaction(
                 w3.eth.account.sign_transaction(
-                    vaultContract.functions.settleStrike_MM(0).build_transaction(
+                    vaultContract.functions.settleStrike_MM(int(1000e6)).build_transaction(
                         {'nonce': Nonce(nonce + 1), 'from': public_key}
                     ),
                     private_key,
@@ -98,10 +99,16 @@ class Thetanuts(SDKConfig):
         if (
             bridgeContract.functions.vaultNextStrikeX1e6(oToken).call() == 0
         ):  # New round not configured yet
-            amtToSell = vaultContract.functions.initNewRound([int(10000e6)], 0, 0).call(
-                {"from": vaultContract.functions.designatedMaker().call()}
-            )  # Get active balance in vault - will fail if not ready
-            price = 2000e6  # Strike Price to sell at (multiplied by 1 million)
+            try:  # Optimistically assume CALL vault
+                price = 4000e6  # Strike Price to sell at (multiplied by 1e6)
+                amtToSell = vaultContract.functions.initNewRound([int(price)], 0, 0).call(
+                    {"from": vaultContract.functions.designatedMaker().call()}
+                )  # Get active balance in vault - will fail if not ready
+            except Exception:  # If failed, assume PUT vault
+                price = 1000e6  # Strike Price to sell at (multiplied by 1e6)
+                amtToSell = vaultContract.functions.initNewRound([int(price)], 0, 0).call(
+                    {"from": vaultContract.functions.designatedMaker().call()}
+                )  # Get active balance in vault - will fail if not ready
             tx = w3.eth.send_raw_transaction(
                 w3.eth.account.sign_transaction(
                     bridgeContract.functions.setNextStrikeAndSize(
@@ -142,7 +149,7 @@ class Thetanuts(SDKConfig):
             "collateralAsset": aucDetails[0],
             "underlyingAsset": aucDetails[1],
             "strikeAsset": aucDetails[2],
-            "strikePrice": aucDetails[3],
+            "strikePrice": aucDetails[3] * self.PARADIGM_OFFSET,
             "expiryTimestamp": aucDetails[4],
             "isPut": aucDetails[5],
         }
@@ -178,9 +185,9 @@ class Thetanuts(SDKConfig):
             'oToken': vault_address,
             'biddingToken': aucDetails[0],
             'minPrice': "0.0",
-            'minBidSize': aucDetails[6],
-            'totalSize': aucDetails[6],
-            'availableSize': aucDetails[6],
+            'minBidSize': aucDetails[6] * self.PARADIGM_OFFSET,
+            'totalSize': aucDetails[6] * self.PARADIGM_OFFSET,
+            'availableSize': aucDetails[6] * self.PARADIGM_OFFSET,
         }
 
     def sign_bid(
