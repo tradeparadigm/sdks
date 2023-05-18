@@ -52,7 +52,7 @@ taker_public = eth_keys.keys.private_key_to_public_key(
 # tweth_token_address = "0xd9F0446AedadCf16A12692E02FA26C617FA4D217"
 # Above address to be picked up from the vault contract
 oToken = vault_contract_address = "0x4a3c6DA195506ADC87D984C5B429708c8Ddd4237"
-contract_address = bridge_contract_address = "0xD8b2027785bd6D995c2ada80f47abcDe91B430d3"
+contract_address = bridge_contract_address = "0x7D18FF97e992cBD603534E85799e5DeAF5C3CC7A"
 
 
 bridgeContract = w3.eth.contract(
