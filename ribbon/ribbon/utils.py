@@ -53,7 +53,7 @@ def get_address(address: str | None) -> ChecksumAddress:
         raise ValueError(f'Invalid address: {address}')
 
     try:
-        return Web3.toChecksumAddress(address)
+        return Web3.to_checksum_address(address)
     except ValueError:
         raise ValueError(f'Invalid address: {address}')
 

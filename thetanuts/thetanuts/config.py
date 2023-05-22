@@ -45,7 +45,7 @@ class Thetanuts(SDKConfig):
         if chain_id == Chains.MATIC:
             w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         vaultContract = w3.eth.contract(
-            w3.toChecksumAddress(oToken),
+            w3.to_checksum_address(oToken),
             abi=get_abi("Thetanuts_Vault"),
         )
 
@@ -89,7 +89,7 @@ class Thetanuts(SDKConfig):
 
         # Configure ParadigmBridge
         bridgeContract = w3.eth.contract(
-            w3.toChecksumAddress(contract_address),
+            w3.to_checksum_address(contract_address),
             abi=get_abi("Thetanuts_ParadigmBridge"),
         )
 
@@ -160,7 +160,7 @@ class Thetanuts(SDKConfig):
 
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
         bridgeContract = w3.eth.contract(
-            w3.toChecksumAddress(swap_contract_address),
+            w3.to_checksum_address(swap_contract_address),
             abi=get_abi("Thetanuts_ParadigmBridge"),
         )
 
@@ -188,11 +188,11 @@ class Thetanuts(SDKConfig):
 
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
         bridgeContract = w3.eth.contract(
-            w3.toChecksumAddress(contract_address),
+            w3.to_checksum_address(contract_address),
             abi=get_abi("Thetanuts_ParadigmBridge"),
         )
 
-        vault_address = w3.toChecksumAddress(
+        vault_address = w3.to_checksum_address(
             bridgeContract.functions.vaultIndex(int(offer_id >> 16)).call()
         )
 
@@ -262,10 +262,10 @@ class Thetanuts(SDKConfig):
 
         w3 = web3.Web3(web3.HTTPProvider(rpc_uri))
         bridgeContract = w3.eth.contract(
-            w3.toChecksumAddress(contract_address),
+            w3.to_checksum_address(contract_address),
             abi=get_abi("Thetanuts_ParadigmBridge"),
         )
-        vault_address = w3.toChecksumAddress(
+        vault_address = w3.to_checksum_address(
             bridgeContract.functions.vaultIndex(int(swap_id >> 16)).call()
         )
 
@@ -287,7 +287,7 @@ class Thetanuts(SDKConfig):
                 vault_address,
                 nonce,
                 sell_amount,
-                w3.toChecksumAddress(signer_wallet),
+                w3.to_checksum_address(signer_wallet),
                 signature,
             ).call()
         except Exception:  # Catches revert when signature invalid
@@ -318,7 +318,7 @@ class Thetanuts(SDKConfig):
             return False
 
         bidding_token = w3.eth.contract(
-            w3.toChecksumAddress(token_address),
+            w3.to_checksum_address(token_address),
             abi=get_abi("ERC20"),
         )
 

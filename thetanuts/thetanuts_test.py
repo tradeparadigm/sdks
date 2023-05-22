@@ -56,7 +56,7 @@ contract_address = bridge_contract_address = "0x7D18FF97e992cBD603534E85799e5DeA
 
 
 bridgeContract = w3.eth.contract(
-    w3.toChecksumAddress(bridge_contract_address),
+    w3.to_checksum_address(bridge_contract_address),
     abi=sdk_commons.helpers.get_abi("Thetanuts_ParadigmBridge"),
 )
 
@@ -73,7 +73,7 @@ assert taker_wallet.public_key, "Taker Public Key is None"
 # Maker gets information on asset
 
 vault = w3.eth.contract(
-    w3.toChecksumAddress(vault_contract_address),
+    w3.to_checksum_address(vault_contract_address),
     abi=sdk_commons.helpers.get_abi("Thetanuts_Vault"),
 )
 
@@ -81,7 +81,7 @@ tweth_token_address = vault.functions.COLLAT().call()
 vault_epoch = vault.functions.epoch().call() + 1
 
 collat = w3.eth.contract(
-    w3.toChecksumAddress(tweth_token_address),
+    w3.to_checksum_address(tweth_token_address),
     abi=sdk_commons.helpers.get_abi("ERC20"),
 )
 
