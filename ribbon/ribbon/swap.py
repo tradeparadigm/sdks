@@ -165,7 +165,9 @@ class SwapContract(ContractConnection):
         offer.oToken = get_address(offer.oToken)
         offer.biddingToken = get_address(offer.biddingToken)
 
-        nonce = self.w3.eth.get_transaction_count(Web3.to_checksum_address(wallet.public_key))
+        nonce = self.w3.eth.get_transaction_count(
+            Web3.to_checksum_address(cast(str, wallet.public_key))
+        )
         tx_params: TxParams = {}
         if self.config.chain_id in [Chains.BSC, Chains.BSC_TESTNET]:
             # BSC transactions require the gasPrice parameter
