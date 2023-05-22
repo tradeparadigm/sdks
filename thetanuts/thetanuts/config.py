@@ -49,7 +49,7 @@ class Thetanuts(SDKConfig):
             abi=get_abi("Thetanuts_Vault"),
         )
 
-        nonce = w3.eth.get_transaction_count(public_key)
+        nonce = w3.eth.get_transaction_count(web3.Web3.to_checksum_address(public_key))
 
         if vaultContract.functions.expiry().call() > 0:  # Round in progress, let's end it
             currentTime = int(time.time())
