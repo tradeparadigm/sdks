@@ -124,7 +124,7 @@ class SwapContract(ContractConnection):
             return {
                 "errors": errors,
                 "messages": [
-                    DETAILED_ERROR_MESSAGES[Web3.toText(msg).replace("\x00", "")]
+                    DETAILED_ERROR_MESSAGES[Web3.to_text(msg).replace("\x00", "")]
                     for msg in response[1][:errors]
                 ],
             }
