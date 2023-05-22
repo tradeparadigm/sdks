@@ -139,7 +139,11 @@ class Thetanuts(SDKConfig):
             print("Sent OWNER transaction for setting new strike and size", tx.hex())
             w3.eth.wait_for_transaction_receipt(tx)
             time.sleep(5)
-        return str(int(oToken[2:], 16))
+        return (
+            (bridgeContract.functions.vaultIndexToAddress(contract_address).call() << 16)
+            + vaultContract.functions.epoch().call()
+            + 1
+        )
 
     def get_otoken_details(
         self,
@@ -265,6 +269,9 @@ class Thetanuts(SDKConfig):
             bridgeContract.functions.vaultIndex(int(swap_id >> 16)).call()
         )
 
+        vault = w3.eth.contract(vault_address, abi=get_abi("Thetanuts_Vault"))
+
+        # Check for sufficient allowance
         try:
             isValid = bridgeContract.functions.validateSignature(
                 vault_address,
@@ -275,6 +282,16 @@ class Thetanuts(SDKConfig):
             ).call()
         except Exception:
             return {'errors': True, "messages": ["signature invalid"]}
+
+        bidding_token = w3.eth.contract(
+            w3.toChecksumAddress(vault.functions.COLLAT().call()),
+            abi=get_abi("ERC20"),
+        )
+
+        # Check for sufficient assets in wallet
+        assetBalance = bidding_token.functions.balanceOf(signer_wallet).call()
+        if assetBalance < sell_amount:
+            return {'errors': True, "messages": ["insufficient bidding token in wallet"]}
 
         return {'errors': not isValid}
 
