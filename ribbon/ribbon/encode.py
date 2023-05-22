@@ -30,9 +30,9 @@ DOMAIN_FIELD_TYPES = {
     'salt': 'bytes32',
 }
 
-HEX_TRUE = hex_zero_pad(Web3.toHex(1), 32)
-HEX_FALSE = hex_zero_pad(Web3.toHex(0), 32)
-ADDRESS_ZERO = hex_zero_pad(Web3.toHex(0), 20)
+HEX_TRUE = hex_zero_pad(Web3.to_hex(1), 32)
+HEX_FALSE = hex_zero_pad(Web3.to_hex(0), 32)
+ADDRESS_ZERO = hex_zero_pad(Web3.to_hex(0), 20)
 
 # TODO: to be improved by replacing Any with specific types
 EncoderType = Callable[[Any], str]
@@ -63,7 +63,7 @@ def uint_encoder(data_type: str) -> EncoderType:
     return cast(
         EncoderType,
         (
-            lambda value: hex_zero_pad(Web3.toHex(int(value)), 32)
+            lambda value: hex_zero_pad(Web3.to_hex(int(value)), 32)
             if int(value) < boundsUpper and int(value) > boundsLower
             # TODO this is a return ValueError and not a raise,
             # it is expected? (Please note that exception can't
