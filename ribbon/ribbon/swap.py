@@ -190,5 +190,5 @@ class SwapContract(ContractConnection):
             raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
 
         return cast(
-            str, self.contract.events.NewOffer().processReceipt(tx_receipt)[0]["args"]["swapId"]
+            str, self.contract.events.NewOffer().process_receipt(tx_receipt)[0]["args"]["swapId"]
         )
