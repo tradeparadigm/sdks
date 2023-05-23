@@ -271,18 +271,6 @@ class Thetanuts(SDKConfig):
 
         vault = w3.eth.contract(vault_address, abi=get_abi("Thetanuts_Vault"))
 
-        # Check for sufficient allowance
-        try:
-            isValid = bridgeContract.functions.validateSignature(
-                vault_address,
-                nonce,
-                sell_amount,
-                w3.toChecksumAddress(signer_wallet),
-                signature,
-            ).call()
-        except Exception:
-            return {'errors': True, "messages": ["signature invalid"]}
-
         bidding_token = w3.eth.contract(
             w3.toChecksumAddress(vault.functions.COLLAT().call()),
             abi=get_abi("ERC20"),
@@ -291,9 +279,24 @@ class Thetanuts(SDKConfig):
         # Check for sufficient assets in wallet
         assetBalance = bidding_token.functions.balanceOf(signer_wallet).call()
         if assetBalance < sell_amount:
-            return {'errors': True, "messages": ["insufficient bidding token in wallet"]}
+            return {'errors': 1, "messages": ["insufficient bidding token in wallet"]}
 
-        return {'errors': not isValid}
+        # Check for valid signature
+        try:
+            isValid = bridgeContract.functions.validateSignature(
+                vault_address,
+                nonce,
+                sell_amount,
+                w3.toChecksumAddress(signer_wallet),
+                signature,
+            ).call()
+        except Exception:  # Catches revert when signature invalid
+            return {'errors': 1, "messages": ["signature invalid"]}
+
+        if isValid:
+            return {'errors': 0}
+        else:
+            return {'errors': 1, "messages": ["signature valid, bid parameters invalid"]}
 
     def verify_allowance(
         self,
