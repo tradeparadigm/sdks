@@ -139,7 +139,7 @@ class Thetanuts(SDKConfig):
             print("Sent OWNER transaction for setting new strike and size", tx.hex())
             w3.eth.wait_for_transaction_receipt(tx)
             time.sleep(5)
-        return (
+        return str(
             (bridgeContract.functions.vaultIndexToAddress(contract_address).call() << 16)
             + vaultContract.functions.epoch().call()
             + 1
