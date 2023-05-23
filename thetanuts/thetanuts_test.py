@@ -161,29 +161,28 @@ print("Signed bid:", signed_bid)
 # Validate bid through ParadigmBridge contract
 
 print("Validating bid by checking validate_bid(..) returns {'errors': False} ")
-if (
-    thetanuts.validate_bid(
-        contract_address=bridge_contract_address,
-        chain_id=current_chain,
-        rpc_uri=rpc_uri,
-        swap_id=(vault_id << 16) + vault_epoch,
-        nonce=vaultInfo["expiryTimestamp"],
-        signer_wallet=maker_public,
-        sell_amount=int(
-            Decimal(offer["availableSize"])
-            * Decimal(pricePerContract)
-            * COLLAT_DECIMALS
-            / PARADIGM_DECIMALS
-        ),
-        buy_amount=int(Decimal(offer["availableSize"]) * COLLAT_DECIMALS / PARADIGM_DECIMALS),
-        referrer="0x" + "0" * 40,
-        signature=signed_bid,
-    )["errors"]
-    is False
-):
+bidValidation = thetanuts.validate_bid(
+    contract_address=bridge_contract_address,
+    chain_id=current_chain,
+    rpc_uri=rpc_uri,
+    swap_id=(vault_id << 16) + vault_epoch,
+    nonce=vaultInfo["expiryTimestamp"],
+    signer_wallet=maker_public,
+    sell_amount=int(
+        Decimal(offer["availableSize"])
+        * Decimal(pricePerContract)
+        * COLLAT_DECIMALS
+        / PARADIGM_DECIMALS
+    ),
+    buy_amount=int(Decimal(offer["availableSize"]) * COLLAT_DECIMALS / PARADIGM_DECIMALS),
+    referrer="0x" + "0" * 40,
+    signature=signed_bid,
+)
+
+if bidValidation["errors"] == 0:
     print(" -> Bid validated")
 else:
-    print(" -> Bid validation failed!")
+    print(" -> Bid validation failed! Error: ", bidValidation["messages"])
 
 # Paradigm validates allowance
 
@@ -232,6 +231,7 @@ print("Sent OWNER transaction for pulling assets from MAKER to start new round",
 w3.eth.wait_for_transaction_receipt(signedTx)
 
 # Repeat the above for the put vault
+time.sleep(15)
 print("Perform test for PUT vault - using tUSDC")
 
 vault_contract_address = "0x95f907d6Dcd0ea1F4F53E1e63c72Ed1E1471FEa7"
@@ -305,30 +305,28 @@ print("Signed bid:", signed_bid)
 
 # Validate bid through ParadigmBridge contract
 
-print("Validating bid by checking validate_bid(..) returns {'errors': False} ")
-if (
-    thetanuts.validate_bid(
-        contract_address=bridge_contract_address,
-        chain_id=current_chain,
-        rpc_uri=rpc_uri,
-        swap_id=(vault_id << 16) + vault_epoch,
-        nonce=vaultInfo["expiryTimestamp"],
-        signer_wallet=maker_public,
-        sell_amount=int(
-            Decimal(offer["availableSize"])
-            / PARADIGM_DECIMALS
-            * Decimal(pricePerContract)
-            * COLLAT_DECIMALS
-        ),
-        buy_amount=int(Decimal(offer["availableSize"]) * BRIDGE_DECIMALS / PARADIGM_DECIMALS),
-        referrer="0x" + "0" * 40,
-        signature=signed_bid,
-    )["errors"]
-    is False
-):
+bidValidation = thetanuts.validate_bid(
+    contract_address=bridge_contract_address,
+    chain_id=current_chain,
+    rpc_uri=rpc_uri,
+    swap_id=(vault_id << 16) + vault_epoch,
+    nonce=vaultInfo["expiryTimestamp"],
+    signer_wallet=maker_public,
+    sell_amount=int(
+        Decimal(offer["availableSize"])
+        * Decimal(pricePerContract)
+        * COLLAT_DECIMALS
+        / PARADIGM_DECIMALS
+    ),
+    buy_amount=int(Decimal(offer["availableSize"]) * COLLAT_DECIMALS / PARADIGM_DECIMALS),
+    referrer="0x" + "0" * 40,
+    signature=signed_bid,
+)
+
+if bidValidation["errors"] == 0:
     print(" -> Bid validated")
 else:
-    print(" -> Bid validation failed!")
+    print(" -> Bid validation failed! Error: ", bidValidation["messages"])
 
 # Paradigm validates allowance
 
@@ -376,6 +374,7 @@ tx = bridgeContract.functions.pullAssetsAndStartRound(
         'maxFeePerGas': hex(w3.eth.gas_price * 2),
     }
 )
+
 signedTx = w3.eth.send_raw_transaction(
     w3.eth.account.sign_transaction(tx, owner_private).rawTransaction
 )
