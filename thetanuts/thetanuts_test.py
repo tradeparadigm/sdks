@@ -177,7 +177,7 @@ bidValidation = thetanuts.validate_bid(
     buy_amount=int(Decimal(offer["availableSize"]) * COLLAT_DECIMALS / PARADIGM_DECIMALS),
     referrer="0x" + "0" * 40,
     signature=signed_bid,
-);
+)
 
 if bidValidation["errors"] == 0:
     print(" -> Bid validated")
@@ -321,7 +321,7 @@ bidValidation = thetanuts.validate_bid(
     buy_amount=int(Decimal(offer["availableSize"]) * COLLAT_DECIMALS / PARADIGM_DECIMALS),
     referrer="0x" + "0" * 40,
     signature=signed_bid,
-);
+)
 
 if bidValidation["errors"] == 0:
     print(" -> Bid validated")
