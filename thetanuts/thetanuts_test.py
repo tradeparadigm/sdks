@@ -182,7 +182,7 @@ bidValidation = thetanuts.validate_bid(
 if bidValidation["errors"] is False:
     print(" -> Bid validated")
 else:
-    print(" -> Bid validation failed! Error: " + bidValidation["message"])
+    print(" -> Bid validation failed! Error: " + bidValidation["messages"])
 
 # Paradigm validates allowance
 
