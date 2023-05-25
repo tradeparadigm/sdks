@@ -166,7 +166,7 @@ class SwapContract(ContractConnection):
         offer.biddingToken = get_address(offer.biddingToken)
 
         nonce = self.w3.eth.get_transaction_count(
-            Web3.to_checksum_address(cast(str, wallet.public_key))
+            self.w3.to_checksum_address(cast(str, wallet.public_key))
         )
         tx_params: TxParams = {}
         if self.config.chain_id in [Chains.BSC, Chains.BSC_TESTNET]:
