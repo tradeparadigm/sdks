@@ -272,7 +272,7 @@ class Thetanuts(SDKConfig):
         vault = w3.eth.contract(vault_address, abi=get_abi("Thetanuts_Vault"))
 
         bidding_token = w3.eth.contract(
-            w3.toChecksumAddress(vault.functions.COLLAT().call()),
+            w3.to_checksum_address(vault.functions.COLLAT().call()),
             abi=get_abi("ERC20"),
         )
 
