@@ -32,7 +32,7 @@ class Wallet:
         if self.private_key:
             self.signer = eth_keys.keys.PrivateKey(bytes.fromhex(self.private_key[2:]))
             if not self.public_key:
-                self.public_key = Web3.toChecksumAddress(self.signer.public_key.to_address())
+                self.public_key = Web3.to_checksum_address(self.signer.public_key.to_address())
 
     def sign_msg(self, messageHash: str) -> str:
         """Sign a hash message using the signer object
@@ -59,7 +59,7 @@ class Wallet:
         if not self.private_key:
             raise ValueError("Unable to sign. Create the Wallet with the private key argument.")
 
-        signerWallet = Web3.toChecksumAddress(bid.signerWallet)
+        signerWallet = Web3.to_checksum_address(bid.signerWallet)
 
         if signerWallet != self.public_key:
             raise ValueError("Signer wallet address mismatch")

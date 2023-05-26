@@ -72,14 +72,14 @@ Open a container with python
 #### Collect token decimals for proper scaling
 
     vault = w3.eth.contract(
-        w3.toChecksumAddress(vault_contract_address),
+        w3.to_checksum_address(vault_contract_address),
         abi=sdk_commons.helpers.get_abi("Thetanuts_Vault"),
     )
 
     tweth_token_address = vault.functions.COLLAT().call()
 
     collat = w3.eth.contract(
-        w3.toChecksumAddress(tweth_token_address),
+        w3.to_checksum_address(tweth_token_address),
         abi=sdk_commons.helpers.get_abi("ERC20"),
     )
 

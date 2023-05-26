@@ -124,7 +124,7 @@ class SwapContract(ContractConnection):
             return {
                 "errors": errors,
                 "messages": [
-                    DETAILED_ERROR_MESSAGES[Web3.toText(msg).replace("\x00", "")]
+                    DETAILED_ERROR_MESSAGES[Web3.to_text(msg).replace("\x00", "")]
                     for msg in response[1][:errors]
                 ],
             }
@@ -165,7 +165,9 @@ class SwapContract(ContractConnection):
         offer.oToken = get_address(offer.oToken)
         offer.biddingToken = get_address(offer.biddingToken)
 
-        nonce = self.w3.eth.get_transaction_count(wallet.public_key)
+        nonce = self.w3.eth.get_transaction_count(
+            self.w3.to_checksum_address(cast(str, wallet.public_key))
+        )
         tx_params: TxParams = {}
         if self.config.chain_id in [Chains.BSC, Chains.BSC_TESTNET]:
             # BSC transactions require the gasPrice parameter
@@ -190,5 +192,5 @@ class SwapContract(ContractConnection):
             raise ExecError(f'Transaction reverted: {signed_tx.hash.hex()}')
 
         return cast(
-            str, self.contract.events.NewOffer().processReceipt(tx_receipt)[0]["args"]["swapId"]
+            str, self.contract.events.NewOffer().process_receipt(tx_receipt)[0]["args"]["swapId"]
         )
