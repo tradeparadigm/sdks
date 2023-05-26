@@ -6,7 +6,7 @@ build-backend = 'poetry.core.masonry.api'
 name = 'sdks'
 description = 'Paradigm SDK to interact with DeFi Venues'
 license = 'MIT'
-version = '0.7.0'
+version = '0.8.0'
 authors = [
     "Paolo D'Onorio De Meo <paolo@paradigm.co>",
     "Cássios Marques <cassios@paradigm.co>",
