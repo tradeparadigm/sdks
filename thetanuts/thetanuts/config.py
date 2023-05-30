@@ -281,6 +281,10 @@ class Thetanuts(SDKConfig):
         if assetBalance < sell_amount:
             return {'errors': 1, "messages": ["insufficient bidding token in wallet"]}
 
+        # Metamask returns a signature string without '0x' prepend
+        if signature[0:2].lower() != "0x":
+            signature = "0x" + signature
+
         # Check for valid signature
         try:
             isValid = bridgeContract.functions.validateSignature(
