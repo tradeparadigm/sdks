@@ -1,9 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "branchConcurrentLimit": 10,
   "prHourlyLimit": 2,
   "configMigration": true,
@@ -12,7 +14,10 @@
   "commitMessageExtra": "to {{newVersion}}",
   "transitiveRemediation": true,
   "vulnerabilityAlerts": {
-    "labels": ["dependencies", "security"]
+    "labels": [
+      "dependencies",
+      "security"
+    ]
   },
   "pre-commit": {
     "enabled": true,
