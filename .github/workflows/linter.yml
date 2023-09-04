@@ -25,7 +25,7 @@ jobs:
       # Checkout the code base #
       ##########################
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Full git history is needed within `super-linter`
           fetch-depth: 0
