@@ -13,6 +13,10 @@
   "commitMessageTopic": "{{depName}}",
   "commitMessageExtra": "to {{newVersion}}",
   "transitiveRemediation": true,
+  "automerge": true,
+  "automergeStrategy": "squash",
+  "rebaseWhen": "conflict",
+  "assignAutomerge": true,
   "vulnerabilityAlerts": {
     "labels": [
       "dependencies",
