@@ -32,7 +32,7 @@ web3 = '6.4.0'
 
 # Ribbon only
 cryptography = '41.0.4'
-pyOpenSSL = '22.0.0'
+pyOpenSSL = '23.3.0'
 eth-hash = '0.5.1'
 eth-keyfile = '0.6.1'
 eth-rlp = '0.3.0'
