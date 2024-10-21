@@ -26,16 +26,16 @@ python = '>=3.7.2,<3.12'
 eth-abi = '4.0.0'
 eth-account = '0.8.0'
 eth-keys = '0.4.0'
-eth-typing = '3.3.0'
-eth-utils = '2.1.0'
-web3 = '6.4.0'
+eth-typing = '5.0.1'
+eth-utils = '5.1.0'
+web3 = '7.4.0'
 
 # Ribbon only
 cryptography = '41.0.4'
 pyOpenSSL = '22.0.0'
 eth-hash = '0.5.1'
 eth-keyfile = '0.6.1'
-eth-rlp = '0.3.0'
+eth-rlp = '2.1.0'
 
 [tool.black]
 target-version = ['py310']
