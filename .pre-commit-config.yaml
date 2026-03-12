@@ -1,20 +1,20 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0 # Use the ref you want to point at
+  rev: v6.0.0 # Use the ref you want to point at
   hooks:
     - id: end-of-file-fixer
 - repo: https://github.com/psf/black
-  rev: 23.10.0
+  rev: 26.3.1
   hooks:
   - id: black
     args: [--config=pyproject.toml]
 - repo: https://github.com/timothycrosley/isort
-  rev: 5.12.0
+  rev: 8.0.1
   hooks:
   - id: isort
     args: [--sp=pyproject.toml]
 - repo: https://github.com/pycqa/flake8
-  rev: 6.1.0
+  rev: 7.3.0
   hooks:
     - id: flake8
 - repo: https://github.com/asottile/pyupgrade
