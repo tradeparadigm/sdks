@@ -10,17 +10,17 @@
 from dataclasses import asdict
 from typing import Any
 
-# ---------------------------------------------------------------------------
-# Imports
-# ---------------------------------------------------------------------------
-
-
 import eth_keys
 
 from ribbon.definitions import Bid, ContractConfig, Domain, SignedBid
 from ribbon.encode import TypedDataEncoder
 from ribbon.erc20 import ERC20Contract
 from ribbon.utils import get_address, hex_zero_pad
+
+# ---------------------------------------------------------------------------
+# Imports
+# ---------------------------------------------------------------------------
+
 
 # ---------------------------------------------------------------------------
 # Constants
