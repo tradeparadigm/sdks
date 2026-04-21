@@ -10,7 +10,7 @@ import time
 from binascii import unhexlify
 from decimal import Decimal
 
-import eth_keys  # type: ignore
+import eth_keys
 import web3
 from web3.middleware import geth_poa_middleware
 

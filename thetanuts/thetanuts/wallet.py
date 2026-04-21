@@ -1,5 +1,5 @@
 """ Module for wallet utilities """
-import eth_keys  # type: ignore
+import eth_keys
 import web3
 from eth_abi.packed import encode_packed
 from eth_account.messages import encode_defunct
@@ -42,7 +42,7 @@ class Wallet:
         Returns:
             signature (dict): returns Signature in hex string
         """
-        return str(self.signer.sign_message(bytes.fromhex(messageHash[2:])).to_hex())
+        return str(self.signer.sign_msg(bytes.fromhex(messageHash[2:])).to_hex())
 
     def sign_bid(self, bid: Bid) -> str:
         """Sign a bid
