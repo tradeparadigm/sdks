@@ -106,3 +106,7 @@ warn_unused_configs = true
 
 # Warns about unneeded # type: ignore comments
 warn_unused_ignores = true
+[tool.pytest.ini_options]
+# web3's pytest plugin auto-loads and imports ContractName from eth_typing,
+# which was removed in eth-typing 4.x. Disable it since we don't use it.
+addopts = "-p no:web3"
