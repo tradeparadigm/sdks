@@ -13,9 +13,9 @@ from typing import Any
 # ---------------------------------------------------------------------------
 # Imports
 # ---------------------------------------------------------------------------
-# TODO: waiting new version to fix type hints
-# https://github.com/ethereum/eth-keys/pull/90
-import eth_keys  # type: ignore
+
+
+import eth_keys
 
 from ribbon.definitions import Bid, ContractConfig, Domain, SignedBid
 from ribbon.encode import TypedDataEncoder
