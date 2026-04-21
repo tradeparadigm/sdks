@@ -27,7 +27,7 @@ jobs:
       - name: Install SDKs
         run: |
           # TODO: move me in a requirements file
-          pip install pytest
+          pip install pytest "eth-typing<4.0.0"  # web3==6.4.0 pytest plugin needs ContractName (removed in 4.x)
           pip install . ./template
 
       - name: Run pytest
